@@ -429,6 +429,8 @@ void Program::cacheLocations() {
   uniform_locations_.clear();
   uniform_blocks_.clear();
   ub_map_name_id_.clear();
+  uniforms_.clear();
+  uniform_blocks_.clear();
 
   GLint i;
   GLint count;
