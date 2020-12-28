@@ -432,7 +432,6 @@ void Program::cacheLocations() {
   uniforms_.clear();
   uniform_blocks_.clear();
 
-  GLint i;
   GLint count;
 
   GLint size; // size of the variable
@@ -443,7 +442,7 @@ void Program::cacheLocations() {
   GLsizei length; // name length
 
   glGetProgramiv(id_, GL_ACTIVE_ATTRIBUTES, &count);
-  for (i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
     glGetActiveAttrib(id_, (GLuint) i, bufSize, &length, &size, &type, name);
     attr_locations_[name] = glGetAttribLocation(id_, name);
   }
@@ -485,13 +484,24 @@ void Program::cacheLocations() {
     u.is_row_major = values[7];
     u.location = values[15];
     uniform_locations_[u.name] = u.location;
-
     return u;
   };
   // get active uniforms
   glGetProgramInterfaceiv(id_, GL_UNIFORM, GL_ACTIVE_RESOURCES, &count);
-  for (i = 0; i < count; i++)
+  for (int i = 0; i < count; i++) {
     uniforms_.emplace_back(readUniform(i));
+    if(uniforms_.back().array_size > 1) {
+     const auto& u = uniforms_.back();
+      for (int j = 1; j < u.array_size; ++j) {
+        Uniform au = u;
+        au.name = ponos::Str::replace_r(u.name, "[0]", std::to_string(j));
+        au.index = i + j;
+        au.location = u.location + j;
+        uniform_locations_[au.name] = au.location;
+        uniforms_.emplace_back(au);
+      }
+    }
+  }
 
 
   // get active uniform blocks
@@ -510,7 +520,7 @@ void Program::cacheLocations() {
       GL_REFERENCED_BY_COMPUTE_SHADER // 10
   };
   const GLenum active_uniform_property[1] = {GL_ACTIVE_VARIABLES};
-  for (i = 0; i < count; ++i) {
+  for (int i = 0; i < count; ++i) {
     UniformBlock ub;
     // get properties
     GLint values[11];
@@ -590,8 +600,7 @@ void Program::setUniform(const std::string &name, const ponos::vec4 &v) {
 void Program::setUniform(const std::string &name, const ponos::vec3 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    std::cerr << "Attribute " << name << " not located.\n";
     return;
   }
   glUniform3fv(loc, 1, &v.x);
@@ -689,6 +698,7 @@ bool Program::checkLinkageErrors() {
   linked_ = true;
   return true;
 }
+
 std::ostream &operator<<(std::ostream &o, const Program &program) {
   {
     GLint i;
