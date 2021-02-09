@@ -69,6 +69,7 @@ public:
     default:data_type = GL_UNSIGNED_BYTE;
     }
     switch (element_type) {
+    case GL_POINTS: element_count = data.size(); break;
     case GL_TRIANGLES: element_count = data.size() / 3;
       break;
     case GL_TRIANGLE_STRIP:

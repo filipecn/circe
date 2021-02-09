@@ -58,6 +58,7 @@ public:
   inline u64 vertexCount() const { return vb_.vertexCount(); }
   inline u64 elementCount() const { return ib_.element_count; }
   VertexBuffer &vertexBuffer() { return vb_; }
+  const IndexBuffer &indexBuffer() const { return ib_; }
   void draw();
   // ***********************************************************************
   //                          PUBLIC FIELDS

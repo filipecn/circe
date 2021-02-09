@@ -51,7 +51,7 @@ SceneModel::SceneModel(SceneModel &&other) noexcept {
 }
 
 SceneModel::SceneModel(const Model &model) {
-  model_ = std::forward<Model>(model_);
+  model_ = model;
   vb_ = model.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model.indices();
@@ -60,10 +60,10 @@ SceneModel::SceneModel(const Model &model) {
 }
 
 SceneModel::SceneModel(Model &&model) noexcept {
-  model_ = std::forward<Model>(model_);
-  vb_ = model.data();
+  model_ = std::forward<Model>(model);
+  vb_ = model_.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
-  ib_ = model.indices();
+  ib_ = model_.indices();
   vao_.bind();
   vb_.bindAttributeFormats();
 }
@@ -71,7 +71,7 @@ SceneModel::SceneModel(Model &&model) noexcept {
 SceneModel::~SceneModel() = default;
 
 SceneModel &SceneModel::operator=(SceneModel &&other) noexcept {
-  model_ = std::forward<Model>(model_);
+  model_ = std::move(other.model_);
   vao_ = std::move(other.vao_);
   vb_ = std::move(other.vb_);
   ib_ = std::move(other.ib_);
@@ -79,7 +79,7 @@ SceneModel &SceneModel::operator=(SceneModel &&other) noexcept {
 }
 
 SceneModel &SceneModel::operator=(const Model &model) {
-  model_ = std::forward<Model>(model_);
+  model_ = model;
   vb_ = model.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());
   ib_ = model.indices();
@@ -89,10 +89,10 @@ SceneModel &SceneModel::operator=(const Model &model) {
 }
 
 SceneModel &SceneModel::operator=(Model &&model) noexcept {
-  model_ = std::forward<Model>(model_);
-  vb_ = model.data();
+  model_ = std::forward<Model>(model);
+  vb_ = model_.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
-  ib_ = model.indices();
+  ib_ = model_.indices();
   vao_.bind();
   vb_.bindAttributeFormats();
   return *this;

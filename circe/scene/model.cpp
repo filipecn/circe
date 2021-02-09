@@ -92,7 +92,24 @@ void Model::setPrimitiveType(ponos::GeometricPrimitiveType primitive_type) {
 }
 
 std::ostream &operator<<(std::ostream &o, const Model &model) {
+  auto ESTR = [](ponos::GeometricPrimitiveType p) -> std::string {
+#define ES(P) \
+    if(p == P) return #P
+    ES(ponos::GeometricPrimitiveType::POINTS);
+    ES(ponos::GeometricPrimitiveType::LINES);
+    ES(ponos::GeometricPrimitiveType::LINE_STRIP);
+    ES(ponos::GeometricPrimitiveType::LINE_LOOP);
+    ES(ponos::GeometricPrimitiveType::TRIANGLES);
+    ES(ponos::GeometricPrimitiveType::TRIANGLE_STRIP);
+    ES(ponos::GeometricPrimitiveType::TRIANGLE_FAN);
+    ES(ponos::GeometricPrimitiveType::QUADS);
+    ES(ponos::GeometricPrimitiveType::TETRAHEDRA);
+    ES(ponos::GeometricPrimitiveType::CUSTOM);
+    return "ERR";
+#undef ES
+  };
   o << "Model:\n" << model.data_;
+  o << "Model primitive type " << ESTR(model.element_type_) << std::endl;
   o << "Model Indices:\n";
   for (auto i : model.indices_)
     o << i << " ";

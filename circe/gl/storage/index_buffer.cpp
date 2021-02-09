@@ -50,6 +50,8 @@ IndexBuffer &IndexBuffer::operator=(IndexBuffer &&other) noexcept {
 u64 IndexBuffer::dataSizeInBytes() const {
   u64 index_count = 0;
   switch (element_type) {
+  case GL_POINTS: index_count = element_count;
+    break;
   case GL_TRIANGLES: index_count = element_count * 3;
     break;
   case GL_TRIANGLE_STRIP:
@@ -75,6 +77,8 @@ void IndexBuffer::draw() {
     last_element_count = element_count;
     last_element_type = element_type;
     switch (element_type) {
+    case GL_POINTS: index_count = element_count;
+      break;
     case GL_TRIANGLES: index_count = element_count * 3;
       break;
     case GL_TRIANGLE_STRIP:

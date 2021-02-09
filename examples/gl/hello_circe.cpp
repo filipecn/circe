@@ -126,6 +126,32 @@ public:
     mesh.program.setUniform("lightColors[1]", ponos::vec3(300));
     mesh.program.setUniform("lightColors[2]", ponos::vec3(300));
     mesh.program.setUniform("lightColors[3]", ponos::vec3(300));
+
+
+
+
+
+
+
+
+
+
+    ponos::AoS vertex_positions;
+    vertex_positions.pushField<ponos::point3>("position");
+    vertex_positions.resize(3);
+    vertex_positions.valueAt<ponos::point3>(0, 0) = {0, 0, 0};
+    vertex_positions.valueAt<ponos::point3>(0, 1) = {0, 1, 0};
+    vertex_positions.valueAt<ponos::point3>(0, 2) = {1, 0, 0};
+//    std::vector<i32> indices = {0, 1, 1, 2, 2, 0};
+    std::vector<i32> indices = {0, 1, 2};
+    circe::Model model;
+    model.setPrimitiveType(ponos::GeometricPrimitiveType::POINTS);
+    model = indices;
+    model = std::move(vertex_positions);
+    std::cerr << model << std::endl;
+    PING
+    MESH = model;
+    std::cerr << MESH.indexBuffer() << std::endl;
   }
 
   void prepareFrame(const circe::gl::ViewportDisplay &display) override {
@@ -188,6 +214,9 @@ public:
   circe::gl::UniformBuffer scene_ubo;
   circe::gl::SceneModel mesh, cartesian_plane;
   GLuint texture_id{0};
+
+
+  circe::gl::SceneModel MESH;
 };
 
 int main() {
