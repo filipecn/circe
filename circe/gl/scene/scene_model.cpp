@@ -33,6 +33,7 @@ SceneModel SceneModel::fromFile(const ponos::Path &path) {
   auto model = Model::fromFile(path);
   SceneModel scene_model;
   scene_model.vb_ = model.data();
+  scene_model.ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());
   scene_model.ib_ = model.indices();
   scene_model.model_ = std::move(model);
   scene_model.vao_.bind();
@@ -52,6 +53,7 @@ SceneModel::SceneModel(SceneModel &&other) noexcept {
 SceneModel::SceneModel(const Model &model) {
   model_ = std::forward<Model>(model_);
   vb_ = model.data();
+  ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model.indices();
   vao_.bind();
   vb_.bindAttributeFormats();
@@ -60,6 +62,7 @@ SceneModel::SceneModel(const Model &model) {
 SceneModel::SceneModel(Model &&model) noexcept {
   model_ = std::forward<Model>(model_);
   vb_ = model.data();
+  ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model.indices();
   vao_.bind();
   vb_.bindAttributeFormats();
@@ -78,6 +81,7 @@ SceneModel &SceneModel::operator=(SceneModel &&other) noexcept {
 SceneModel &SceneModel::operator=(const Model &model) {
   model_ = std::forward<Model>(model_);
   vb_ = model.data();
+  ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());
   ib_ = model.indices();
   vao_.bind();
   vb_.bindAttributeFormats();
@@ -87,6 +91,7 @@ SceneModel &SceneModel::operator=(const Model &model) {
 SceneModel &SceneModel::operator=(Model &&model) noexcept {
   model_ = std::forward<Model>(model_);
   vb_ = model.data();
+  ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model.indices();
   vao_.bind();
   vb_.bindAttributeFormats();

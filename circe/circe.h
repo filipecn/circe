@@ -3,6 +3,7 @@
 #include <circe/imgui/imgui.h>
 #include <circe/imgui/ImGuiFileDialog.h>
 #include <circe/imgui/TextEditor.h>
+#include <circe/imgui/ImGuizmo.h>
 #include <circe/gl/graphics/compute_shader.h>
 #include <circe/gl/graphics/shader.h>
 #include <circe/gl/graphics/shader_manager.h>
@@ -11,6 +12,7 @@
 #include <circe/gl/helpers/camera_model.h>
 #include <circe/gl/helpers/cartesian_grid.h>
 #include <circe/gl/helpers/geometry_drawers.h>
+#include <circe/ui/gizmo.h>
 #include <circe/gl/helpers/grid_model.h>
 //#include <circe/helpers/hemesh_model.h>
 #include <circe/gl/helpers/quad_tree_model.h>

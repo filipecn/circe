@@ -87,6 +87,10 @@ void Model::setIndices(std::vector<i32> &&indices) {
   indices_ = indices;
 }
 
+void Model::setPrimitiveType(ponos::GeometricPrimitiveType primitive_type) {
+  element_type_ = primitive_type;
+}
+
 std::ostream &operator<<(std::ostream &o, const Model &model) {
   o << "Model:\n" << model.data_;
   o << "Model Indices:\n";
@@ -94,6 +98,13 @@ std::ostream &operator<<(std::ostream &o, const Model &model) {
     o << i << " ";
   o << std::endl;
   return o;
+}
+
+ponos::bbox3 Model::boundingBox() const {
+  return ponos::bbox3();
+}
+void Model::fitToBox(const ponos::bbox3 &box) {
+
 }
 
 }

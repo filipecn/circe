@@ -36,6 +36,21 @@ namespace circe::gl {
 
 class OpenGL final {
 public:
+  static GLuint PrimitiveToGL(ponos::GeometricPrimitiveType primitive) {
+#define RET_GL(P, G) \
+  if(primitive == P) \
+  return G;
+    RET_GL(ponos::GeometricPrimitiveType::TRIANGLES, GL_TRIANGLES)
+    RET_GL(ponos::GeometricPrimitiveType::LINES, GL_LINES)
+    RET_GL(ponos::GeometricPrimitiveType::LINE_STRIP, GL_LINE_STRIP)
+    RET_GL(ponos::GeometricPrimitiveType::LINE_LOOP, GL_LINE_LOOP)
+    RET_GL(ponos::GeometricPrimitiveType::TRIANGLES, GL_TRIANGLES)
+    RET_GL(ponos::GeometricPrimitiveType::TRIANGLE_STRIP, GL_TRIANGLE_STRIP)
+    RET_GL(ponos::GeometricPrimitiveType::TRIANGLE_FAN, GL_TRIANGLE_FAN)
+    RET_GL(ponos::GeometricPrimitiveType::QUADS, GL_QUADS)
+    return GL_POINTS;
+#undef RET_GL
+  }
   static std::string EnumToStr(GLenum e) {
 #define RET_STR(A) \
     if(e == A) return #A;

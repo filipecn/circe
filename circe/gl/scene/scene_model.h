@@ -63,6 +63,7 @@ public:
   //                          PUBLIC FIELDS
   // ***********************************************************************
   Program program;
+  ponos::Transform transform;
 
 private:
   VertexArrayObject vao_;

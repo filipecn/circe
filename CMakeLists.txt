@@ -41,11 +41,12 @@ include(ponos)
 ##########################################
 set(IMGUI_SOURCES
         circe/imgui/imgui.cpp
-        circe/imgui/imgui_demo.cpp
+#        circe/imgui/imgui_demo.cpp
         circe/imgui/imgui_draw.cpp
         circe/imgui/imgui_widgets.cpp
         circe/imgui/ImGuiFileDialog.cpp
         circe/imgui/TextEditor.cpp
+        circe/imgui/ImGuizmo.cpp
         )
 
 set(IMGUI_HEADERS
@@ -58,6 +59,7 @@ set(IMGUI_HEADERS
         circe/imgui/ImGuiFileDialog.h
         circe/imgui/ImGuiFileDialogConfig.h
         circe/imgui/TextEditor.h
+        circe/imgui/ImGuizmo.h
         )
 
 set(CIRCE_HEADERS
@@ -123,6 +125,7 @@ set(CIRCE_HEADERS
         circe/gl/ui/text_renderer.h
         circe/gl/ui/text_object.h
         circe/gl/ui/font_manager.h
+        circe/ui/gizmo.h
         circe/ui/trackball.h
         circe/ui/trackball_interface.h
         circe/ui/track_mode.h

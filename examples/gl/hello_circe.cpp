@@ -103,7 +103,8 @@ public:
 //    if (!cartesian_plane.program.link(shaders_path, "scene_object"))
 //      spdlog::error("Failed to load model shader");
     /// load mesh
-    mesh = circe::gl::SceneModel::fromFile(assets_path + "suzanne.obj");
+//    mesh = circe::gl::SceneModel::fromFile(assets_path + "suzanne.obj");
+    mesh = circe::gl::SceneModel::fromFile("/home/filipecn/Desktop/teapot.obj");
 //    mesh = circe::Shapes::icosphere(ponos::point3(), 1., 3., circe::shape_options::normal | circe::shape_options::uv);
     if (!mesh.program.link(shaders_path, "scene_object"))
       spdlog::error("Failed to load model shader: " + mesh.program.err);
@@ -129,6 +130,7 @@ public:
 
   void prepareFrame(const circe::gl::ViewportDisplay &display) override {
     circe::gl::BaseApp::prepareFrame(display);
+    ImGuizmo::BeginFrame();
     auto p = app_->getCamera()->getPosition();
     circe::Light l;
     l.type = circe::LightTypes::DIRECTIONAL;
@@ -156,7 +158,7 @@ public:
     mesh.program.use();
     mesh.program.setUniform("view",
                             ponos::transpose(camera->getViewTransform().matrix()));
-    mesh.program.setUniform("model", ponos::Transform().matrix());
+    mesh.program.setUniform("model", ponos::transpose(mesh.transform.matrix()));
     mesh.program.setUniform("projection",
                             ponos::transpose(camera->getProjectionTransform().matrix()));
     mesh.program.setUniform("camPos", camera->getPosition());
@@ -171,6 +173,12 @@ public:
 //    texture_id = normal_map.textureObjectId();
     ImGui::Image((void *) (intptr_t) (texture_id), {256, 256},
                  {0, 1}, {1, 0});
+
+    ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
+
+    circe::Gizmo::update(camera, mesh.transform, ImGuizmo::OPERATION::ROTATE);
+    circe::Gizmo::draw(camera, 8, ponos::index2(200 - 128, 200), {128, 128});
+
     ImGui::End();
   }
 

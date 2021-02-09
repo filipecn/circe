@@ -79,8 +79,14 @@ public:
   }
   const ponos::AoS &data() const { return data_; }
   const std::vector<i32> &indices() const { return indices_; }
+  ponos::GeometricPrimitiveType primitiveType() const { return element_type_; }
   void resize(u64 new_size);
   void setIndices(std::vector<i32> &&indices);
+  void setPrimitiveType(ponos::GeometricPrimitiveType primitive_type);
+
+
+  ponos::bbox3 boundingBox() const;
+  void fitToBox(const ponos::bbox3& box = ponos::bbox3::unitBox());
 
 protected:
   ponos::AoS data_;
