@@ -115,6 +115,7 @@ set(CIRCE_HEADERS
         circe/gl/storage/buffer_interface.h
         circe/gl/storage/device_memory.h
         circe/gl/storage/index_buffer.h
+        circe/gl/storage/shader_storage_buffer.h
         circe/gl/storage/vertex_array_object.h
         circe/gl/storage/uniform_buffer.h
         circe/gl/storage/vertex_buffer.h
@@ -176,6 +177,7 @@ set(CIRCE_SOURCES
         circe/gl/storage/vertex_array_object.cpp
         circe/gl/storage/uniform_buffer.cpp
         circe/gl/storage/vertex_buffer.cpp
+        circe/gl/storage/shader_storage_buffer.cpp
         circe/gl/ui/app.cpp
         circe/gl/ui/text_renderer.cpp
         circe/gl/ui/text_object.cpp

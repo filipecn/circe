@@ -52,6 +52,7 @@
 #include <circe/gl/storage/index_buffer.h>
 #include <circe/gl/storage/vertex_array_object.h>
 #include <circe/gl/storage/uniform_buffer.h>
+#include <circe/gl/storage/shader_storage_buffer.h>
 #include <circe/gl/storage/vertex_buffer.h>
 #include <circe/gl/ui/app.h>
 #include <circe/gl/ui/font_manager.h>

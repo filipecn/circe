@@ -55,6 +55,7 @@ set(EXAMPLES
         scene_object_interaction
         shader_editor
         compiling_shaders
+        ssbo
         )
 
 foreach (EXAMPLE ${EXAMPLES})
