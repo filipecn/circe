@@ -41,18 +41,15 @@ public:
     ssbo.descriptor.valueAt<f32>(m, 1, 0) = f;
     ssbo.memory()->unmap();
 
-    ssbo.
-        bind();
-    mesh.program.
-        use();
+    ssbo.bind();
+    mesh.program.use();
     mesh.program.setUniform("view", ponos::transpose(camera->getViewTransform().matrix()));
     mesh.program.setUniform("model", ponos::transpose(mesh.transform.matrix()));
     mesh.program.setUniform("projection", ponos::transpose(camera->getProjectionTransform().matrix()));
     mesh.draw();
   }
 
-  circe::gl::SceneModel
-      mesh;
+  circe::gl::SceneModel mesh;
   circe::gl::ShaderStorageBuffer ssbo;
 };
 

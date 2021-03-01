@@ -1,4 +1,4 @@
-/// Copyright (c) 2020, FilipeCN.
+/// Copyright (c) 2021, FilipeCN.
 ///
 /// The MIT License (MIT)
 ///
@@ -19,61 +19,56 @@
 /// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 /// IN THE SOFTWARE.
 ///
-///\file scene_model.h
+///\file bbox_model.h
 ///\author FilipeCN (filipedecn@gmail.com)
-///\date 2020-18-10
+///\date 2021-02-11
 ///
 ///\brief
 
-#ifndef PONOS_CIRCE_CIRCE_GL_SCENE_SCENE_MODEL_H
-#define PONOS_CIRCE_CIRCE_GL_SCENE_SCENE_MODEL_H
+#ifndef CIRCE_CIRCE_GL_HELPERS_BBOX_MODEL_H
+#define CIRCE_CIRCE_GL_HELPERS_BBOX_MODEL_H
 
-#include <circe/scene/model.h>
+#include <ponos/geometry/bbox.h>
+#include <circe/gl/scene/scene_object.h>
+#include <circe/gl/scene/scene_model.h>
 
 namespace circe::gl {
 
-class SceneModel {
+class BBoxModel : public SceneObject {
 public:
-  // ***********************************************************************
-  //                          STATIC METHODS
-  // ***********************************************************************
-  static SceneModel fromFile(const ponos::Path &path);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
-  SceneModel();
-  explicit SceneModel(const Model &model);
-  explicit SceneModel(Model &&model) noexcept;
-  SceneModel(SceneModel &&other) noexcept;
-  ~SceneModel();
+  ///
+  /// \param bbox
+  explicit BBoxModel(const ponos::bbox3 &bbox = ponos::bbox3::unitBox());
+  ~BBoxModel() override;
   // ***********************************************************************
-  //                            OPERATORS
+  //                           OPERATORS
   // ***********************************************************************
-  SceneModel &operator=(SceneModel &&other) noexcept;
-  SceneModel &operator=(const Model &model);
-  SceneModel &operator=(Model &&model) noexcept;
+  ///
+  /// \param bbox
+  /// \return
+  BBoxModel &operator=(const ponos::bbox3 &bbox);
   // ***********************************************************************
   //                             METHODS
   // ***********************************************************************
-  inline u64 vertexCount() const { return vb_.vertexCount(); }
-  inline u64 elementCount() const { return ib_.element_count; }
-  VertexBuffer &vertexBuffer() { return vb_; }
-  const IndexBuffer &indexBuffer() const { return ib_; }
-  const Model &model() const { return model_; }
-  void draw();
+  ///
+  /// \param camera
+  /// \param t
+  void draw(const CameraInterface *camera, ponos::Transform t) override;
   // ***********************************************************************
   //                          PUBLIC FIELDS
   // ***********************************************************************
-  Program program;
   ponos::Transform transform;
+  circe::Color color{1.f, 1.f, 1.f, .5f};
 
 private:
-  VertexArrayObject vao_;
-  VertexBuffer vb_;
-  IndexBuffer ib_;
-  Model model_;
+  void updateTransform(const ponos::bbox3 &bbox);
+
+  SceneModel mesh_;
 };
 
 }
 
-#endif //PONOS_CIRCE_CIRCE_GL_SCENE_SCENE_MODEL_H
+#endif //CIRCE_CIRCE_GL_HELPERS_BBOX_MODEL_H

@@ -71,6 +71,8 @@ set(CIRCE_HEADERS
         circe/gl/graphics/shader.h
         circe/gl/graphics/shader_manager.h
         circe/gl/graphics/shadow_map.h
+        circe/gl/helpers/bbox_model.h
+        circe/gl/helpers/segment_model.h
         circe/gl/helpers/bvh_model.h
         circe/gl/helpers/camera_model.h
         circe/gl/helpers/cartesian_grid.h
@@ -90,7 +92,6 @@ set(CIRCE_HEADERS
         circe/gl/io/font_texture.h
         circe/gl/io/render_texture.h
         circe/gl/io/screen_quad.h
-        circe/gl/io/storage_buffer.h
         circe/gl/io/texture.h
         circe/gl/io/texture_parameters.h
         circe/io/utils.h
@@ -144,6 +145,8 @@ set(CIRCE_SOURCES
         circe/gl/graphics/shader.cpp
         circe/gl/graphics/shader_manager.cpp
         circe/gl/graphics/shadow_map.cpp
+        circe/gl/helpers/bbox_model.cpp
+        circe/gl/helpers/segment_model.cpp
         circe/gl/helpers/cartesian_grid.cpp
         circe/gl/helpers/geometry_drawers.cpp
         # imgui
@@ -156,7 +159,6 @@ set(CIRCE_SOURCES
         circe/gl/io/image_texture.cpp
         circe/gl/io/render_texture.cpp
         circe/gl/io/font_texture.cpp
-        circe/gl/io/storage_buffer.cpp
         circe/gl/io/screen_quad.cpp
         circe/gl/io/texture.cpp
         circe/io/utils.cpp

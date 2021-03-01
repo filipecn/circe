@@ -19,32 +19,32 @@
 /// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 /// IN THE SOFTWARE.
 ///
-///\file io.h
+///\file model.h
 ///\author FilipeCN (filipedecn@gmail.com)
-///\date 2020-18-10
+///\date 2020-01-03
 ///
 ///\brief
 
+#ifndef CIRCE_CIRCE_SCENE_SHAPE_OPTIONS_H
+#define CIRCE_CIRCE_SCENE_SHAPE_OPTIONS_H
 
-#ifndef PONOS_CIRCE_CIRCE_IO_H
-#define PONOS_CIRCE_CIRCE_IO_H
-
-#include <circe/scene/model.h>
-#include <circe/scene/shapes.h>
-#include <ponos/common/file_system.h>
+#include <circe/common/bitmask_operators.h>
 
 namespace circe {
 
-class io {
-public:
-  ///
-  /// \param path
-  /// \param options
-  /// \param mesh_id
-  /// \return
-  static Model readOBJ(const ponos::Path &path, shape_options options = shape_options::none, u32 mesh_id = 0);
+/// Shape's mesh attributes and configurations
+enum class shape_options {
+  none = 0x00, //!< the mesh contains only positions
+  normal = 0x01, //!< generate vertex normals
+  uv = 0x02, //!< generate vertex uv coordinates
+  tangent_space = 0x4, //!< generate vertex tangent space (stores tangents and bitangents)
+  tangent = 0x8, //!< generate vertex tangent space (stores tangents)
+  bitangent = 0x10, //!< generate vertex tangent space (stores bitangents)
+  unique_positions = 0x20,  //!< vertex attributes are averaged to occupy a single index in the mesh
+  wireframe = 0x40, //!< only edges
+  vertices = 0x80, //!< only vertices
 };
-
+CIRCE_ENABLE_BITMASK_OPERATORS(shape_options);
 }
 
-#endif //PONOS_CIRCE_CIRCE_IO_H
+#endif //CIRCE_CIRCE_SCENE_SHAPE_OPTIONS_H

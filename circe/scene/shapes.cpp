@@ -26,8 +26,149 @@
 ///\brief
 
 #include <circe/scene/shapes.h>
+#include <circe/scene/model.h>
 
 namespace circe {
+
+Model Shapes::fromNMesh(const ponos::NMesh &mesh, shape_options options) {
+  Model model;
+  // process options
+  if ((options & shape_options::tangent_space) == shape_options::tangent_space)
+    options = options | shape_options::tangent | shape_options::bitangent;
+  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool generate_normals = testMaskBit(options, shape_options::normal);
+  bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+
+  // setup fields
+  ponos::AoS aos;
+  const u64 position_id = aos.pushField<ponos::point3>("position");
+  const u64 normal_id = generate_normals ? aos.pushField<ponos::vec3>("normal") : 0;
+  const u64 uv_id = generate_uvs ? aos.pushField<ponos::point2>("uvs") : 0;
+  const u64 tangent_id = generate_tangents ? aos.pushField<ponos::vec3>("tangents") : 0;
+  const u64 bitangent_id = generate_bitangents ? aos.pushField<ponos::vec3>("bitangents") : 0;
+
+  // get a copy of positions
+  auto vertex_positions = mesh.positions();
+
+  std::vector<i32> indices;
+  if (testMaskBit(options, shape_options::wireframe)) {
+    model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+    for (auto f : mesh.faces()) {
+      u64 a = ponos::Constants::greatest<u64>();
+      u64 b = a;
+      f.vertices(a, b);
+      indices.emplace_back(a);
+      indices.emplace_back(b);
+    }
+  } else if (testMaskBit(options, shape_options::vertices)) {
+    model.setPrimitiveType(ponos::GeometricPrimitiveType::POINTS);
+    for (u64 i = 0; i < mesh.vertexCount(); ++i)
+      indices.emplace_back(i);
+  } else {
+    model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+    for (auto c : mesh.cells()) {
+      if (mesh.cellFaceCount(c.index) == 3) {
+        // the cell is already a triangle
+        for (auto s : c.star())
+          indices.emplace_back(s.vertexIndex());
+      } else {
+        // in case we have a N polygon, we create N triangles using the cell centroid
+        for (auto s :c.star()) {
+          // TODO check orientation
+          u64 a, b;
+          mesh.faceVertices(s.faceIndex(), a, b);
+          indices.emplace_back(vertex_positions.size()); // centroid index
+          indices.emplace_back(a);
+          indices.emplace_back(b);
+        }
+        vertex_positions.emplace_back(c.centroid());
+      }
+    }
+  }
+
+  // copy vertex positions
+  aos.resize(vertex_positions.size());
+  auto position_field = aos.field<ponos::point3>(position_id) = vertex_positions;
+
+  model = std::move(aos);
+  model = indices;
+  return std::move(model);
+}
+
+Model Shapes::convert(const Model &model, shape_options options, const std::vector<u64> &attr_filter) {
+  Model converted_model;
+  // filter attributes
+  if (attr_filter.empty())
+    converted_model = model.data();
+  else {
+    ponos::AoS aos;
+    // add fields
+    const auto &fields = model.data().fields();
+    for (const auto &field_id : attr_filter) {
+#define ADD_FIELD(D, C, T) \
+      if(fields[field_id].type == D && fields[field_id].component_count == C) \
+        aos.pushField<T>(fields[field_id].name);
+      ADD_FIELD(ponos::DataType::F32, 1, f32)
+      ADD_FIELD(ponos::DataType::F32, 2, ponos::vec2f)
+      ADD_FIELD(ponos::DataType::F32, 3, ponos::vec3f)
+#undef ADD_FIELD
+    }
+    aos.resize(model.data().size());
+    // copy fields
+    u64 f = 0;
+    for (const auto &field_id : attr_filter) {
+#define CPY_FIELD(D, C, T) \
+      if(fields[field_id].type == D && fields[field_id].component_count == C) { \
+        const auto& field = model.data().field<T>(fields[field_id].name);       \
+        for(u64 i = 0; i < aos.size(); ++i)                                     \
+          aos.valueAt<T>(f, i) = field[i];}
+      CPY_FIELD(ponos::DataType::F32, 1, f32)
+      CPY_FIELD(ponos::DataType::F32, 2, ponos::vec2f)
+      CPY_FIELD(ponos::DataType::F32, 3, ponos::vec3f)
+#undef CPY_FIELD
+      f++;
+    }
+  }
+  if (testMaskBit(options, shape_options::wireframe)) {
+    if (model.primitiveType() == ponos::GeometricPrimitiveType::LINES ||
+        model.primitiveType() == ponos::GeometricPrimitiveType::POINTS ||
+        model.primitiveType() == ponos::GeometricPrimitiveType::LINE_LOOP ||
+        model.primitiveType() == ponos::GeometricPrimitiveType::LINE_STRIP)
+      converted_model = model.indices();
+    else {
+      converted_model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+      u32 element_size = 3;
+      switch (model.primitiveType()) {
+      case ponos::GeometricPrimitiveType::TRIANGLES: element_size = 3;
+        break;
+      case ponos::GeometricPrimitiveType::QUADS: element_size = 4;
+        break;
+      default:spdlog::warn("GeometricPrimitiveType not implemented in circe::Shapes::convert");
+      }
+      const auto &model_indices = model.indices();
+      u64 element_count = model.elementCount();
+      assert(element_count * element_size <= model_indices.size());
+      std::set<std::pair<u64, u64>> edges;
+      for (u64 e = 0; e < element_count; ++e)
+        for (u32 k = 0; k < element_size; ++k) {
+          u64 a = std::min(model_indices[e * element_size + k],
+                           model_indices[e * element_size + (k + 1) % element_size]);
+          u64 b = std::max(model_indices[e * element_size + k],
+                           model_indices[e * element_size + (k + 1) % element_size]);
+          edges.insert(std::make_pair(a, b));
+        }
+      std::vector<i32> indices;
+      for (auto e : edges) {
+        indices.emplace_back(e.first);
+        indices.emplace_back(e.second);
+      }
+      converted_model = indices;
+    }
+  }
+  return std::move(converted_model);
+}
 
 Model Shapes::icosphere(const ponos::point3 &center, real_t radius, u32 divisions, shape_options options) {
   ponos::AoS aos;
@@ -229,6 +370,82 @@ Model Shapes::plane(const ponos::Plane &plane,
   model = index_data;
   return model;
 #undef ADD_FACE
+}
+
+Model Shapes::box(const ponos::bbox3 &box, shape_options options) {
+  if (testMaskBit(options, shape_options::tangent_space))
+    options = options | shape_options::tangent | shape_options::bitangent;
+  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool generate_normals = testMaskBit(options, shape_options::normal);
+  bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+
+  Model model;
+
+  const u64 position_id = model.pushAttribute<ponos::point3>("position");
+  const u64 normal_id = generate_normals ? model.pushAttribute<ponos::vec3>("normal") : 0;
+  const u64 uv_id = generate_uvs ? model.pushAttribute<ponos::point2>("uvs") : 0;
+  const u64 tangent_id = generate_tangents ? model.pushAttribute<ponos::vec3>("tangent") : 0;
+  const u64 bitangent_id = generate_bitangents ? model.pushAttribute<ponos::vec3>("bitangent") : 0;
+
+  std::vector<i32> indices;
+
+  if (testMaskBit(options, shape_options::unique_positions)) {
+    // TODO
+  } else {
+    model.resize(8);
+
+    model.attributeValue<ponos::point3>(position_id, 0) = {box.lower.x, box.lower.y, box.lower.z};
+    model.attributeValue<ponos::point3>(position_id, 1) = {box.upper.x, box.lower.y, box.lower.z};
+    model.attributeValue<ponos::point3>(position_id, 2) = {box.upper.x, box.upper.y, box.lower.z};
+    model.attributeValue<ponos::point3>(position_id, 3) = {box.lower.x, box.upper.y, box.lower.z};
+    model.attributeValue<ponos::point3>(position_id, 4) = {box.lower.x, box.lower.y, box.upper.z};
+    model.attributeValue<ponos::point3>(position_id, 5) = {box.upper.x, box.lower.y, box.upper.z};
+    model.attributeValue<ponos::point3>(position_id, 6) = {box.upper.x, box.upper.y, box.upper.z};
+    model.attributeValue<ponos::point3>(position_id, 7) = {box.lower.x, box.upper.y, box.upper.z};
+    if (generate_uvs) {
+      model.attributeValue<ponos::point2>(uv_id, 0) = {0, 0};
+      model.attributeValue<ponos::point2>(uv_id, 1) = {1, 0};
+      model.attributeValue<ponos::point2>(uv_id, 2) = {1, 1};
+      model.attributeValue<ponos::point2>(uv_id, 3) = {0, 1};
+      model.attributeValue<ponos::point2>(uv_id, 4) = {0, 0};
+      model.attributeValue<ponos::point2>(uv_id, 5) = {1, 0};
+      model.attributeValue<ponos::point2>(uv_id, 6) = {1, 1};
+      model.attributeValue<ponos::point2>(uv_id, 7) = {0, 1};
+    }
+    if (generate_normals) {
+    }
+    if (generate_tangents) {
+    }
+    if (generate_bitangents) {
+    }
+    if (generate_wireframe) {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+      indices = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 5, 2, 6, 3, 7, 4, 5, 5, 6, 6, 7, 7, 4};
+    } else {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+    }
+  }
+  model = indices;
+  return model;
+}
+Model Shapes::segment(const ponos::Segment3 &s, shape_options options) {
+  Model model;
+  model.pushAttribute<ponos::point3>("position");
+  if (testMaskBit(options, shape_options::uv))
+    model.pushAttribute<ponos::point2>("uv");
+  model.resize(2);
+  model.attributeValue<ponos::point3>(0, 0) = s.a;
+  model.attributeValue<ponos::point3>(0, 1) = s.b;
+  if (testMaskBit(options, shape_options::uv)) {
+    model.attributeValue<ponos::point2>(1, 0) = {0.f, 0.f};
+    model.attributeValue<ponos::point2>(1, 1) = {1.f, 1.f};
+  }
+  std::vector<i32> indices = {0, 1};
+  model = indices;
+  model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+  return model;
 }
 
 }

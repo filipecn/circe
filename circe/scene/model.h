@@ -34,6 +34,7 @@
 #include <circe/gl/storage/vertex_buffer.h>
 #include <circe/gl/storage/index_buffer.h>
 #include <circe/gl/graphics/shader.h>
+#include <circe/scene/shape_options.h>
 
 namespace circe {
 
@@ -43,7 +44,7 @@ public:
   // ***********************************************************************
   //                          STATIC METHODS
   // ***********************************************************************
-  static Model fromFile(const ponos::Path &path);
+  static Model fromFile(const ponos::Path &path, shape_options options = shape_options::none);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
@@ -64,11 +65,11 @@ public:
   //                             METHODS
   // ***********************************************************************
   template<typename T>
-  ponos::AoSFieldAccessor<T> attributeAccessor(const std::string &attribute_name) {
+  ponos::AoS::FieldAccessor<T> attributeAccessor(const std::string &attribute_name) {
     return data_.field<T>(attribute_name);
   }
   template<typename T>
-  ponos::AoSFieldAccessor<T> attributeAccessor(u64 attribute_index) {
+  ponos::AoS::FieldAccessor<T> attributeAccessor(u64 attribute_index) {
     return data_.field<T>(attribute_index);
   }
   template<typename T>
@@ -83,10 +84,10 @@ public:
   void resize(u64 new_size);
   void setIndices(std::vector<i32> &&indices);
   void setPrimitiveType(ponos::GeometricPrimitiveType primitive_type);
-
+  u64 elementCount() const;
 
   ponos::bbox3 boundingBox() const;
-  void fitToBox(const ponos::bbox3& box = ponos::bbox3::unitBox());
+  void fitToBox(const ponos::bbox3 &box = ponos::bbox3::unitBox());
 
 protected:
   ponos::AoS data_;

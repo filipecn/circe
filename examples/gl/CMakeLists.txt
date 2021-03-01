@@ -56,6 +56,7 @@ set(EXAMPLES
         shader_editor
         compiling_shaders
         ssbo
+        mesh_editor
         )
 
 foreach (EXAMPLE ${EXAMPLES})

@@ -28,24 +28,97 @@
 #ifndef PONOS_CIRCE_CIRCE_SCENE_SHAPES_H
 #define PONOS_CIRCE_CIRCE_SCENE_SHAPES_H
 
+#include <vector>
+#include <ponos/structures/n_mesh.h>
+#include <ponos/geometry/point.h>
+#include <ponos/geometry/plane.h>
+#include <ponos/geometry/segment.h>
 #include <circe/scene/model.h>
-#include <circe/common/bitmask_operators.h>
 
 namespace circe {
-/// Shape's mesh attributes and configurations
-enum class shape_options {
-  none = 0x00, //!< the mesh contains only positions
-  normal = 0x01, //!< generate vertex normals
-  uv = 0x02, //!< generate vertex uv coordinates
-  tangent_space = 0x4, //!< generate vertex tangent space (stores tangents and bitangents)
-  tangent = 0x8, //!< generate vertex tangent space (stores tangents)
-  bitangent = 0x10, //!< generate vertex tangent space (stores bitangents)
-  unique_positions = 0x20,  //!< vertex attributes are averaged to occupy a single index in the mesh
-};
-CIRCE_ENABLE_BITMASK_OPERATORS(shape_options);
 
 class Shapes {
 public:
+  ///
+  /// \param mesh
+  /// \param options
+  /// \return
+  static Model fromNMesh(const ponos::NMesh &mesh,
+                         shape_options options = shape_options::none);
+  template<u64 N>
+  static Model fromPMesh(const ponos::PMesh<N> &mesh,
+                         shape_options options = shape_options::none) {
+    Model model;
+    // process options
+    if ((options & shape_options::tangent_space) == shape_options::tangent_space)
+      options = options | shape_options::tangent | shape_options::bitangent;
+    const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+    const bool generate_normals = testMaskBit(options, shape_options::normal);
+    bool generate_uvs = testMaskBit(options, shape_options::uv);
+    const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+    const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+
+    // setup fields
+    ponos::AoS aos;
+    const u64 position_id = aos.pushField<ponos::point3>("position");
+    const u64 normal_id = generate_normals ? aos.pushField<ponos::vec3>("normal") : 0;
+    const u64 uv_id = generate_uvs ? aos.pushField<ponos::point2>("uvs") : 0;
+    const u64 tangent_id = generate_tangents ? aos.pushField<ponos::vec3>("tangents") : 0;
+    const u64 bitangent_id = generate_bitangents ? aos.pushField<ponos::vec3>("bitangents") : 0;
+
+    // get a copy of positions
+    auto vertex_positions = mesh.positions();
+
+    std::vector<i32> indices;
+    if (testMaskBit(options, shape_options::wireframe)) {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+      for (auto f : mesh.faces()) {
+        u64 a = ponos::Constants::greatest<u64>();
+        u64 b = a;
+        f.vertices(a, b);
+        indices.emplace_back(a);
+        indices.emplace_back(b);
+      }
+    } else if (testMaskBit(options, shape_options::vertices)) {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::POINTS);
+      for (u64 i = 0; i < mesh.vertexCount(); ++i)
+        indices.emplace_back(i);
+    } else {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+      for (auto c : mesh.cells()) {
+        if (N == 3) {
+          // the cell is already a triangle
+          for (auto s : c.star())
+            indices.emplace_back(s.vertexIndex());
+        } else {
+          // in case we have a N polygon, we create N triangles using the cell centroid
+          for (auto s :c.star()) {
+            // TODO check orientation
+            u64 a, b;
+            mesh.faceVertices(s.faceIndex(), a, b);
+            indices.emplace_back(vertex_positions.size()); // centroid index
+            indices.emplace_back(a);
+            indices.emplace_back(b);
+          }
+          vertex_positions.emplace_back(c.centroid());
+        }
+      }
+    }
+
+    // copy vertex positions
+    aos.resize(vertex_positions.size());
+    auto position_field = aos.field<ponos::point3>(position_id) = vertex_positions;
+
+    model = std::move(aos);
+    model = indices;
+    return std::move(model);
+  }
+  /// Generates a new model with shape options
+  /// \param model input model
+  /// \param options
+  /// \return
+  static Model convert(const Model &model, shape_options options,
+                       const std::vector<u64> &attr_filter = {});
   ///
   /// \param center
   /// \param radius
@@ -70,6 +143,17 @@ public:
                      const ponos::point3 &center,
                      const ponos::vec3 &extension,
                      u32 divisions = 1, shape_options options = shape_options::none);
+  ///
+  /// \param box
+  /// \param options
+  /// \return
+  static Model box(const ponos::bbox3 &box, shape_options options = shape_options::none);
+  ///
+  /// \param s
+  /// \param options
+  /// \return
+  static Model segment(const ponos::Segment3 &s,
+                       shape_options options = shape_options::none);
 };
 
 }

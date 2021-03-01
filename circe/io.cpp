@@ -50,7 +50,7 @@ struct ObjIndexKeyHash : public std::unary_function<ObjIndexKey, int> {
 
 namespace circe {
 
-Model io::readOBJ(const ponos::Path &path, u32 mesh_id) {
+Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
   Model model;
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;

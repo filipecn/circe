@@ -30,9 +30,9 @@
 
 namespace circe {
 
-Model Model::fromFile(const ponos::Path &path) {
+Model Model::fromFile(const ponos::Path &path, shape_options options) {
   if (path.extension() == "obj")
-    return std::move(io::readOBJ(path));
+    return std::move(io::readOBJ(path, options | shape_options::unique_positions));
   return std::move(Model());
 }
 
@@ -116,12 +116,28 @@ std::ostream &operator<<(std::ostream &o, const Model &model) {
   o << std::endl;
   return o;
 }
-
 ponos::bbox3 Model::boundingBox() const {
   return ponos::bbox3();
 }
+
 void Model::fitToBox(const ponos::bbox3 &box) {
 
+}
+u64 Model::elementCount() const {
+  if (indices_.empty())
+    return 0;
+  switch (element_type_) {
+  case ponos::GeometricPrimitiveType::TRIANGLES: return indices_.size() / 3;
+  case ponos::GeometricPrimitiveType::LINES: return indices_.size() / 2;
+  case ponos::GeometricPrimitiveType::POINTS:
+  case ponos::GeometricPrimitiveType::LINE_LOOP: return indices_.size();
+  case ponos::GeometricPrimitiveType::LINE_STRIP: return indices_.size() - 1;
+  case ponos::GeometricPrimitiveType::TRIANGLE_STRIP:
+  case ponos::GeometricPrimitiveType::TRIANGLE_FAN: return indices_.size() - 2;
+  case ponos::GeometricPrimitiveType::QUADS:
+  case ponos::GeometricPrimitiveType::TETRAHEDRA: return indices_.size() / 4;
+  default: return indices_.size();
+  }
 }
 
 }

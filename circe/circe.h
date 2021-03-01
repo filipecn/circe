@@ -8,6 +8,8 @@
 #include <circe/gl/graphics/shader.h>
 #include <circe/gl/graphics/shader_manager.h>
 #include <circe/gl/graphics/shadow_map.h>
+#include <circe/gl/helpers/bbox_model.h>
+#include <circe/gl/helpers/segment_model.h>
 #include <circe/gl/helpers/bvh_model.h>
 #include <circe/gl/helpers/camera_model.h>
 #include <circe/gl/helpers/cartesian_grid.h>
@@ -28,7 +30,6 @@
 #include <circe/gl/io/image_texture.h>
 #include <circe/gl/io/render_texture.h>
 #include <circe/gl/io/screen_quad.h>
-#include <circe/gl/io/storage_buffer.h>
 #include <circe/gl/io/texture.h>
 #include <circe/gl/io/texture_parameters.h>
 #include <circe/gl/io/viewport_display.h>

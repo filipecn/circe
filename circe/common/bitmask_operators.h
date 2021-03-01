@@ -45,6 +45,11 @@
 
 namespace circe {
 
+template<typename E>
+constexpr bool testMaskBit(E mask, E bit) {
+  return (mask & bit) == bit;
+}
+
 #define CIRCE_ENABLE_BITMASK_OPERATORS(x)  \
 template<>                           \
 struct CirceEnableBitMaskOperators<x>     \
