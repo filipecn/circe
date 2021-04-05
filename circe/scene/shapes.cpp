@@ -256,9 +256,12 @@ Model Shapes::icosphere(const ponos::point3 &center, real_t radius, u32 division
           (*reinterpret_cast<ponos::vec3 *>(vertex_data.data() + struct_size * i)).z);
     }
     // translate and scale
-    (*reinterpret_cast<ponos::point3 *>(vertex_data.data() + struct_size * i)).x * radius + center.x;
-    (*reinterpret_cast<ponos::point3 *>(vertex_data.data() + struct_size * i)).y * radius + center.y;
-    (*reinterpret_cast<ponos::point3 *>(vertex_data.data() + struct_size * i)).z * radius + center.z;
+    vertex_data[i * struct_size + 0] =
+        (*reinterpret_cast<ponos::point3 *>(vertex_data.data() + struct_size * i)).x * radius + center.x;
+    vertex_data[i * struct_size + 1] =
+        (*reinterpret_cast<ponos::point3 *>(vertex_data.data() + struct_size * i)).y * radius + center.y;
+    vertex_data[i * struct_size + 2] =
+        (*reinterpret_cast<ponos::point3 *>(vertex_data.data() + struct_size * i)).z * radius + center.z;
   }
   aos = std::move(vertex_data);
   Model model;
@@ -430,6 +433,49 @@ Model Shapes::box(const ponos::bbox3 &box, shape_options options) {
   model = indices;
   return model;
 }
+
+Model Shapes::box(const ponos::bbox2 &box, shape_options options) {
+  if (testMaskBit(options, shape_options::tangent_space))
+    options = options | shape_options::tangent | shape_options::bitangent;
+  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool generate_normals = testMaskBit(options, shape_options::normal);
+  bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+
+  Model model;
+
+  const u64 position_id = model.pushAttribute<ponos::point2>("position");
+  const u64 uv_id = generate_uvs ? model.pushAttribute<ponos::point2>("uvs") : 0;
+
+  std::vector<i32> indices;
+
+  if (testMaskBit(options, shape_options::unique_positions)) {
+    // TODO
+  } else {
+    model.resize(4);
+    model.attributeValue<ponos::point2>(position_id, 0) = {box.lower.x, box.lower.y};
+    model.attributeValue<ponos::point2>(position_id, 1) = {box.upper.x, box.lower.y};
+    model.attributeValue<ponos::point2>(position_id, 2) = {box.upper.x, box.upper.y};
+    model.attributeValue<ponos::point2>(position_id, 3) = {box.lower.x, box.upper.y};
+    if (generate_uvs) {
+      model.attributeValue<ponos::point2>(uv_id, 0) = {0, 0};
+      model.attributeValue<ponos::point2>(uv_id, 1) = {1, 0};
+      model.attributeValue<ponos::point2>(uv_id, 2) = {1, 1};
+      model.attributeValue<ponos::point2>(uv_id, 3) = {0, 1};
+    }
+    if (generate_wireframe) {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+      indices = {0, 1, 1, 2, 2, 3, 3, 0};
+    } else {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+      indices = {0, 1, 2, 0, 2, 3};
+    };
+  }
+  model = indices;
+  return model;
+}
+
 Model Shapes::segment(const ponos::Segment3 &s, shape_options options) {
   Model model;
   model.pushAttribute<ponos::point3>("position");

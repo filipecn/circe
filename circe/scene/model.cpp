@@ -26,7 +26,7 @@
 ///\brief
 
 #include "model.h"
-#include <circe/io.h>
+#include <circe/io/io.h>
 
 namespace circe {
 

@@ -29,8 +29,8 @@
 
 namespace circe::gl {
 
-SceneModel SceneModel::fromFile(const ponos::Path &path) {
-  auto model = Model::fromFile(path);
+SceneModel SceneModel::fromFile(const ponos::Path &path, shape_options options) {
+  auto model = Model::fromFile(path, options);
   SceneModel scene_model;
   scene_model.vb_ = model.data();
   scene_model.ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());

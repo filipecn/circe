@@ -29,14 +29,14 @@
 
 #include <circe/scene/camera_projection.h>
 
+#include <utility>
+
 namespace circe {
 
 class CameraInterface {
 public:
-  typedef CameraInterface CameraType;
   /// \param p projection type
-  explicit CameraInterface(CameraProjection *p = nullptr)
-      : zoom(1.f), projection(p) {}
+  CameraInterface() = default;
   virtual ~CameraInterface() = default;
   /// \param p normalized mouse position
   /// \return camera's ray in world space
@@ -47,15 +47,10 @@ public:
         ponos::inverse(projection->transform) * ponos::point3(p.x, p.y, 1.f));
     return ponos::Ray3(O, D - O);
   }
-  /// multiplies MVP matrix to OpenGL pipeline
-  virtual void look() {
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    glApplyTransform(projection->transform);
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-//    glApplyTransform(view);
-//    glApplyTransform(model);
+
+  template<typename T, class... P>
+  void setProjection(P &&...params) {
+    projection = std::make_unique<T>(std::forward<P>(params)...);
   }
   /// \param w width in pixels
   /// \param h height in pixels
@@ -137,30 +132,30 @@ public:
   }
   /// \param f
   virtual void setFar(float f) {
-    projection->zfar = f;
+    projection->far = f;
     projection->update();
   }
   /// \param n
   virtual void setNear(float n) {
-    projection->znear = n;
+    projection->near = n;
     projection->update();
   }
-  [[nodiscard]] virtual float getNear() const { return projection->znear; }
-  [[nodiscard]] virtual float getFar() const { return projection->zfar; }
+  [[nodiscard]] virtual float getNear() const { return projection->near; }
+  [[nodiscard]] virtual float getFar() const { return projection->far; }
   [[nodiscard]] virtual const ponos::Frustum &getFrustum() const { return frustum; }
   ///
   virtual void update() = 0;
 
 protected:
-  float zoom;
+  ponos::Transform view;
+  ponos::Transform model;
+  ponos::Frustum frustum;
+  ponos::Matrix3x3<real_t> normal;
   ponos::vec3 up;
   ponos::point3 pos;
   ponos::point3 target;
-  ponos::Transform view;
-  ponos::Transform model;
-  ponos::Matrix3x3<real_t> normal;
-  ponos::Frustum frustum;
   std::unique_ptr<CameraProjection> projection;
+  float zoom{1.};
 };
 
 } // namespace circe

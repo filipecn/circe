@@ -37,7 +37,11 @@ public:
   // ***********************************************************************
   //                          STATIC METHODS
   // ***********************************************************************
-  static SceneModel fromFile(const ponos::Path &path);
+  ///
+  /// \param path
+  /// \param options
+  /// \return
+  static SceneModel fromFile(const ponos::Path &path, shape_options options = shape_options::none);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************

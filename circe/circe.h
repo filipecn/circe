@@ -68,7 +68,7 @@
 #include <circe/gl/utils/open_gl.h>
 #include <circe/gl/utils/win32_utils.h>
 #include <circe/gl/utils/base_app.h>
-#include <circe/io.h>
+#include <circe/io/io.h>
 
 namespace circe {
 

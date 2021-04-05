@@ -26,6 +26,8 @@
 #include <circe/gl/io/user_input.h>
 #include <circe/ui/ui_camera.h>
 
+#include <memory>
+
 namespace circe {
 
 UserCamera::UserCamera() = default;
@@ -64,16 +66,16 @@ void UserCamera::mouseScroll(ponos::point2 p, ponos::vec2 d) {
 }
 
 UserCamera2D::UserCamera2D() {
-  this->projection.reset(new OrthographicProjection());
+  this->projection = std::make_unique<OrthographicProjection>();
   this->pos = ponos::point3(0.f, 0.f, 1.f);
   this->target = ponos::point3(0.f, 0.f, 0.f);
   this->up = ponos::vec3(0.f, 1.f, 0.f);
-  this->projection->znear = -1000.f;
-  this->projection->zfar = 1000.f;
+  this->projection->near = -1000.f;
+  this->projection->far = 1000.f;
 }
 
 void UserCamera2D::update() {
-  this->view = ponos::lookAtRH(this->pos, this->target, this->up);
+  this->view = ponos::Transform::lookAt(this->pos, this->target, this->up);
   view.computeInverse();
   model.computeInverse();
   normal = inverse((view * model).upperLeftMatrix());
@@ -102,20 +104,18 @@ void UserCamera2D::mouseScroll(ponos::point2 p, ponos::vec2 d) {
   projection->update();
 }
 
-UserCamera3D::UserCamera3D(bool left_handed) : left_handed_(left_handed) {
+UserCamera3D::UserCamera3D(ponos::transform_options options) {
   this->pos = ponos::point3(20.f, 0.f, 0.f);
   this->target = ponos::point3(0.f, 0.f, 0.f);
   this->up = ponos::vec3(0.f, 1.f, 0.f);
   this->zoom = 1.f;
-  this->projection = std::make_unique<PerspectiveProjection>(45.f, left_handed);
-  this->projection->znear = 0.1f;
-  this->projection->zfar = 1000.f;
+  this->projection = std::make_unique<PerspectiveProjection>(45.f, options);
+  this->projection->near = 0.1f;
+  this->projection->far = 1000.f;
 }
 
-void UserCamera3D::setHandedness(bool left_handed) {
-  left_handed_ = left_handed;
-  dynamic_cast<PerspectiveProjection *>(projection.get())->left_handed =
-      left_handed;
+void UserCamera3D::setOptions(ponos::transform_options options) {
+  projection->options = options;
   projection->update();
   update();
 }
@@ -132,10 +132,7 @@ void UserCamera3D::setFov(float f) {
 }
 
 void UserCamera3D::update() {
-  if (left_handed_)
-    view = ponos::lookAtRH(pos, target, up);
-  else
-    view = ponos::Transform::lookAtRH(pos, target, up);
+  view = ponos::Transform::lookAt(pos, target, up, projection->options);
   view.computeInverse();
   model.computeInverse();
   normal = inverse((model * view).upperLeftMatrix());

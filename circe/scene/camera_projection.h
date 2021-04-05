@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef CIRCE_SCENE_CAMERA_PROJECTION_H
 #define CIRCE_SCENE_CAMERA_PROJECTION_H
 
@@ -38,52 +37,42 @@ public:
   virtual void update() = 0;
 
   float ratio{1.f}; //!< film size ratio
-  float znear{0.01f}; //!< z near clip plane
-  float zfar{1000.f};  //!< z far clip plane
+  float near{0.01f}; //!< near depth clip plane
+  float far{1000.f};  //!< far depth clip plane
   ponos::vec2 clip_size; //!< window size (in pixels)
   ponos::Transform transform; //!< projection transform
+  ponos::transform_options options{ponos::transform_options::left_handed}; //!< flags to choose handedness, etc.
 };
 
 class PerspectiveProjection : public CameraProjection {
 public:
   PerspectiveProjection() = default;
   /// \param fov field of view angle (in degrees)
-  /// \param left_handed  transform handedness
+  /// \param options handedness, zero_to_one, flip_y, and other options
   explicit PerspectiveProjection(float fov,
-                                 bool left_handed = true,
-                                 bool zero_to_one = true, bool flip_y = true)
-      : fov(fov), left_handed(left_handed), zero_to_one(zero_to_one), flip_y(flip_y) {}
+                                 ponos::transform_options options = ponos::transform_options::left_handed)
+      : fov(fov) {
+    this->options = options;
+  }
   void update() override {
-    if (left_handed)
-      this->transform =
-          ponos::perspective(fov, this->ratio, this->znear, this->zfar);
-    else {
-      this->transform = ponos::Transform::perspectiveRH(fov,
-                                                        this->ratio,
-                                                        this->znear,
-                                                        this->zfar,
-                                                        zero_to_one);
-      if (flip_y) {
-        auto m = this->transform.matrix();
-        m[1][1] *= -1;
-        this->transform = ponos::Transform(m);
-      }
-    }
+    this->transform = ponos::Transform::perspective(fov,
+                                                    this->ratio,
+                                                    this->near,
+                                                    this->far,
+                                                    options);
   }
 
   float fov{45.f}; //!< field of view angle in degrees
-  bool left_handed{true};
-  bool zero_to_one{true};
-  bool flip_y{true};
 };
 
 class OrthographicProjection : public CameraProjection {
 public:
   OrthographicProjection() {
-    region_.lower.x = region_.lower.y = this->znear = -1.f;
-    region_.upper.x = region_.upper.y = this->zfar = 1.f;
+    region_.lower.x = region_.lower.y = this->near = -1.f;
+    region_.upper.x = region_.upper.y = this->far = 1.f;
   }
-  OrthographicProjection(float left, float right, float bottom, float top) {
+  OrthographicProjection(float left, float right, float bottom, float top,
+                         ponos::transform_options options = ponos::transform_options::left_handed) {
     set(left, right, bottom, top);
   }
   /// \param z
@@ -101,8 +90,8 @@ public:
   }
   void update() override {
     this->transform =
-        ponos::ortho(region_.lower.x, region_.upper.x, region_.lower.y,
-                     region_.upper.y, this->znear, this->zfar);
+        ponos::Transform::ortho(region_.lower.x, region_.upper.x, region_.lower.y,
+                                region_.upper.y, this->near, this->far);
   }
 
 private:

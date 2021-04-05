@@ -29,7 +29,8 @@
 
 namespace circe::gl {
 
-ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size) {
+ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size),
+                                                 projection_transform_{ponos::Transform::ortho(-10, 10, -10, 10, -10, 10)} {
   // setup shader program
   Shader vertex_shader(GL_VERTEX_SHADER, "#version 430 core\n"
                                          "layout (location = 0) in vec3 position;\n"
@@ -39,7 +40,7 @@ ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size) {
                                          "{ gl_Position = lightSpaceMatrix * model * vec4(position, 1.0); }");
   Shader fragment_shader(GL_FRAGMENT_SHADER, "#version 430 core\nvoid main(){ "
                                              "gl_FragDepth = gl_FragCoord.z;"
-                                             "gl_FragDepth += gl_FrontFacing ? 0.01 : 0.0; }\n");
+                                             "//gl_FragDepth += gl_FrontFacing ? 0.01 : 0.0;\n }\n");
   program_.attach(vertex_shader);
   program_.attach(fragment_shader);
   if (!program_.link()) {
@@ -76,17 +77,17 @@ ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size) {
 
 ShadowMap::~ShadowMap() = default;
 
-void ShadowMap::render(const std::function<void()>& f) {
+void ShadowMap::render(const std::function<void(const Program &)> &f) {
   glEnable(GL_DEPTH_TEST);
   glViewport(0, 0, size_.width, size_.height);
   depth_buffer_.enable();
   glClear(GL_DEPTH_BUFFER_BIT);
   depth_map_.bind(GL_TEXTURE0);
   program_.use();
-  program_.setUniform("lightSpaceMatrix", ponos::transpose(light_transform_.matrix()));
-  program_.setUniform("model", ponos::Transform().matrix());
+  program_.setUniform("lightSpaceMatrix", light_transform_);
+  program_.setUniform("model", ponos::Transform());
   if (f)
-    f();
+    f(program_);
   circe::gl::Framebuffer::disable();
 }
 
@@ -95,12 +96,8 @@ void ShadowMap::bind() const {
 }
 
 void ShadowMap::setLight(const Light &light) {
-  ponos::Transform projection, view;
-  if (light.type == circe::LightTypes::DIRECTIONAL) {
-    projection = ponos::Transform::ortho(-10, 10, -10, 10, -1, 30);
-    view = ponos::Transform::lookAt(ponos::point3() + 20.f * light.direction);
-  }
-  light_transform_ = projection * view;
+  light_ = light;
+  light_transform_ = projection_transform_ * ponos::Transform::lookAt(ponos::point3() + light_.direction);
 }
 
 const ponos::Transform &ShadowMap::light_transform() const { return light_transform_; }

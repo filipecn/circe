@@ -490,8 +490,8 @@ void Program::cacheLocations() {
   glGetProgramInterfaceiv(id_, GL_UNIFORM, GL_ACTIVE_RESOURCES, &count);
   for (int i = 0; i < count; i++) {
     uniforms_.emplace_back(readUniform(i));
-    if(uniforms_.back().array_size > 1) {
-     const auto& u = uniforms_.back();
+    if (uniforms_.back().array_size > 1) {
+      const auto &u = uniforms_.back();
       for (int j = 1; j < u.array_size; ++j) {
         Uniform au = u;
         au.name = ponos::Str::replace_r(u.name, "[0]", std::to_string(j));
@@ -557,14 +557,14 @@ int Program::locateAttribute(const std::string &name) const {
 
 GLuint Program::id() const { return id_; }
 
-void Program::setUniform(const std::string &name, const ponos::Transform &t) {
+void Program::setUniform(const std::string &name, const ponos::Transform &t) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
               << " not located. (Must be added first.)\n";
     return;
   }
-  glUniformMatrix4fv(loc, 1, GL_FALSE, &t.matrix()[0][0]);
+  glUniformMatrix4fv(loc, 1, GL_TRUE, &t.matrix()[0][0]);
 }
 
 void Program::setUniform(const std::string &name, const ponos::mat4 &m) {
@@ -666,7 +666,7 @@ void Program::setUniformBlockBinding(const std::string &name, GLuint buffer_bind
   }
 }
 
-GLint Program::getUniLoc(const std::string &name) {
+GLint Program::getUniLoc(const std::string &name) const {
   auto it = uniform_locations_.find(name);
   if (it == uniform_locations_.end())
     return -1;

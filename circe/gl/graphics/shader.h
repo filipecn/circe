@@ -177,7 +177,7 @@ public:
   /// \return
   [[nodiscard]] inline const std::vector<UniformBlock> &uniformBlocks() const { return uniform_blocks_; }
   // Uniforms
-  void setUniform(const std::string &name, const ponos::Transform &t);
+  void setUniform(const std::string &name, const ponos::Transform &t) const;
   void setUniform(const std::string &name, const ponos::mat4 &m);
   void setUniform(const std::string &name, const ponos::mat3 &m);
   void setUniform(const std::string &name, const ponos::vec4 &v);
@@ -196,7 +196,7 @@ public:
   std::string err; //!< linkage errors (if any)
 private:
   bool checkLinkageErrors();
-  GLint getUniLoc(const std::string &name);
+  [[nodiscard]] GLint getUniLoc(const std::string &name) const;
   void create();
   /// Cache uniform and attribute layout locations
   void cacheLocations();

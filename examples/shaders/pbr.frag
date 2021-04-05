@@ -2,6 +2,7 @@
 
 in vec3 fPosition;
 in vec3 fNormal;
+in vec4 fPosLightSpace;
 
 out vec4 outColor;
 
@@ -20,8 +21,33 @@ layout (std140) uniform PBR {
 };
 
 uniform vec3 camPos;
+uniform sampler2D shadowMap;
 
 const float PI = 3.14159265359;
+// ----------------------------------------------------------------------------
+float computeShadow(vec4 fPosLS) {
+    // perform perspective divide
+    vec3 projCoords = fPosLS.xyz / fPosLS.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    if (projCoords.z > 1.0)
+        return 0.0;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+    vec3 lightDir = normalize(lights[0].position - fPosition);
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    float bias = max(0.01 * (1.0 - dot(normalize(fNormal), lightDir)), 0.003);
+    for (int x = -1; x <= 1; ++x)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+    return shadow;
+}
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -75,14 +101,14 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 1; ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(lights[i].position.xyz - fPosition);
         vec3 H = normalize(V + L);
         float distance = length(lights[i].position.xyz - fPosition);
         float attenuation = 1.0 / (distance * distance);
-        vec3 radiance = /*lights[i].color*/ vec3(300,300,300) * attenuation;
+        vec3 radiance = lights[i].color * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughness);
@@ -117,6 +143,9 @@ void main()
 
     vec3 color = ambient + Lo;
 
+    // calculate shadow
+    float shadow = computeShadow(fPosLightSpace);
+    color *= 1.0 - shadow;
     // HDR tonemapping
     color = color / (color + vec3(1.0));
     // gamma correct

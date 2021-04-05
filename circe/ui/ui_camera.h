@@ -60,14 +60,11 @@ public:
 
 class UserCamera3D : public UserCamera {
 public:
-  explicit UserCamera3D(bool left_handed = true);
-  void setHandedness(bool left_handed);
+  explicit UserCamera3D(ponos::transform_options options = ponos::transform_options::left_handed);
+  void setOptions(ponos::transform_options options);
   void setUp(const ponos::vec3 &u);
   void setFov(float f);
   void update() override;
-
-private:
-  bool left_handed_{true};
 };
 
 } // namespace circe

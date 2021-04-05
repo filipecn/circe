@@ -67,7 +67,7 @@ Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
   u64 position_id{0}, normal_id{0}, color_id{0}, uv_id{0};
   if (!attrib.vertices.empty())
     position_id = model.pushAttribute<ponos::point3>("position");
-  if (!attrib.normals.empty())
+  if (!attrib.normals.empty() || testMaskBit(options, shape_options::normal))
     normal_id = model.pushAttribute<ponos::vec3>("normal");
   if (!attrib.colors.empty())
     color_id = model.pushAttribute<ponos::vec3>("color");
@@ -132,6 +132,34 @@ Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
       model.attributeValue<ponos::vec2>(uv_id, vertex.second) = {
           attrib.texcoords[2 * idx.uv_index + 0],
           attrib.texcoords[2 * idx.uv_index + 1]};
+  }
+  // check if we need to generate normals
+  if (!attrib.normals.empty() && normal_id) {
+    std::vector<u8> face_count(attrib.vertices.size() / 3, 0);
+    std::vector<ponos::vec3> normals(attrib.vertices.size() / 3, ponos::vec3());
+    index_offset = 0;
+    for (auto fv : shape.mesh.num_face_vertices) {
+      // loop over vertices in the face
+      ponos::vec3 face_vertices[3];
+      for (u64 v = 0; v < 3; ++v) {
+        auto idx = shape.mesh.indices[index_offset + v];
+        face_vertices[v] = {attrib.vertices[3 * idx.vertex_index + 0],
+                            attrib.vertices[3 * idx.vertex_index + 1],
+                            attrib.vertices[3 * idx.vertex_index + 2]};
+      }
+      auto normal = ponos::cross(face_vertices[1] - face_vertices[0],
+                                 face_vertices[2] - face_vertices[1]);
+      for (u64 v = 0; v < fv; ++v) {
+        auto idx = shape.mesh.indices[index_offset + v];
+        normals[idx.vertex_index] = normal;
+        face_count[idx.vertex_index]++;
+      }
+      index_offset += fv;
+    }
+    // store normals
+    for (const auto &vertex : index_map)
+      model.attributeValue<ponos::vec3>(normal_id, vertex.second) =
+          ponos::normalize(normals[vertex.first.vertex_index]);// / (f32) face_count[vertex.second]);
   }
   model.setIndices(std::move(index_data));
   return model;

@@ -148,6 +148,7 @@ public:
   /// \param options
   /// \return
   static Model box(const ponos::bbox3 &box, shape_options options = shape_options::none);
+  static Model box(const ponos::bbox2 &box, shape_options options = shape_options::none);
   ///
   /// \param s
   /// \param options

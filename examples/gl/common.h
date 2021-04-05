@@ -1,4 +1,4 @@
-/// Copyright (c) 2020, FilipeCN.
+/// Copyright (c) 2021, FilipeCN.
 ///
 /// The MIT License (MIT)
 ///
@@ -19,44 +19,34 @@
 /// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 /// IN THE SOFTWARE.
 ///
-///\file shadow_map.h
+///\file common.h
 ///\author FilipeCN (filipedecn@gmail.com)
-///\date 2020-08-09
+///\date 2021-03-28
 ///
 ///\brief
 
-#ifndef PONOS_CIRCE_CIRCE_GL_GRAPHICS_SHADOW_MAP_H
-#define PONOS_CIRCE_CIRCE_GL_GRAPHICS_SHADOW_MAP_H
+#ifndef CIRCE_EXAMPLES_GL_COMMON_H
+#define CIRCE_EXAMPLES_GL_COMMON_H
 
-#include <circe/scene/light.h>
-#include <circe/gl/io/render_texture.h>
-#include <circe/gl/graphics/shader.h>
-
-namespace circe::gl {
-
-class ShadowMap {
-public:
-  explicit ShadowMap(const ponos::size2 &size = ponos::size2(1024, 1024));
-  ~ShadowMap();
-  void setLight(const circe::Light &light);
-  void render(const std::function<void(const Program &)> &f);
-  void bind() const;
-  [[nodiscard]] const ponos::Transform &light_transform() const;
-  [[nodiscard]] const Texture &depthMap() const;
-  void setLightProjection(const ponos::Transform &p) {
-    projection_transform_ = p;
-    light_transform_ = projection_transform_ * ponos::Transform::lookAt(ponos::point3() + 4.f * light_.direction);
+struct alignas(16) vec3_16 {
+  vec3_16() = default;
+  vec3_16(float x, float y, float z) : x(x), y(y), z(z) {}
+  vec3_16 &operator=(const circe::Color &color) {
+    x = color.r;
+    y = color.g;
+    z = color.b;
+    return *this;
   }
-private:
-  ponos::size2 size_;
-  Framebuffer depth_buffer_;
-  Texture depth_map_;
-  Program program_;
-  Light light_;
-  ponos::Transform projection_transform_;
-  ponos::Transform light_transform_;
+  float x{0};
+  float y{0};
+  float z{0};
 };
 
-}
+struct alignas(16) PBR_UB {
+  vec3_16 albedo;
+  float metallic{};
+  float roughness{};
+  float ao{};
+};
 
-#endif //PONOS_CIRCE_CIRCE_GL_GRAPHICS_SHADOW_MAP_H
+#endif //CIRCE_EXAMPLES_GL_COMMON_H

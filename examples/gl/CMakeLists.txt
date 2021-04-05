@@ -43,6 +43,7 @@ endfunction(buildExample)
 
 set(EXAMPLES
         hello_circe
+        shadows
         volume_box
         volume_box_2d
         compute_shader
@@ -53,7 +54,6 @@ set(EXAMPLES
         post_effects
         text
         scene_object_interaction
-        shader_editor
         compiling_shaders
         ssbo
         mesh_editor

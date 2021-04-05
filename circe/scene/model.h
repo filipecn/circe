@@ -73,6 +73,14 @@ public:
     return data_.field<T>(attribute_index);
   }
   template<typename T>
+  ponos::AoS::FieldConstAccessor<T> attributeAccessor(const std::string &attribute_name) const {
+    return data_.field<T>(attribute_name);
+  }
+  template<typename T>
+  ponos::AoS::FieldConstAccessor<T> attributeAccessor(u64 attribute_index) const {
+    return data_.field<T>(attribute_index);
+  }
+  template<typename T>
   T &attributeValue(u64 attribute_index, u64 vertex_index) { return data_.valueAt<T>(attribute_index, vertex_index); }
   template<typename T>
   u64 pushAttribute(const std::string &attribute_name) {

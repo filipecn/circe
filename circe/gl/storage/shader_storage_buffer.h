@@ -53,6 +53,7 @@ public:
   [[nodiscard]] GLuint bufferUsage() const override;
   u64 dataSizeInBytes() const override;
   void bind() override;
+  void setBindingIndex(GLuint binding_index);
   // ***********************************************************************
   //                          PUBLIC FIELDS
   // ***********************************************************************

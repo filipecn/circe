@@ -84,4 +84,8 @@ void ShaderStorageBuffer::bind() {
   CHECK_GL_ERRORS;
 }
 
+void ShaderStorageBuffer::setBindingIndex(GLuint binding_index) {
+  binding_index_ = binding_index;
+}
+
 }

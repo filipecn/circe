@@ -136,7 +136,7 @@ set(CIRCE_HEADERS
         circe/gl/utils/win32_utils.h
         circe/gl/utils/base_app.h
         circe/circe.h
-        circe/io.h
+        circe/io/io.h
         )
 
 set(CIRCE_SOURCES
@@ -189,7 +189,7 @@ set(CIRCE_SOURCES
         circe/gl/utils/open_gl.cpp
         circe/gl/utils/base_app.cpp
         circe/circe.cpp
-        circe/io.cpp
+        circe/io/io.cpp
         circe/gl/scene/instance_set.cpp circe/gl/scene/instance_set.h)
 
 add_library(circe STATIC ${CIRCE_SOURCES} ${CIRCE_HEADERS} ${IMGUI_HEADERS} ${IMGUI_SOURCES})
