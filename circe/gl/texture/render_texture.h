@@ -26,7 +26,7 @@
 #define CIRCE_IO_RENDER_TEXTURE_H
 
 #include <circe/gl/io/framebuffer.h>
-#include <circe/gl/io/texture.h>
+#include <circe/gl/texture/texture.h>
 
 #include <functional>
 #include <memory>
@@ -46,7 +46,7 @@ public:
   RenderTexture(const TextureAttributes &a, const TextureParameters &p);
   ~RenderTexture() override;
   void set(const TextureAttributes &a, const TextureParameters &p) override;
-  void render(std::function<void()> f);
+  void render(const std::function<void()>& f);
   friend std::ostream &operator<<(std::ostream &out, RenderTexture &pt);
 
 private:

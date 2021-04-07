@@ -27,11 +27,11 @@
 #include <circe/gl/io/font_texture.h>
 #include <circe/gl/io/framebuffer.h>
 #include <circe/gl/io/graphics_display.h>
-#include <circe/gl/io/image_texture.h>
-#include <circe/gl/io/render_texture.h>
+#include <circe/gl/texture/image_texture.h>
+#include <circe/gl/texture/render_texture.h>
 #include <circe/gl/io/screen_quad.h>
-#include <circe/gl/io/texture.h>
-#include <circe/gl/io/texture_parameters.h>
+#include <circe/gl/texture/texture.h>
+#include <circe/gl/texture/texture_parameters.h>
 #include <circe/gl/io/viewport_display.h>
 #include <circe/gl/scene/bvh.h>
 #include <circe/scene/camera_interface.h>

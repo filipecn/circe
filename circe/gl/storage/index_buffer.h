@@ -69,7 +69,8 @@ public:
     default:data_type = GL_UNSIGNED_BYTE;
     }
     switch (element_type) {
-    case GL_POINTS: element_count = data.size(); break;
+    case GL_POINTS: element_count = data.size();
+      break;
     case GL_TRIANGLES: element_count = data.size() / 3;
       break;
     case GL_TRIANGLE_STRIP:
@@ -80,6 +81,8 @@ public:
     case GL_LINE_STRIP: element_count = data.size() - 1;
       break;
     case GL_LINE_LOOP: element_count = data.size();
+      break;
+    case GL_QUADS: element_count = data.size() / 4;
       break;
     default:spdlog::warn("Element type considered GL_POINTS on index buffer assignment.");
       element_count = data.size();

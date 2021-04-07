@@ -34,7 +34,7 @@ DeviceMemory::View::View(DeviceMemory &buffer, u64 length, u64 offset)
   if (!length_)
     length_ = buffer.size();
   if (offset_ >= buffer.size()) {
-    spdlog::warn("Offset of View out of bounds. View offset set to 0.");
+    spdlog::warn("Offset of Device Memory View out of bounds. View offset set to 0.");
     offset_ = 0;
   }
   if (offset_ + length_ > buffer.size())

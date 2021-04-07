@@ -28,7 +28,7 @@
 
 #include "screen_quad.h"
 #include <circe/gl/graphics/post_effect.h>
-#include <circe/gl/io/render_texture.h>
+#include <circe/gl/texture/render_texture.h>
 #include <circe/gl/scene/quad.h>
 
 namespace circe::gl {

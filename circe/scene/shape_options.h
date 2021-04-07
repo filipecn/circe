@@ -43,6 +43,8 @@ enum class shape_options {
   unique_positions = 0x20,  //!< vertex attributes are averaged to occupy a single index in the mesh
   wireframe = 0x40, //!< only edges
   vertices = 0x80, //!< only vertices
+  flip_normals = 0x100, //!< flip normals to point inwards (uv coordinates may change as well)
+  flip_faces = 0x200 //!< reverse face vertex order
 };
 CIRCE_ENABLE_BITMASK_OPERATORS(shape_options);
 }

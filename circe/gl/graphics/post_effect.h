@@ -26,7 +26,7 @@
 #define CIRCE_POST_EFFECT_H
 
 #include <circe/gl/graphics/shader.h>
-#include <circe/gl/io/render_texture.h>
+#include <circe/gl/texture/render_texture.h>
 
 namespace circe::gl {
 

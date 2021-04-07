@@ -22,7 +22,7 @@
  *
  */
 
-#include <circe/gl/io/texture.h>
+#include <circe/gl/texture/texture.h>
 #include <circe/gl/utils/open_gl.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -44,6 +44,38 @@ Texture Texture::fromFile(const ponos::Path &path) {
   texture.attributes_.internal_format = GL_RGB;
   texture.setTexels(data);
   stbi_image_free(data);
+  return texture;
+}
+
+Texture Texture::fromFiles(const std::vector<ponos::Path> &face_paths) {
+  Texture texture;
+  // set cube map
+  texture.setTarget(GL_TEXTURE_CUBE_MAP);
+  texture.attributes_.type = GL_UNSIGNED_BYTE;
+  texture.attributes_.depth = 1;
+  // bind texture
+  glBindTexture(texture.attributes_.target, texture.texture_object_);
+  // load faces
+  int width, height, channel_count;
+  for (size_t i = 0; i < face_paths.size(); ++i) {
+    unsigned char *data = stbi_load(face_paths[i].fullName().c_str(), &width, &height, &channel_count, 0);
+    if (!data) {
+      // TODO report error
+      std::cerr << "failed to load cubemap face texture\n";
+      return Texture();
+    }
+    texture.attributes_.width = width;
+    texture.attributes_.height = height;
+    texture.attributes_.format = GL_RGB;
+    texture.attributes_.internal_format = GL_RGB;
+    // store texels
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                 0, texture.attributes_.internal_format, texture.attributes_.width,
+                 texture.attributes_.height, 0, texture.attributes_.format, texture.attributes_.type,
+                 data);
+    CHECK_GL_ERRORS;
+    stbi_image_free(data);
+  }
   return texture;
 }
 
@@ -228,6 +260,8 @@ void Texture::setType(GLenum type) {
 
 void Texture::setTarget(GLenum target) {
   attributes_.target = target;
+  parameters_.target = target;
+  parameters_changed_ = true;
 }
 
 void Texture::resize(const ponos::size2 &new_size) {

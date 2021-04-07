@@ -97,10 +97,10 @@ public:
     wall.transform = ponos::translate({-4, 0,0});
     xy_wall.transform = ponos::translate({0, -4,0});
     // set floor material
-    floor_mtl.albedo = vec3_16(.5f, .0f, .5f);
+    floor_mtl.albedo = vec3_16(.3f, .0f, .0f);
     floor_mtl.ao = 1;
-    floor_mtl.metallic = 0.45;
-    floor_mtl.roughness = 0.35;
+    floor_mtl.metallic = 0.25;
+    floor_mtl.roughness = 0.55;
     // set mesh material
     mesh_mtl.albedo = vec3_16(.5f, 0.f, 0.f);
     mesh_mtl.ao = 1;

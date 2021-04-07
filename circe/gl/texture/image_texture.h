@@ -27,7 +27,7 @@
 #define CIRCE_IMAGE_TEXTURE_H
 
 #include <circe/colors/color_palette.h>
-#include <circe/gl/io/texture.h>
+#include <circe/gl/texture/texture.h>
 
 namespace circe::gl {
 

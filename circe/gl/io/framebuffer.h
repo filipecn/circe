@@ -25,7 +25,6 @@
 #ifndef CIRCE_IO_FRAMEBUFFER_H
 #define CIRCE_IO_FRAMEBUFFER_H
 
-#include <circe/gl/io/texture_parameters.h>
 #include <circe/gl/utils/open_gl.h>
 
 #include <ponos/ponos.h>
@@ -46,8 +45,8 @@ public:
 
 private:
   uint width, height, depth;
-  GLuint framebufferObject;
-  GLuint renderBufferObject;
+  GLuint framebufferObject{};
+  GLuint renderBufferObject{};
 };
 
 } // circe namespace

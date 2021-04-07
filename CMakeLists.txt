@@ -88,12 +88,13 @@ set(CIRCE_HEADERS
         circe/gl/io/display_renderer.h
         circe/gl/io/framebuffer.h
         circe/gl/io/graphics_display.h
-        circe/gl/io/image_texture.h
+        circe/gl/texture/image_texture.h
         circe/gl/io/font_texture.h
-        circe/gl/io/render_texture.h
+        circe/gl/texture/render_texture.h
         circe/gl/io/screen_quad.h
-        circe/gl/io/texture.h
-        circe/gl/io/texture_parameters.h
+        circe/gl/texture/texture_atlas.h
+        circe/gl/texture/texture.h
+        circe/gl/texture/texture_parameters.h
         circe/io/utils.h
         circe/gl/io/viewport_display.h
         circe/gl/io/user_input.h
@@ -156,11 +157,12 @@ set(CIRCE_SOURCES
         circe/gl/io/display_renderer.cpp
         circe/gl/io/framebuffer.cpp
         circe/gl/io/graphics_display.cpp
-        circe/gl/io/image_texture.cpp
-        circe/gl/io/render_texture.cpp
+        circe/gl/texture/image_texture.cpp
+        circe/gl/texture/render_texture.cpp
         circe/gl/io/font_texture.cpp
         circe/gl/io/screen_quad.cpp
-        circe/gl/io/texture.cpp
+        circe/gl/texture/texture.cpp
+        circe/gl/texture/texture_atlas.cpp
         circe/io/utils.cpp
         circe/gl/io/viewport_display.cpp
         circe/gl/scene/bvh.cpp

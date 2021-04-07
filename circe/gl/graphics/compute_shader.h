@@ -26,7 +26,7 @@
 #define CIRCE_GRAPHICS_COMPUTE_SHADER_H
 
 #include <circe/gl/graphics/shader.h>
-#include <circe/gl/io/texture.h>
+#include <circe/gl/texture/texture.h>
 #include <circe/gl/utils/open_gl.h>
 
 namespace circe::gl {

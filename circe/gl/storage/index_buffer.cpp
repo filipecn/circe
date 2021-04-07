@@ -63,6 +63,8 @@ u64 IndexBuffer::dataSizeInBytes() const {
     break;
   case GL_LINE_LOOP: index_count = element_count;
     break;
+  case GL_QUADS: index_count = element_count * 4;
+    break;
   default:spdlog::warn("Assuming one index per element in index buffer size.");
     index_count = element_count;
   }
@@ -89,6 +91,9 @@ void IndexBuffer::draw() {
     case GL_LINE_STRIP: index_count = element_count + 1;
       break;
     case GL_LINE_LOOP: index_count = element_count;
+      break;
+    case GL_QUADS:spdlog::error("Index Buffer: QUADS are not supported.");
+      index_count = element_count * 4;
       break;
     default:spdlog::warn("Assuming one index per element in index buffer size.");
       index_count = element_count;

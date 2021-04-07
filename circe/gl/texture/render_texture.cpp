@@ -22,7 +22,7 @@
  *
  */
 
-#include <circe/gl/io/render_texture.h>
+#include <circe/gl/texture/render_texture.h>
 #include <circe/gl/utils/open_gl.h>
 
 namespace circe::gl {
@@ -41,7 +41,7 @@ RenderTexture::~RenderTexture() {
     glDeleteTextures(1, &texture_object_);
 }
 
-void RenderTexture::render(std::function<void()> f) {
+void RenderTexture::render(const std::function<void()>& f) {
   glViewport(0, 0, static_cast<GLsizei>(attributes_.width),
              static_cast<GLsizei>(attributes_.height));
   framebuffer->enable();
@@ -55,9 +55,7 @@ std::ostream &operator<<(std::ostream &out, RenderTexture &pt) {
   int width = pt.attributes_.width;
   int height = pt.attributes_.height;
 
-  unsigned char *data = nullptr;
-
-  data = new unsigned char[(int) (width * height)];
+  auto *data = new unsigned char[(int) (width * height)];
 
   for (int i(0); i < width; ++i) {
     for (int j(0); j < height; ++j) {

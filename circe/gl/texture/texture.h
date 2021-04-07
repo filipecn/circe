@@ -25,7 +25,7 @@
 #ifndef CIRCE_IO_TEXTURE_H
 #define CIRCE_IO_TEXTURE_H
 
-#include <circe/gl/io/texture_parameters.h>
+#include <circe/gl/texture/texture_parameters.h>
 
 namespace circe::gl {
 
@@ -36,12 +36,26 @@ namespace circe::gl {
 class Texture {
 public:
   // ***********************************************************************
+  //                          TEXTURE VIEW
+  // ***********************************************************************
+  class View {
+  public:
+    View();
+  private:
+  };
+  // ***********************************************************************
   //                          STATIC METHODS
   // ***********************************************************************
   ///
   /// \param path
   /// \return Texture object
   static Texture fromFile(const ponos::Path &path);
+  /// Load images into a cube map texture
+  /// \note This function expects the face sequence: right,
+  ///   left, top, bottom, front, back
+  /// \param face_paths
+  /// \return
+  static Texture fromFiles(const std::vector<ponos::Path> &face_paths);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************

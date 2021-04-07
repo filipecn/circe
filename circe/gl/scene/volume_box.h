@@ -25,7 +25,7 @@
 #ifndef CIRCE_SCENE_VOLUME_BOX_H
 #define CIRCE_SCENE_VOLUME_BOX_H
 
-#include <circe/gl/io/texture.h>
+#include <circe/gl/texture/texture.h>
 #include <circe/gl/scene/scene_object.h>
 
 namespace circe::gl {

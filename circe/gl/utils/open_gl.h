@@ -70,6 +70,16 @@ public:
   static std::string EnumToStr(GLenum e) {
 #define RET_STR(A) \
     if(e == A) return #A;
+    RET_STR(GL_BYTE)
+    RET_STR(GL_UNSIGNED_BYTE)
+    RET_STR( GL_SHORT)
+    RET_STR( GL_UNSIGNED_SHORT)
+    RET_STR( GL_HALF_FLOAT)
+    RET_STR( GL_INT)
+    RET_STR( GL_UNSIGNED_INT)
+    RET_STR( GL_FIXED)
+    RET_STR( GL_FLOAT)
+    RET_STR( GL_DOUBLE)
     RET_STR(GL_NAME_LENGTH)
     RET_STR(GL_BUFFER_BINDING)
     RET_STR(GL_BUFFER_DATA_SIZE)
@@ -251,6 +261,7 @@ public:
     RET_STR(GL_LINE_STRIP_ADJACENCY);
     RET_STR(GL_TRIANGLES_ADJACENCY);
     RET_STR(GL_TRIANGLE_STRIP_ADJACENCY);
+    RET_STR(GL_QUADS);
 #undef RET_STR
     return "";
   }

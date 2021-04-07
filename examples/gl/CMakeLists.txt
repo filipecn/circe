@@ -44,6 +44,7 @@ endfunction(buildExample)
 set(EXAMPLES
         hello_circe
         shadows
+        skybox
         volume_box
         volume_box_2d
         compute_shader

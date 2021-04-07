@@ -27,7 +27,7 @@
 #define CIRCE_FONT_TEXTURE_H
 
 #include <circe/gl/graphics/shader_manager.h>
-#include <circe/gl/io/texture.h>
+#include <circe/gl/texture/texture.h>
 #include <circe/gl/scene/quad.h>
 #include <memory>
 #include <ponos/ponos.h>

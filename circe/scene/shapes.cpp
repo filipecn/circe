@@ -379,10 +379,14 @@ Model Shapes::box(const ponos::bbox3 &box, shape_options options) {
   if (testMaskBit(options, shape_options::tangent_space))
     options = options | shape_options::tangent | shape_options::bitangent;
   const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool only_vertices = testMaskBit(options, shape_options::vertices);
   const bool generate_normals = testMaskBit(options, shape_options::normal);
   bool generate_uvs = testMaskBit(options, shape_options::uv);
   const bool generate_tangents = testMaskBit(options, shape_options::tangent);
   const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
+  const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
+  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
 
   Model model;
 
@@ -392,42 +396,109 @@ Model Shapes::box(const ponos::bbox3 &box, shape_options options) {
   const u64 tangent_id = generate_tangents ? model.pushAttribute<ponos::vec3>("tangent") : 0;
   const u64 bitangent_id = generate_bitangents ? model.pushAttribute<ponos::vec3>("bitangent") : 0;
 
+  // base vertices
+  ponos::point3 base_vertices[8] = {
+      {box.lower.x, box.lower.y, box.lower.z}, // 0
+      {box.upper.x, box.lower.y, box.lower.z}, // 1
+      {box.upper.x, box.upper.y, box.lower.z}, // 2
+      {box.lower.x, box.upper.y, box.lower.z}, // 3
+      {box.lower.x, box.lower.y, box.upper.z}, // 4
+      {box.upper.x, box.lower.y, box.upper.z}, // 5
+      {box.upper.x, box.upper.y, box.upper.z}, // 6
+      {box.lower.x, box.upper.y, box.upper.z}};// 7
+  // base uvs
+  ponos::point2 base_uvs[4] = {
+      {0, 0}, // 0
+      {1, 0}, // 1
+      {1, 1}, // 2
+      {0, 1}, // 3
+  };
+  ponos::vec3 base_normals[6] = {
+      {0, 0, -1}, // -Z
+      {0, 0, 1}, // +Z
+      {0, -1, 0}, // -Y
+      {0, 1, 0}, // Y
+      {-1, 0, 0}, // -X
+      {1, 0, 0}, // X
+  };
+
+  std::vector<i32> base_vertex_indices = {
+      0, 1, 2, 3, // -Z face
+      4, 7, 6, 5, // +Z face
+      0, 4, 5, 1, // -Y face
+      3, 2, 6, 7, // +Y face
+      0, 3, 7, 4, // -X face
+      2, 1, 5, 6  // +X face
+  };
+
+  //           7
+  //  3                     6
+  //               2
+  //
+  //           4
+  //  0                     5
+  //               1
+
   std::vector<i32> indices;
-
-  if (testMaskBit(options, shape_options::unique_positions)) {
-    // TODO
-  } else {
+  if (only_vertices) {
+    model.setPrimitiveType(ponos::GeometricPrimitiveType::POINTS);
     model.resize(8);
-
-    model.attributeValue<ponos::point3>(position_id, 0) = {box.lower.x, box.lower.y, box.lower.z};
-    model.attributeValue<ponos::point3>(position_id, 1) = {box.upper.x, box.lower.y, box.lower.z};
-    model.attributeValue<ponos::point3>(position_id, 2) = {box.upper.x, box.upper.y, box.lower.z};
-    model.attributeValue<ponos::point3>(position_id, 3) = {box.lower.x, box.upper.y, box.lower.z};
-    model.attributeValue<ponos::point3>(position_id, 4) = {box.lower.x, box.lower.y, box.upper.z};
-    model.attributeValue<ponos::point3>(position_id, 5) = {box.upper.x, box.lower.y, box.upper.z};
-    model.attributeValue<ponos::point3>(position_id, 6) = {box.upper.x, box.upper.y, box.upper.z};
-    model.attributeValue<ponos::point3>(position_id, 7) = {box.lower.x, box.upper.y, box.upper.z};
-    if (generate_uvs) {
-      model.attributeValue<ponos::point2>(uv_id, 0) = {0, 0};
-      model.attributeValue<ponos::point2>(uv_id, 1) = {1, 0};
-      model.attributeValue<ponos::point2>(uv_id, 2) = {1, 1};
-      model.attributeValue<ponos::point2>(uv_id, 3) = {0, 1};
-      model.attributeValue<ponos::point2>(uv_id, 4) = {0, 0};
-      model.attributeValue<ponos::point2>(uv_id, 5) = {1, 0};
-      model.attributeValue<ponos::point2>(uv_id, 6) = {1, 1};
-      model.attributeValue<ponos::point2>(uv_id, 7) = {0, 1};
+    for (int i = 0; i < 8; ++i) {
+      model.attributeValue<ponos::point3>(position_id, i) = base_vertices[i];
+      indices.emplace_back(i);
     }
-    if (generate_normals) {
-    }
-    if (generate_tangents) {
-    }
-    if (generate_bitangents) {
-    }
+  } else if (unique_positions || (!generate_normals && !generate_uvs)) {
+    model.resize(8);
+    for (int i = 0; i < 8; ++i)
+      model.attributeValue<ponos::point3>(position_id, i) = base_vertices[i];
     if (generate_wireframe) {
       model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
       indices = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 5, 2, 6, 3, 7, 4, 5, 5, 6, 6, 7, 7, 4};
     } else {
       model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+      for(int f = 0; f < 6; ++f)
+        for(int jump = 0; jump < 2; ++jump) {
+          indices.emplace_back(base_vertex_indices[f * 4 + 0]);
+          indices.emplace_back(base_vertex_indices[f * 4 + jump + 1]);
+          indices.emplace_back(base_vertex_indices[f * 4 + jump + 2]);
+        }
+    }
+  } else {
+    if (generate_wireframe) {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+      indices = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 5, 2, 6, 3, 7, 4, 5, 5, 6, 6, 7, 7, 4};
+    } else if (generate_normals || generate_uvs) {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+      for(int f = 0; f < 6; ++f)
+        for(int jump = 0; jump < 2; ++jump) {
+          indices.emplace_back(f * 4 + 0);
+          indices.emplace_back(f * 4 + jump + 1);
+          indices.emplace_back(f * 4 + jump + 2);
+        }
+      // 4 vertices per cube quad face
+      model.resize(base_vertex_indices.size());
+      for (size_t i = 0; i < base_vertex_indices.size(); ++i)
+        model.attributeValue<ponos::point3>(position_id, i) =
+            base_vertices[base_vertex_indices[i]];
+      if (generate_uvs) {
+      }
+      if (generate_normals) {
+        for (int f = 0; f < 6; ++f)
+          for (int i = 0; i < 4; ++i)
+            model.attributeValue<ponos::vec3>(normal_id, f * 4 + i) =
+                flip_normals ? -base_normals[f] : base_normals[f];
+      }
+      if (generate_tangents) {
+      }
+      if (generate_bitangents) {
+      }
+
+    } else {
+      model.setPrimitiveType(ponos::GeometricPrimitiveType::QUADS);
+      indices = base_vertex_indices;
+      model.resize(8);
+      for (int i = 0; i < 8; ++i)
+        model.attributeValue<ponos::point3>(position_id, i) = base_vertices[i];
     }
   }
   model = indices;
