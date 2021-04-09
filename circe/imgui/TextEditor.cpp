@@ -2754,7 +2754,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::CPlusPlus(
     static const char* const identifiers[] = {
         "abort", "abs", "acos", "asin", "atan", "atexit", "atof", "atoi", "atol", "ceil", "clock", "cosh", "ctime", "div", "exit", "fabs", "floor", "fmod", "getchar", "getenv", "isalnum", "isalpha", "isdigit", "isgraph",
         "ispunct", "isspace", "isupper", "kbhit", "log10", "log2", "log", "memcmp", "modf", "pow", "printf", "sprintf", "snprintf", "putchar", "putenv", "puts", "rand", "remove", "rename", "sinh", "sqrt", "srand", "strcat", "strcmp", "strerror", "time", "tolower", "toupper",
-        "std", "string", "vector", "map", "unordered_map", "set", "unordered_set", "min", "max"
+        "std", "string", "vector", "map", "unordered_map", "resize", "unordered_set", "min", "max"
     };
     for (auto& k : identifiers)
     {
@@ -3064,7 +3064,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::AngelScrip
     static const char* const keywords[] = {
         "and", "abstract", "auto", "bool", "break", "case", "cast", "class", "const", "continue", "default", "do", "double", "else", "enum", "false", "final", "float", "for",
         "from", "funcdef", "function", "get", "if", "import", "in", "inout", "int", "interface", "int8", "int16", "int32", "int64", "is", "mixin", "namespace", "not",
-        "null", "or", "out", "override", "private", "protected", "return", "set", "shared", "super", "switch", "this ", "true", "typedef", "uint", "uint8", "uint16", "uint32",
+        "null", "or", "out", "override", "private", "protected", "return", "resize", "shared", "super", "switch", "this ", "true", "typedef", "uint", "uint8", "uint16", "uint32",
         "uint64", "void", "while", "xor"
     };
 

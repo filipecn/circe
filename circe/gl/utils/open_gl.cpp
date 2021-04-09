@@ -75,7 +75,7 @@ std::string glErrorToString(GLenum error, bool description) {
          "instead.";
     break;
   case GL_INVALID_OPERATION:s += "GL_INVALID_OPERATION";
-    d += "Given when the set of state for a command is not legal for the "
+    d += "Given when the resize of state for a command is not legal for the "
          "parameters given to that command. It is also given for commands "
          "where combinations of parameters define what the legal parameters "
          "are.";
@@ -107,15 +107,15 @@ std::string glErrorToString(GLenum error, bool description) {
   return s + ((description) ? "(" + d + ")" : "");
 }
 
-bool checkGL(const char *file, int line_number, const char *function, const char*line) {
+bool checkGL(const char *file, int line_number, const char *function, const char *line) {
   GLenum glErr;
   bool retCode = false;
 
   while ((glErr = glad_glGetError()) != GL_NO_ERROR) {
     std::cerr << '[' << file << "][" << line_number << "]";
-    if(function)
+    if (function)
       std::cerr << "[" << function << "]";
-    if(line)
+    if (line)
       std::cerr << "[" << line << "]";
     std::cerr << ": " << glErrorToString(glErr) << std::endl;
     retCode = true;
@@ -123,7 +123,7 @@ bool checkGL(const char *file, int line_number, const char *function, const char
   return retCode;
 }
 
-bool checkFramebuffer() {
+bool checkFramebuffer(const char *file, int line_number, const char *function) {
   std::string error;
   std::string name;
   switch (glCheckFramebufferStatus(GL_FRAMEBUFFER)) {
@@ -155,7 +155,7 @@ bool checkFramebuffer() {
     break;
   case GL_FRAMEBUFFER_UNSUPPORTED:
     error += "the combination of internal formats of the attached images "
-             "violates an implementation-dependent set of restrictions.";
+             "violates an implementation-dependent resize of restrictions.";
     name += "GL_FRAMEBUFFER_UNSUPPORTED";
     break;
   case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
@@ -182,6 +182,7 @@ bool checkFramebuffer() {
   }
 
   error += "\n";
+  std::cout << '[' << file << "][" << line_number << "]";
   std::cout << "[CHECKFRAMBUFFER - " << name << "]\n" << error << std::endl;
   exit(1);
 

@@ -34,23 +34,38 @@
 
 namespace circe::gl {
 
-/** \brief Renders the image into a texture directly from the framebuffer.
- */
-class RenderTexture : public Texture {
+/// Holds a framebuffer object and a texture attached to it.
+/// This object provides a method to rendering into the texture.
+class FramebufferTexture : public Texture {
 public:
-  RenderTexture() = default;
+  // ***********************************************************************
+  //                              CONSTRUCTORS
+  // ***********************************************************************
+  FramebufferTexture();
   /** \brief Constructor.
    * \param a texture attributes
-   * \param p texture parameters
    */
-  RenderTexture(const TextureAttributes &a, const TextureParameters &p);
-  ~RenderTexture() override;
-  void set(const TextureAttributes &a, const TextureParameters &p) override;
-  void render(const std::function<void()>& f);
-  friend std::ostream &operator<<(std::ostream &out, RenderTexture &pt);
+  explicit FramebufferTexture(const Texture::Attributes &a);
+  ~FramebufferTexture() override;
+  // ***********************************************************************
+  //                              SETTINGS
+  // ***********************************************************************
+  void set(const Texture::Attributes &a) override;
+  // ***********************************************************************
+  //                              RENDER
+  // ***********************************************************************
+  ///
+  /// \param f
+  void render(const std::function<void()> &f);
+  ///
+  /// \param region
+  /// \param f
+  void render(Texture::Atlas::Region region, const std::function<void()> &f);
+
+  friend std::ostream &operator<<(std::ostream &out, FramebufferTexture &pt);
 
 private:
-  std::shared_ptr<Framebuffer> framebuffer;
+  Framebuffer framebuffer_;
 };
 
 } // circe namespace

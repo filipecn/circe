@@ -2107,7 +2107,7 @@ namespace ImGuizmo
    {
       ComputeContext(view, projection, matrix, mode);
 
-      // set delta to identity
+      // resize delta to identity
       if (deltaMatrix)
       {
          ((matrix_t*)deltaMatrix)->SetToIdentity();
@@ -2414,7 +2414,7 @@ namespace ImGuizmo
       vec_t zero = makeVect(0.f, 0.f);
       LookAt(&eye.x, &zero.x, &up.x, cubeView.m16);
 
-      // set context
+      // resize context
       gContext.mViewMat = cubeView;
       gContext.mProjectionMat = cubeProjection;
       ComputeCameraRay(gContext.mRayOrigin, gContext.mRayVector, position, size);

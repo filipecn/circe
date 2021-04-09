@@ -96,7 +96,7 @@ USAGE:
    writer, both because it is in BGR order and because it may have padding
    at the end of the line.)
 
-   PNG allows you to set the deflate compression level by setting the global
+   PNG allows you to resize the deflate compression level by setting the global
    variable 'stbi_write_png_compression_level' (it defaults to 8).
 
    HDR expects linear float data. Since the format is always 32-bit rgb(e)
@@ -104,7 +104,7 @@ USAGE:
    replicated across all three channels.
 
    TGA supports RLE or non-RLE compressed data. To use non-RLE-compressed
-   data, set the global variable 'stbi_write_tga_with_rle' to 0.
+   data, resize the global variable 'stbi_write_tga_with_rle' to 0.
 
    JPEG does ignore alpha channels in input data; quality is between 1 and 100.
    Higher quality looks better but results in a bigger image.

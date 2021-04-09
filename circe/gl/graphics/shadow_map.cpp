@@ -30,7 +30,8 @@
 namespace circe::gl {
 
 ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size),
-                                                 projection_transform_{ponos::Transform::ortho(-10, 10, -10, 10, -10, 10)} {
+                                                 projection_transform_{
+                                                     ponos::Transform::ortho(-10, 10, -10, 10, -10, 10)} {
   // setup shader program
   Shader vertex_shader(GL_VERTEX_SHADER, "#version 430 core\n"
                                          "layout (location = 0) in vec3 position;\n"
@@ -48,24 +49,23 @@ ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size),
     exit(-1);
   }
   // setup depth texture attributes and parameters
-  TextureAttributes attributes;
-  attributes.height = size.height;
-  attributes.width = size.width;
-  attributes.depth = 1;
+  Texture::Attributes attributes;
+  attributes.size_in_texels = {size.width, size.height, 1};
   attributes.target = GL_TEXTURE_2D;
   attributes.internal_format = GL_DEPTH_COMPONENT;
   attributes.format = GL_DEPTH_COMPONENT;
   attributes.type = GL_FLOAT;
-  float border_color[4] = {1.0, 1.0, 1.0, 1.0,};
-  TextureParameters parameters(GL_TEXTURE_2D, border_color);
+  Texture::View parameters(Color::White());
   parameters[GL_TEXTURE_MIN_FILTER] = GL_NEAREST;
   parameters[GL_TEXTURE_MAG_FILTER] = GL_NEAREST;
   parameters[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_BORDER;
   parameters[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_BORDER;
-  // set depth texture
-  depth_map_.set(attributes, parameters);
-  // set buffer
-  depth_buffer_.set(size.width, size.height);
+  // resize depth texture
+  depth_map_.set(attributes);
+  depth_map_.bind();
+  parameters.apply();
+  // resize buffer
+  depth_buffer_.resize(size);
   depth_buffer_.attachColorBuffer(depth_map_.textureObjectId(), depth_map_.target(), GL_DEPTH_ATTACHMENT);
   depth_buffer_.enable();
   glDrawBuffer(GL_NONE);

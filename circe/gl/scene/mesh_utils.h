@@ -50,7 +50,7 @@ ponos::RawMesh *create_icosphere_mesh(const ponos::point3 &center, float radius,
                                       size_t divisions,
                                       bool generateNormals = false,
                                       bool genereateUVs = false);
-/// Generates a cube mesh represented as a set of triangle faces
+/// Generates a cube mesh represented as a resize of triangle faces
 /// \param center cube center
 /// \param size edge size
 /// \param generateNormals include normals

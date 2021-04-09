@@ -9,7 +9,7 @@ ViewportDisplay::ViewportDisplay(int _x, int _y, int _width, int _height)
 }
 
 void ViewportDisplay::render(const std::function<void(CameraInterface *)> &f) {
-  if(prepareRenderCallback)
+  if (prepareRenderCallback)
     prepareRenderCallback(*this);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -25,7 +25,7 @@ void ViewportDisplay::render(const std::function<void(CameraInterface *)> &f) {
   glViewport(x, y, width, height);
   glScissor(x, y, width, height);
   glEnable(GL_SCISSOR_TEST);
-  gd.clearScreen(1.f, 1.f, 1.f, 0.f);
+  circe::gl::GraphicsDisplay::clearScreen(1.f, 1.f, 1.f, 0.f);
   // glEnable(GL_DEPTH_TEST);
   renderer->render();
   glDisable(GL_SCISSOR_TEST);
@@ -49,7 +49,7 @@ void ViewportDisplay::button(int b, int a, int m) {
   camera->mouseButton(a, b, getMouseNPos());
 }
 
-void ViewportDisplay::key(int k, int scancode, int action, int modifiers) {
+void ViewportDisplay::key(int k, int scancode, int action, int modifiers) const {
   if (keyCallback)
     keyCallback(k, scancode, action, modifiers);
 }
@@ -68,7 +68,7 @@ bool ViewportDisplay::hasMouseFocus() const {
   return (mp.x >= 0.f && mp.x <= width && mp.y >= 0.f && mp.y <= height);
 }
 
-ponos::point3 ViewportDisplay::viewCoordToNormDevCoord(ponos::point3 p) {
+ponos::point3 ViewportDisplay::viewCoordToNormDevCoord(ponos::point3 p) const {
   float v[] = {0, 0, static_cast<float>(width), static_cast<float>(height)};
   return ponos::point3((p.x - v[0]) / (v[2] / 2.0) - 1.0,
                        (p.y - v[1]) / (v[3] / 2.0) - 1.0, 2 * p.z - 1.0);

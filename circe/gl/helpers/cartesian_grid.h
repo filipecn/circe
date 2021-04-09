@@ -47,14 +47,14 @@ public:
    * \param dz **[in]** delta Z
    */
   CartesianGrid(int dx, int dy, int dz);
-  /* set
+  /* resize
    * \param d **[in]** dimension index (x = 0, ...)
    * \param a **[in]** lowest coordinate
    * \param b **[in]** highest coordinate
    * Set the limits of the grid for an axis.
    *
    * **Example:** If we want a grid with **y** coordinates in **[-5,5]**, we
-   *call **set(1, -5, 5)**
+   *call **resize(1, -5, 5)**
    */
   void setDimension(size_t d, int a, int b);
   /* @inherit */

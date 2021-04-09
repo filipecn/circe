@@ -1,8 +1,3 @@
-//
-// Created by filipecn on 07/04/2021.
-//
-
-
 /// Copyright (c) 2021, FilipeCN.
 ///
 /// The MIT License (MIT)
@@ -26,8 +21,34 @@
 ///
 ///\file texture_atlas.cpp.c
 ///\author FilipeCN (filipedecn@gmail.com)
-///\date 2021-04-07
+///\date 2021-04-08
 ///
-///\brief
+///\brief Example of a Texture atlas usage
 
-#include "texture_atlas.h"
+#include <circe/circe.h>
+
+class AtlasExample : public circe::gl::BaseApp {
+public:
+  AtlasExample() : BaseApp(800, 800) {
+    ponos::Path assets_path(std::string(ASSETS_PATH));
+    ponos::Path shaders_path(std::string(SHADERS_PATH));
+
+    atlas_texture = circe::gl::Texture::fromFile(assets_path + "atlas.jpg");
+  }
+
+  void render(circe::CameraInterface *camera) override {
+    ImGui::Begin("Texture Atlas");
+    auto texture_id = atlas_texture.textureObjectId();
+    ImGui::Image((void *) (intptr_t) (texture_id),
+                 {static_cast<f32>( atlas_texture.size().width),
+                  static_cast<f32>(atlas_texture.size().height)},
+                 {0, 1}, {1, 0});
+    ImGui::End();
+  }
+
+  circe::gl::Texture atlas_texture;
+};
+
+int main() {
+  return AtlasExample().run();
+}

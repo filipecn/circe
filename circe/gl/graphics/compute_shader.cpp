@@ -27,8 +27,8 @@ ComputeShader::ComputeShader(const char *source) {
   }
 }
 
-ComputeShader::ComputeShader(const TextureAttributes &a,
-                             const TextureParameters &p, const char *source)
+ComputeShader::ComputeShader(const Texture::Attributes &a,
+                             const Texture::View &p, const char *source)
     : ComputeShader(source) {
   setTexture(a, p);
 }
@@ -55,6 +55,7 @@ bool ComputeShader::compute() {
 }
 
 void ComputeShader::bindTexture(GLenum t) const { texture->bind(t); }
+
 void ComputeShader::setBuffer(const char *name, GLuint id,
                               GLuint bindingPoint) {
   UNUSED_VARIABLE(name);
@@ -64,11 +65,11 @@ void ComputeShader::setBuffer(const char *name, GLuint id,
   CHECK_GL_ERRORS;
   bufferIds.emplace_back(id);
 }
-void ComputeShader::setTexture(const TextureAttributes &a,
-                               const TextureParameters &p) {
-  texture = std::make_unique<Texture>(a, p);
+void ComputeShader::setTexture(const Texture::Attributes &a,
+                               const Texture::View &p) {
+  texture = std::make_unique<Texture>(a);
   groupSize = texture->size();
 }
-void ComputeShader::setGroupSize(const ponos::size3 gs) { groupSize = gs; }
+void ComputeShader::setGroupSize(const ponos::size3& gs) { groupSize = gs; }
 
 } // namespace circe

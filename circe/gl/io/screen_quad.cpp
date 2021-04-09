@@ -68,7 +68,7 @@ ScreenQuad::ScreenQuad() {
   shader->addUniform("tex", 0);
   {
     glGenVertexArrays(1, &VAO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s),
+    // bind the Vertex Array Object first, then bind and resize vertex buffer(s),
     // and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     BufferDescriptor vd, id;

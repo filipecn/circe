@@ -30,33 +30,35 @@
 namespace circe::gl {
 
 DisplayRenderer::DisplayRenderer(size_t w, size_t h) : curBuffer_(0) {
-  attributes_.target = GL_TEXTURE_2D;
-  attributes_.type = GL_UNSIGNED_BYTE;
-  attributes_.internal_format = GL_RGBA8;
-  attributes_.format = GL_RGBA;
-  attributes_.width = w;
-  attributes_.height = h;
-  buffers_.resize(2);
+  for (auto &framebuffer_texture : framebuffer_textures_) {
+    framebuffer_texture.setTarget(GL_TEXTURE_2D);
+    framebuffer_texture.setType(GL_UNSIGNED_BYTE);
+    framebuffer_texture.setInternalFormat(GL_RGBA8);
+    framebuffer_texture.setFormat(GL_RGBA);
+  }
   needsResize_ = true;
+  resize(w, h);
 }
 
 void DisplayRenderer::addEffect(PostEffect *e) { effects_.emplace_back(e); }
 
 void DisplayRenderer::process(const std::function<void()> &f) {
-  resize(attributes_.width, attributes_.height);
+  resize(framebuffer_textures_->size().width, framebuffer_textures_->size().height);
   // render image to the first framebuffer
-  buffers_[curBuffer_]->render(f);
-  for (auto &effect : effects_) {
-    effect->apply(*buffers_[curBuffer_].get(),
-                  *buffers_[(curBuffer_ + 1) % 2].get());
-    curBuffer_ = (curBuffer_ + 1) % 2;
-  }
+  framebuffers_[curBuffer_].render(f);
+//  buffers_[curBuffer_]->render(f);
+//  for (auto &effect : effects_) {
+//    effect->apply(*buffers_[curBuffer_].get(),
+//                  *buffers_[(curBuffer_ + 1) % 2].get());
+//    curBuffer_ = (curBuffer_ + 1) % 2;
+//  }
 }
 
 void DisplayRenderer::render() {
-  resize(attributes_.width, attributes_.height);
+  return;
+  resize(framebuffer_textures_->size().width, framebuffer_textures_->size().height);
   // render to display
-  buffers_[curBuffer_]->bind(GL_TEXTURE0);
+  framebuffer_textures_[curBuffer_].bind(GL_TEXTURE0);
   screen.shader->begin();
   screen.shader->setUniform("tex", 0);
   screen.shader->end();
@@ -65,19 +67,20 @@ void DisplayRenderer::render() {
 
 void DisplayRenderer::resize(size_t w, size_t h) {
   if (needsResize_) {
-    attributes_.width = w;
-    attributes_.height = h;
-    for (size_t i = 0; i < 2; i++)
-      buffers_[i].reset(new RenderTexture(attributes_, parameters_));
+    for (size_t i = 0; i < 2; i++) {
+      framebuffer_textures_[i].resize(ponos::size2(w, h));
+      framebuffers_[i].resize(ponos::size2(w, h));
+      framebuffers_[i].attachTexture(framebuffer_textures_[i]);
+    }
   }
   needsResize_ = false;
 }
 
 void DisplayRenderer::currentPixels(std::vector<unsigned char> &data,
                                     size_t &width, size_t &height) const {
-  data = buffers_[curBuffer_]->texels();
-  width = attributes_.width;
-  height = attributes_.height;
+  data = framebuffer_textures_[curBuffer_].texels();
+  width = framebuffer_textures_[0].size().width;
+  height = framebuffer_textures_[0].size().height;
 }
 
 } // circe namespace

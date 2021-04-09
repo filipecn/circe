@@ -32,7 +32,7 @@
 
 namespace circe::gl {
 
-/// A Element Buffer Object (EBO) stores the topology of a mesh. A set of
+/// A Element Buffer Object (EBO) stores the topology of a mesh. A resize of
 /// indices assigned by a geometric primitive.
 class IndexBuffer : public BufferInterface {
 public:

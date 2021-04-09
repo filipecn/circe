@@ -33,15 +33,15 @@ namespace circe::gl {
 
 class ComputeShader : public ShaderProgram {
 public:
-  ComputeShader(const char *source);
-  ComputeShader(const TextureAttributes &a, const TextureParameters &p,
+  explicit ComputeShader(const char *source);
+  ComputeShader(const Texture::Attributes &a, const Texture::View &p,
                 const char *source);
   virtual ~ComputeShader();
   bool compute();
   void bindTexture(GLenum t) const;
-  void setTexture(const TextureAttributes &a, const TextureParameters &p);
+  void setTexture(const Texture::Attributes &a, const Texture::View &p);
   void setBuffer(const char *name, GLuint id, GLuint bindingPoint);
-  void setGroupSize(const ponos::size3 gs);
+  void setGroupSize(const ponos::size3& gs);
 
 private:
   std::unique_ptr<Texture> texture;

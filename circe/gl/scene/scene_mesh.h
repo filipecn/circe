@@ -36,7 +36,7 @@ namespace circe::gl {
 //public:
 //  SceneModel();
 //  virtual ~SceneModel();
-//  bool set(const ponos::RawMesh &raw_mesh);
+//  bool resize(const ponos::RawMesh &raw_mesh);
 //  void bind() const;
 //  const GLVertexBuffer &vertexBuffer() const { return vertex_buffer_; }
 //  const GLIndexBuffer &indexBuffer() const { return index_buffer_; }
@@ -103,7 +103,7 @@ public:
   /// \param mesh_element_count **[in]**
   void update(float *vertex_buffer_data, size_t vertex_count,
               uint *index_buffer_data, size_t mesh_element_count);
-  /// \brief set descriptions
+  /// \brief resize descriptions
   /// \param vertex_buffer_desc **[in]**
   /// \param index_buffer_desc **[in]**
   void setDescription(const BufferDescriptor &vertex_buffer_desc,

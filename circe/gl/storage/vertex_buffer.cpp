@@ -151,7 +151,7 @@ void VertexBuffer::bindAttributeFormats() {
     // specify vertex attribute format
     glVertexAttribFormat(i, attributes.attributes_[i].size,
                          attributes.attributes_[i].type, false, attributes.offsets_[i]);
-    // set the details of a single attribute
+    // resize the details of a single attribute
     glVertexAttribBinding(i, binding_index_);
   }
 }

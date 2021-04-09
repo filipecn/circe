@@ -27,21 +27,20 @@
 namespace circe::gl {
 
 VolumeBox2::VolumeBox2(u32 w, u32 h, float *data) : VolumeBox2() {
-  TextureAttributes ta;
-  ta.width = w;
-  ta.height = h;
+  Texture::Attributes ta;
+  ta.size_in_texels.width = w;
+  ta.size_in_texels.height = h;
   ta.internal_format = GL_RED;
   ta.format = GL_RED;
   ta.type = GL_FLOAT;
   ta.target = GL_TEXTURE_2D;
-  TextureParameters tp;
-  tp.target = GL_TEXTURE_2D;
+  Texture::View tp;
   tp[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
   tp[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
   tp[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_BORDER;
   tp[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_BORDER;
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  density_texture_.set(ta, tp);
+  density_texture_.set(ta);
   density_texture_.setTexels(data);
 }
 
@@ -232,23 +231,22 @@ VolumeBox::VolumeBox() {
 }
 
 VolumeBox::VolumeBox(size_t w, size_t h, size_t d, float *data) : VolumeBox() {
-  TextureAttributes ta;
-  ta.width = w;
-  ta.height = h;
-  ta.depth = d;
+  Texture::Attributes ta;
+  ta.size_in_texels.width = w;
+  ta.size_in_texels.height = h;
+  ta.size_in_texels.depth = d;
   ta.internal_format = GL_RED;
   ta.format = GL_RED;
   ta.type = GL_FLOAT;
   ta.target = GL_TEXTURE_3D;
-  TextureParameters tp;
-  tp.target = GL_TEXTURE_3D;
+  Texture::View tp;
   tp[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
   tp[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
   tp[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_BORDER;
   tp[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_BORDER;
   tp[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_BORDER;
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  densityTexture.set(ta, tp);
+  densityTexture.set(ta);
   densityTexture.setTexels(data);
 }
 

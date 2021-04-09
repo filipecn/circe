@@ -42,7 +42,7 @@ public:
   ImageTexture(size_t w, size_t h);
   /// \param a texture attributes
   /// \param p texture parameters
-  ImageTexture(const TextureAttributes &a, const TextureParameters &p);
+  explicit ImageTexture(const Texture::Attributes &a);
   /// \param i coordinates in width axis
   /// \param j coordinates in height axis
   /// \param k [optional | default = 0] coordinates in depth axis

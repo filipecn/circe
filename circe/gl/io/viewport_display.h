@@ -55,12 +55,12 @@ public:
    */
   ponos::point2 getMouseNPos();
   /// \return true if mouse is inside viewport region
-  bool hasMouseFocus() const;
+  [[nodiscard]] bool hasMouseFocus() const;
   /* convert
    * \param p **[in]** point (in view space)
    * \return **p** mapped to NDC (**[-1,1]**)
    */
-  ponos::point3 viewCoordToNormDevCoord(ponos::point3 p);
+  ponos::point3 viewCoordToNormDevCoord(ponos::point3 p) const;
   /* convert
    * \param c **[in]** camera
    * \param p **[in]** point (in screen space)
@@ -74,7 +74,7 @@ public:
   void mouse(double x, double y);
   void button(int b, int a, int m);
   void scroll(double dx, double dy);
-  void key(int k, int scancode, int action, int modifiers);
+  void key(int k, int scancode, int action, int modifiers) const;
 
   // render callback
   std::function<void(const ViewportDisplay&)> prepareRenderCallback;

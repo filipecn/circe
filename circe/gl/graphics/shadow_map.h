@@ -29,7 +29,7 @@
 #define PONOS_CIRCE_CIRCE_GL_GRAPHICS_SHADOW_MAP_H
 
 #include <circe/scene/light.h>
-#include <circe/gl/texture/render_texture.h>
+#include <circe/gl/texture/framebuffer_texture.h>
 #include <circe/gl/graphics/shader.h>
 
 namespace circe::gl {

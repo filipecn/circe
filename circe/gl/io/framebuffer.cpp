@@ -26,48 +26,55 @@
 
 namespace circe::gl {
 
-Framebuffer::Framebuffer() {
-  width = height = depth = 0;
-  framebufferObject = renderBufferObject = 0;
+Framebuffer::Framebuffer() = default;
+
+Framebuffer::Framebuffer(const ponos::size3 &resolution) {
+  resize(resolution);
 }
 
-Framebuffer::Framebuffer(uint w, uint h, uint d)
-    : width(w), height(h), depth(d) {
-  set(width, height, depth);
+Framebuffer::Framebuffer(const ponos::size2 &resolution) {
+  resize(resolution);
 }
 
 Framebuffer::~Framebuffer() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  if (framebufferObject)
-    glDeleteFramebuffers(1, &framebufferObject);
+  if (framebuffer_object_)
+    glDeleteFramebuffers(1, &framebuffer_object_);
 }
 
-void Framebuffer::set(uint w, uint h, uint d) {
-  UNUSED_VARIABLE(d);
-  glGenFramebuffers(1, &framebufferObject);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject);
+void Framebuffer::resize(const ponos::size2 &resolution) {
+  resize({resolution.width, resolution.height, 0});
+}
 
-  glGenRenderbuffers(1, &renderBufferObject);
-  glBindRenderbuffer(GL_RENDERBUFFER, renderBufferObject);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
-  //  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
+void Framebuffer::resize(const ponos::size3 &resolution) {
+  size_in_pixels_ = resolution;
+  // delete any previous buffers
+  if (framebuffer_object_)
+    glDeleteFramebuffers(1, &framebuffer_object_);
+  if (render_buffer_object_)
+    glDeleteRenderbuffers(1, &render_buffer_object_);
+  // create frame buffer
+  glGenFramebuffers(1, &framebuffer_object_);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
+  // create render buffer
+  glGenRenderbuffers(1, &render_buffer_object_);
+  glBindRenderbuffer(GL_RENDERBUFFER, render_buffer_object_);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, resolution.width, resolution.height);
   // attach the renderbuffer to depth attachment point
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, // 1. fbo target: GL_FRAMEBUFFER
                             GL_DEPTH_ATTACHMENT, // 2. attachment point
                             GL_RENDERBUFFER, // 3. rbo target: GL_RENDERBUFFER
-                            renderBufferObject); // 4. rbo ID
-
+                            render_buffer_object_); // 4. rbo ID
   CHECK_GL_ERRORS;
   CHECK_FRAMEBUFFER;
-
+  // unbind before leave
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::attachColorBuffer(GLuint textureId, GLenum target,
-                                    GLenum attachmentPoint) const  {
-  glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject);
-
+                                    GLenum attachmentPoint) const {
+  // bind framebuffer
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
   // attach the texture to FBO color attachment point
   glFramebufferTexture2D(GL_FRAMEBUFFER,  // 1. fbo target: GL_FRAMEBUFFER
                          attachmentPoint, // 2. attachment point
@@ -76,18 +83,34 @@ void Framebuffer::attachColorBuffer(GLuint textureId, GLenum target,
                          0);              // 5. mipmap level: 0(base)
   CHECK_GL_ERRORS;
   CHECK_FRAMEBUFFER;
-
+  // unbind before leave
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Framebuffer::attachTexture(const Texture &texture, GLenum attachment_point) const {
+  texture.bind();
+  attachColorBuffer(texture.textureObjectId(), texture.target(), attachment_point);
+  texture.unbind();
+}
+
 void Framebuffer::enable() const {
-  glBindFramebuffer(GL_FRAMEBUFFER, framebufferObject);
-  glBindRenderbuffer(GL_RENDERBUFFER, renderBufferObject);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
+  glBindRenderbuffer(GL_RENDERBUFFER, render_buffer_object_);
 }
 
 void Framebuffer::disable() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+void Framebuffer::render(const std::function<void()> &render_function) const {
+  enable();
+  glViewport(0, 0, static_cast<GLsizei>(size_in_pixels_.width),
+             static_cast<GLsizei>(size_in_pixels_.height));
+  glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+  glClear(clear_bitfield_mask);
+  render_function();
+  disable();
 }
 
 } // circe namespace

@@ -25,28 +25,61 @@
 #ifndef CIRCE_IO_FRAMEBUFFER_H
 #define CIRCE_IO_FRAMEBUFFER_H
 
-#include <circe/gl/utils/open_gl.h>
-
+#include <circe/gl/texture/texture.h>
 #include <ponos/ponos.h>
 
 namespace circe::gl {
 
+/// Holds a opengl's framebuffer object
 class Framebuffer {
 public:
-  Framebuffer();
-  Framebuffer(uint w, uint h, uint d = 0);
-  virtual ~Framebuffer();
-
-  void set(uint w, uint h, uint d = 0);
-  void enable() const;
+  // ***********************************************************************
+  //                          STATIC METHODS
+  // ***********************************************************************
   static void disable();
+  // ***********************************************************************
+  //                           CONSTRUCTORS
+  // ***********************************************************************
+  Framebuffer();
+  /// \param resolution in pixels
+  explicit Framebuffer(const ponos::size2 &resolution);
+  /// \param resolution in pixels
+  explicit Framebuffer(const ponos::size3 &resolution);
+  virtual ~Framebuffer();
+  // ***********************************************************************
+  //                             SIZE
+  // ***********************************************************************
+  /// \param resolution in pixels
+  void resize(const ponos::size2 &resolution);
+  /// \param resolution in pixels
+  void resize(const ponos::size3 &resolution);
+  // ***********************************************************************
+  //                             METHODS
+  // ***********************************************************************
+  void enable() const;
+  ///
+  /// \param textureId
+  /// \param target
+  /// \param attachmentPoint
   void attachColorBuffer(GLuint textureId, GLenum target,
                          GLenum attachmentPoint = GL_COLOR_ATTACHMENT0) const;
-
+  ///
+  /// \param texture
+  /// \param attachment_point
+  void attachTexture(const Texture &texture, GLenum attachment_point = GL_COLOR_ATTACHMENT0) const;
+  // ***********************************************************************
+  //                             RENDERING
+  // ***********************************************************************
+  void render(const std::function<void()> &render_function) const;
+  // ***********************************************************************
+  //                             PUBLIC FIELDS
+  // ***********************************************************************
+  circe::Color clear_color{circe::Color::Black()};
+  GLbitfield clear_bitfield_mask{GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT};
 private:
-  uint width, height, depth;
-  GLuint framebufferObject{};
-  GLuint renderBufferObject{};
+  ponos::size3 size_in_pixels_;
+  GLuint framebuffer_object_{0};
+  GLuint render_buffer_object_{0};
 };
 
 } // circe namespace

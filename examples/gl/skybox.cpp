@@ -36,7 +36,7 @@ public:
     // setup skybox
     skybox = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}});
     model = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}}, circe::shape_options::normal);
-    // load cube map
+    // textures
     cubemap = circe::gl::Texture::fromFiles({
                                                 "/home/filipecn/Desktop/skybox/right.jpg",
                                                 "/home/filipecn/Desktop/skybox/left.jpg",
@@ -45,11 +45,16 @@ public:
                                                 "/home/filipecn/Desktop/skybox/front.jpg",
                                                 "/home/filipecn/Desktop/skybox/back.jpg",
                                             });
-    cubemap.setParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    cubemap.setParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    cubemap.setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    cubemap.setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    cubemap.setParameter(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    cubemap.bind();
+    circe::gl::Texture::View parameters(GL_TEXTURE_CUBE_MAP);
+    parameters[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
+    parameters[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
+    parameters[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
+    parameters[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
+    parameters[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_EDGE;
+    parameters.apply();
+    cubemap.unbind();
+
     if (!skybox.program.link(shaders_path, "skybox"))
       spdlog::error("Failed to load model shader: " + skybox.program.err);
     if (!model.program.link(shaders_path, "env_map"))
@@ -59,11 +64,11 @@ public:
   void render(circe::CameraInterface *camera) override {
     glEnable(GL_DEPTH_TEST);
     cubemap.bind(GL_TEXTURE0);
-
     model.program.use();
     model.program.setUniform("projection", camera->getProjectionTransform());
     model.program.setUniform("view", camera->getViewTransform());
     model.program.setUniform("model", model.transform);
+    model.program.setUniform("skybox", 0);
     model.program.setUniform("cameraPos", camera->getPosition());
     model.draw();
     glDepthFunc(GL_LEQUAL);

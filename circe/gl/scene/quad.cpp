@@ -81,7 +81,7 @@ void Quad::set(const ponos::point2 &pm, const ponos::point2 &pM) {
   rawMesh_.interleavedData[12] = pm.x;
   rawMesh_.interleavedData[13] = pM.y;
   //   glBindVertexArray(VAO);
-  //   this->vb->set(&this->rawMesh->interleavedData[0]);
+  //   this->vb->resize(&this->rawMesh->interleavedData[0]);
   //   glBindVertexArray(0);
 }
 

@@ -174,7 +174,7 @@ void loadOBJ(const std::string &filename, ponos::RawMesh *mesh) {
 //    if (equal_strings(vertexString, elem_name)) {
 //      /* create a vertex list to hold all the vertices */
 //      vlist = (Vertex **)malloc(sizeof(Vertex *) * num_elems);
-//      /* set up for getting vertex elements */
+//      /* resize up for getting vertex elements */
 //      ply_get_property(ply, elem_name, &vert_props[0]);
 //      ply_get_property(ply, elem_name, &vert_props[1]);
 //      ply_get_property(ply, elem_name, &vert_props[2]);
@@ -196,7 +196,7 @@ void loadOBJ(const std::string &filename, ponos::RawMesh *mesh) {
 //    if (equal_strings(faceString, elem_name)) {
 //      /* create a list to hold all the face elements */
 //      flist = (Face **)malloc(sizeof(Face *) * num_elems);
-//      /* set up for getting face elements */
+//      /* resize up for getting face elements */
 //      ply_get_property(ply, elem_name, &face_props[0]);
 //      ply_get_property(ply, elem_name, &face_props[1]);
 //      mesh->meshDescriptor.count = num_elems;

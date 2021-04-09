@@ -35,15 +35,15 @@ class DepthBufferView {
 public:
   DepthBufferView() {
     // setup texture image
-    circe::gl::TextureAttributes attributes;
+    circe::gl::Texture::Attributes attributes;
     attributes.target = GL_TEXTURE_2D;
-    attributes.width = 256;
-    attributes.height = 256;
+    attributes.size_in_texels = {256,256,1};
     attributes.type = GL_UNSIGNED_BYTE;
     attributes.internal_format = GL_RGBA8;
     attributes.format = GL_RGBA;
-    circe::gl::TextureParameters parameters;
-    image.set(attributes, parameters);
+    image.set(attributes);
+    image.bind();
+    circe::gl::Texture::View().apply();
     // setup shader
     if (!program.link(shaders_path, "depth_buffer"))
       spdlog::error(program.err);
@@ -60,7 +60,7 @@ public:
 
   circe::gl::SceneModel model;
   circe::gl::Program program;
-  circe::gl::RenderTexture image;
+  circe::gl::FramebufferTexture image;
 };
 
 /// Light + Shadow Map
@@ -96,17 +96,17 @@ public:
                                 circe::shape_options::normal);
     wall.transform = ponos::translate({-4, 0,0});
     xy_wall.transform = ponos::translate({0, -4,0});
-    // set floor material
+    // resize floor material
     floor_mtl.albedo = vec3_16(.3f, .0f, .0f);
     floor_mtl.ao = 1;
     floor_mtl.metallic = 0.25;
     floor_mtl.roughness = 0.55;
-    // set mesh material
+    // resize mesh material
     mesh_mtl.albedo = vec3_16(.5f, 0.f, 0.f);
     mesh_mtl.ao = 1;
     mesh_mtl.metallic = 0.45;
     mesh_mtl.roughness = 0.35;
-    // set ball material
+    // resize ball material
     ball_mtl.albedo = vec3_16(.0f, 0.f, 0.5f);
     ball_mtl.ao = 1;
     ball_mtl.metallic = 0.45;

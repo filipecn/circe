@@ -45,7 +45,7 @@ class GraphicsDisplay {
 public:
   ~GraphicsDisplay();
   static GraphicsDisplay &instance() { return instance_; }
-  /* set
+  /* resize
    * \param w **[in]** width (in pixels)
    * \param h **[in]** height (in pixels)
    * \param windowTitle **[in]**
@@ -113,7 +113,7 @@ public:
    * \param a **[in]** alpha
    * Assign the given color **(r, g, b, a)** to all pixels of the screen
    */
-  void clearScreen(float r, float g, float b, float a);
+  static void clearScreen(float r, float g, float b, float a);
   // events
   void processInput();
   // user input

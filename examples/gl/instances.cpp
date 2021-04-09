@@ -127,7 +127,7 @@ public:
   ponos::RawMeshSPtr instance_mesh;
   ShaderProgramPtr instance_shader;
   std::unique_ptr<SceneMesh> instance_scene_mesh;
-  // instance set
+  // instance resize
   InstanceSet instance_set;
   u32 tid, colid; // instance attribute pointers for transform and color
   // scene

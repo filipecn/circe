@@ -45,6 +45,8 @@ set(EXAMPLES
         hello_circe
         shadows
         skybox
+        texture_atlas
+
         volume_box
         volume_box_2d
         compute_shader

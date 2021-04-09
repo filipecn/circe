@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 // COMPILE-TIME OPTIONS FOR DEAR IMGUI
-// Runtime options (clipboard callbacks, enabling various features, etc.) can generally be set via the ImGuiIO structure.
+// Runtime options (clipboard callbacks, enabling various features, etc.) can generally be resize via the ImGuiIO structure.
 // You can use ImGui::SetAllocatorFunctions() before calling ImGui::CreateContext() to rewire memory allocation functions.
 //-----------------------------------------------------------------------------
 // A) You may edit imconfig.h (and not overwrite it when updating Dear ImGui, or maintain a patch/branch with your modifications to imconfig.h)

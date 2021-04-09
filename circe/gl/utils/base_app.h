@@ -36,7 +36,7 @@ namespace circe::gl {
 class BaseApp {
 public:
   template<typename... Args>
-  BaseApp(Args &&... args) {
+  explicit BaseApp(Args &&... args) {
     app_ = std::make_unique<circe::gl::SceneApp<>>(std::forward<Args>(args)...);
     app_->renderCallback = [&]() { this->nextFrame(); };
     app_->viewports[0].prepareRenderCallback = [&](const ViewportDisplay&vp) {

@@ -28,14 +28,13 @@
 
 #include "screen_quad.h"
 #include <circe/gl/graphics/post_effect.h>
-#include <circe/gl/texture/render_texture.h>
+#include <circe/gl/texture/framebuffer_texture.h>
 #include <circe/gl/scene/quad.h>
 
 namespace circe::gl {
 
 /// Renders to the display. Allows multiple post-effects. Post effects are
-/// applied
-/// on the same order they were added.
+/// applied on the same order they were added.
 class DisplayRenderer {
 public:
   DisplayRenderer(size_t w, size_t h);
@@ -43,6 +42,7 @@ public:
   void addEffect(PostEffect *e);
   /// \param f render callback of the original frame
   void process(const std::function<void()> &f);
+  ///
   void render();
   /// \param w width in pixels
   /// \param h height in pixels
@@ -59,9 +59,9 @@ private:
   bool needsResize_;
   size_t curBuffer_;
   std::vector<std::shared_ptr<PostEffect>> effects_;
-  TextureAttributes attributes_;
-  TextureParameters parameters_;
-  std::vector<std::shared_ptr<RenderTexture>> buffers_;
+
+  Texture framebuffer_textures_[2];
+  Framebuffer framebuffers_[2];
 };
 
 } // circe namespace

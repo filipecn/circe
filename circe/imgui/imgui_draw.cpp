@@ -360,7 +360,7 @@ ImDrawListSharedData::ImDrawListSharedData()
         const float a = ((float)i * 2 * IM_PI) / (float)IM_ARRAYSIZE(ArcFastVtx);
         ArcFastVtx[i] = ImVec2(ImCos(a), ImSin(a));
     }
-    memset(CircleSegmentCounts, 0, sizeof(CircleSegmentCounts)); // This will be set by SetCircleSegmentMaxError()
+    memset(CircleSegmentCounts, 0, sizeof(CircleSegmentCounts)); // This will be resize by SetCircleSegmentMaxError()
 }
 
 void ImDrawListSharedData::SetCircleSegmentMaxError(float max_error)
@@ -900,7 +900,7 @@ void ImDrawList::PathArcToFast(const ImVec2& center, float radius, int a_min_of_
     }
 
     // For legacy reason the PathArcToFast() always takes angles where 2*PI is represented by 12,
-    // but it is possible to set IM_DRAWLIST_ARCFAST_TESSELATION_MULTIPLIER to a higher value. This should compile to a no-op otherwise.
+    // but it is possible to resize IM_DRAWLIST_ARCFAST_TESSELATION_MULTIPLIER to a higher value. This should compile to a no-op otherwise.
 #if IM_DRAWLIST_ARCFAST_TESSELLATION_MULTIPLIER != 1
     a_min_of_12 *= IM_DRAWLIST_ARCFAST_TESSELLATION_MULTIPLIER;
     a_max_of_12 *= IM_DRAWLIST_ARCFAST_TESSELLATION_MULTIPLIER;
@@ -1920,7 +1920,7 @@ struct ImFontBuildSrcData
     const ImWchar*      SrcRanges;          // Ranges as requested by user (user is allowed to request too much, e.g. 0x0020..0xFFFF)
     int                 DstIndex;           // Index into atlas->Fonts[] and dst_tmp_array[]
     int                 GlyphsHighest;      // Highest requested codepoint
-    int                 GlyphsCount;        // Glyph count (excluding missing glyphs and glyphs already set by an earlier source font)
+    int                 GlyphsCount;        // Glyph count (excluding missing glyphs and glyphs already resize by an earlier source font)
     ImBitVector         GlyphsSet;          // Glyph bit map (random access, 1-bit per codepoint. This will be a maximum of 8KB)
     ImVector<int>       GlyphsList;         // Glyph codepoints list (flattened version of GlyphsMap)
 };
@@ -1974,7 +1974,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
         ImFontConfig& cfg = atlas->ConfigData[src_i];
         IM_ASSERT(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == atlas));
 
-        // Find index from cfg.DstFont (we allow the user to set cfg.DstFont. Also it makes casual debugging nicer than when storing indices)
+        // Find index from cfg.DstFont (we allow the user to resize cfg.DstFont. Also it makes casual debugging nicer than when storing indices)
         src_tmp.DstIndex = -1;
         for (int output_i = 0; output_i < atlas->Fonts.Size && src_tmp.DstIndex == -1; output_i++)
             if (cfg.DstFont == atlas->Fonts[output_i])
@@ -2016,7 +2016,7 @@ bool    ImFontAtlasBuildWithStbTruetype(ImFontAtlas* atlas)
                 if (!stbtt_FindGlyphIndex(&src_tmp.FontInfo, codepoint))    // It is actually in the font?
                     continue;
 
-                // Add to avail set/counters
+                // Add to avail resize/counters
                 src_tmp.GlyphsCount++;
                 dst_tmp.GlyphsCount++;
                 src_tmp.GlyphsSet.SetBit(codepoint);

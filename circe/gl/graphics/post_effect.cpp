@@ -34,7 +34,7 @@ PostEffect::PostEffect(ShaderProgram *s) {
     shader.reset(s);
 }
 
-void PostEffect::apply(const RenderTexture &in, RenderTexture &out) {
+void PostEffect::apply(const FramebufferTexture &in, FramebufferTexture &out) {
   in.bind(GL_TEXTURE0);
   shader->setUniform("tex", 0);
   out.render([&]() {
@@ -128,7 +128,7 @@ FXAA::FXAA() {
       ShaderManager::instance().loadFromTexts(vs, nullptr, fs)));
 }
 
-void FXAA::apply(const RenderTexture &in, RenderTexture &out) {
+void FXAA::apply(const FramebufferTexture &in, FramebufferTexture &out) {
   in.bind(GL_TEXTURE0);
   shader->setUniform("tex", 0);
   shader->setUniform("texSize", ponos::vec2(in.size()[0], in.size()[1]));
@@ -156,7 +156,7 @@ GammaCorrection::GammaCorrection(float g) : gamma(g) {
   shader->addUniform("gammaBound", 1);
 }
 
-void GammaCorrection::apply(const RenderTexture &in, RenderTexture &out) {
+void GammaCorrection::apply(const FramebufferTexture &in, FramebufferTexture &out) {
   in.bind(GL_TEXTURE0);
   shader->setUniform("tex", 0);
   shader->setUniform("gammaBound", gamma);

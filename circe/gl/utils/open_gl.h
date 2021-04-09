@@ -295,7 +295,7 @@ public:
 #define CHECK_GL_ERRORS                                                        \
   if (checkGL(__FILE__, __LINE__, __FUNCTION__))                               \
   raise(SIGSEGV);
-#define CHECK_FRAMEBUFFER checkFramebuffer()
+#define CHECK_FRAMEBUFFER checkFramebuffer(__FILE__, __LINE__, __FUNCTION__)
 #else
 #define CHECK_GL
 #define CHECK_GL_ERRORS
@@ -336,7 +336,7 @@ std::string glErrorToString(GLenum error, bool description = true);
  * Check framebuffer is COMPLETE
  * @return **false** if NO errors occured
  */
-bool checkFramebuffer();
+bool checkFramebuffer(const char *file, int line_number, const char *function = nullptr);
 
 /* query
  * @major **[out]** receives major version

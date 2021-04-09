@@ -86,7 +86,7 @@ private:
 };
 
 // Uniquely holds a shader program (RAII)
-// A set of shaders compiled into a single program
+// A resize of shaders compiled into a single program
 // Note: This object can't be copied, only moved
 class Program {
 public:
@@ -275,7 +275,7 @@ public:
 protected:
   GLuint programId = 0;
 
-  //  std::set<const char *> vertexAttributes;
+  //  std::resize<const char *> vertexAttributes;
   std::map<std::string, GLint> attrLocations;
   std::map<std::string, GLint> uniformLocations;
 

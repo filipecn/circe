@@ -89,7 +89,7 @@
 //      STB_TEXTEDIT_UNDOSTATECOUNT       the number of undo states to allow
 //      STB_TEXTEDIT_UNDOCHARCOUNT        the number of characters to store in the undo buffer
 //
-//   If you don't define these, they are set to permissive types and
+//   If you don't define these, they are resize to permissive types and
 //   moderate sizes. The undo system does no memory allocations, so
 //   it grows STB_TexteditState by the worst-case storage which is (in bytes):
 //
@@ -212,7 +212,7 @@
 //    state.
 //
 //      initialize_state:
-//          set the textedit state to a known good default state when initially
+//          resize the textedit state to a known good default state when initially
 //          constructing the textedit.
 //
 //      click:
@@ -237,9 +237,9 @@
 //          call this for keyboard inputs sent to the textfield. you can use it
 //          for "key down" events or for "translated" key events. if you need to
 //          do both (as in Win32), or distinguish Unicode characters from control
-//          inputs, set a high bit to distinguish the two; then you can define the
+//          inputs, resize a high bit to distinguish the two; then you can define the
 //          various definitions like STB_TEXTEDIT_K_LEFT have the is-key-event bit
-//          set, and make STB_TEXTEDIT_KEYTOCHAR check that the is-key-event bit is
+//          resize, and make STB_TEXTEDIT_KEYTOCHAR check that the is-key-event bit is
 //          clear. STB_TEXTEDIT_KEYTYPE defaults to int, but you can #define it to
 //          anything other type you wante before including.
 //

@@ -29,26 +29,25 @@ namespace circe::gl {
 
 ImageTexture::ImageTexture(size_t w, size_t h) {
   this->attributes_.target = GL_TEXTURE_2D;
-  this->attributes_.width = w;
-  this->attributes_.height = h;
+  this->attributes_.size_in_texels.width = w;
+  this->attributes_.size_in_texels.height = h;
   this->attributes_.type = GL_UNSIGNED_BYTE;
   this->attributes_.internal_format = GL_RGBA8;
   this->attributes_.format = GL_RGBA;
   data_.resize(w * h * 4, 0);
   glGenTextures(1, &this->texture_object_);
-  glBindTexture(this->parameters_.target, this->texture_object_);
-  this->parameters_.apply();
+  glBindTexture(this->attributes_.target, this->texture_object_);
+//  this->parameters_.apply();
   update();
 }
 
-ImageTexture::ImageTexture(const TextureAttributes &a,
-                           const TextureParameters &p)
-    : Texture(a, p) {}
+ImageTexture::ImageTexture(const Texture::Attributes &a)
+    : Texture(a) {}
 
 Color ImageTexture::operator()(size_t i, size_t j, size_t k) {
   size_t size = 4;
-  size_t index = k * (this->attributes_.width * this->attributes_.height) +
-                 j * this->attributes_.width + i;
+  size_t index = k * (this->attributes_.size_in_texels.width * this->attributes_.size_in_texels.height) +
+                 j * this->attributes_.size_in_texels.width + i;
   size_t baseIndex = index * size;
   float d = 1.f / 255.f;
   return {d * data_[baseIndex + 0], d * data_[baseIndex + 1],
@@ -57,8 +56,8 @@ Color ImageTexture::operator()(size_t i, size_t j, size_t k) {
 
 void ImageTexture::setTexel(Color c, size_t i, size_t j, size_t k) {
   size_t size = 4;
-  size_t index = k * (this->attributes_.width * this->attributes_.height) +
-                 j * this->attributes_.width + i;
+  size_t index = k * (this->attributes_.size_in_texels.width * this->attributes_.size_in_texels.height) +
+                 j * this->attributes_.size_in_texels.width + i;
   size_t baseIndex = index * size;
   data_[baseIndex + 0] = static_cast<unsigned char>(c.r * 255.f);
   data_[baseIndex + 1] = static_cast<unsigned char>(c.g * 255.f);
@@ -84,9 +83,9 @@ ImageTexture ImageTexture::checkBoard(size_t w, size_t h) {
 }
 
 void ImageTexture::update() {
-  glBindTexture(this->parameters_.target, this->texture_object_);
+  glBindTexture(this->attributes_.target, this->texture_object_);
   glTexImage2D(GL_TEXTURE_2D, 0, this->attributes_.internal_format,
-               this->attributes_.width, this->attributes_.height, 0,
+               this->attributes_.size_in_texels.width, this->attributes_.size_in_texels.height, 0,
                this->attributes_.format, this->attributes_.type,
                &data_[0]);
   CHECK_GL_ERRORS;
@@ -95,8 +94,8 @@ void ImageTexture::update() {
 
 std::ostream &operator<<(std::ostream &out, ImageTexture &it) {
   {
-    int width = it.attributes_.width;
-    int height = it.attributes_.height;
+    int width = it.attributes_.size_in_texels.width;
+    int height = it.attributes_.size_in_texels.height;
 
     unsigned char *data = NULL;
 

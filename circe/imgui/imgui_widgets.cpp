@@ -304,7 +304,7 @@ void ImGui::TextWrapped(const char* fmt, ...)
 void ImGui::TextWrappedV(const char* fmt, va_list args)
 {
     ImGuiWindow* window = GetCurrentWindow();
-    bool need_backup = (window->DC.TextWrapPos < 0.0f);  // Keep existing wrap position if one is already set
+    bool need_backup = (window->DC.TextWrapPos < 0.0f);  // Keep existing wrap position if one is already resize
     if (need_backup)
         PushTextWrapPos(0.0f);
     TextV(fmt, args);
@@ -445,7 +445,7 @@ void ImGui::BulletTextV(const char* fmt, va_list args)
 // - PressedOnDragDropHold can generally be associated with any flag.
 // - PressedOnDoubleClick can be associated by PressedOnClickRelease/PressedOnRelease, in which case the second release event won't be reported.
 //------------------------------------------------------------------------------------------------------------------------------------------------
-// The behavior of the return-value changes when ImGuiButtonFlags_Repeat is set:
+// The behavior of the return-value changes when ImGuiButtonFlags_Repeat is resize:
 //                                         Repeat+                  Repeat+           Repeat+             Repeat+
 //                                         PressedOnClickRelease    PressedOnClick    PressedOnRelease    PressedOnDoubleClick
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -570,7 +570,7 @@ bool ImGui::ButtonBehavior(const ImRect& bb, ImGuiID id, bool* out_hovered, bool
     }
 
     // Gamepad/Keyboard navigation
-    // We report navigated item as hovered but we don't set g.HoveredId to not interfere with mouse.
+    // We report navigated item as hovered but we don't resize g.HoveredId to not interfere with mouse.
     if (g.NavId == id && !g.NavDisableHighlight && g.NavDisableMouseHover && (g.ActiveId == 0 || g.ActiveId == id || g.ActiveId == window->MoveId))
         if (!(flags & ImGuiButtonFlags_NoHoveredOnFocus))
             hovered = true;
@@ -967,7 +967,7 @@ void ImGui::Image(ImTextureID user_texture_id, const ImVec2& size, const ImVec2&
 
 // frame_padding < 0: uses FramePadding from style (default)
 // frame_padding = 0: no framing
-// frame_padding > 0: set framing size
+// frame_padding > 0: resize framing size
 // The color used are the button colors.
 bool ImGui::ImageButton(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
 {
@@ -1388,7 +1388,7 @@ static int IMGUI_CDECL ShrinkWidthItemComparer(const void* lhs, const void* rhs)
     return (b->Index - a->Index);
 }
 
-// Shrink excess width from a set of item, by removing width from the larger items first.
+// Shrink excess width from a resize of item, by removing width from the larger items first.
 void ImGui::ShrinkWidths(ImGuiShrinkWidthItem* items, int count, float width_excess)
 {
     if (count == 1)
@@ -3465,7 +3465,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     const bool is_undoable = (flags & ImGuiInputTextFlags_NoUndoRedo) == 0;
     const bool is_resizable = (flags & ImGuiInputTextFlags_CallbackResize) != 0;
     if (is_resizable)
-        IM_ASSERT(callback != NULL); // Must provide a callback if you set the ImGuiInputTextFlags_CallbackResize flag!
+        IM_ASSERT(callback != NULL); // Must provide a callback if you resize the ImGuiInputTextFlags_CallbackResize flag!
 
     if (is_multiline) // Open group before calling GetID() because groups tracks id created within their scope,
         BeginGroup();
@@ -3596,7 +3596,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             g.ActiveIdUsingKeyInputMask |= ((ImU64)1 << ImGuiKey_Tab);
     }
 
-    // We have an edge case if ActiveId was set through another widget (e.g. widget being swapped), clear id immediately (don't wait until the end of the function)
+    // We have an edge case if ActiveId was resize through another widget (e.g. widget being swapped), clear id immediately (don't wait until the end of the function)
     if (g.ActiveId == id && state == NULL)
         ClearActiveID();
 
@@ -4245,7 +4245,7 @@ bool ImGui::ColorEdit3(const char* label, float col[3], ImGuiColorEditFlags flag
 }
 
 // Edit colors components (each component in 0.0f..1.0f range).
-// See enum ImGuiColorEditFlags_ for available options. e.g. Only access 3 floats if ImGuiColorEditFlags_NoAlpha flag is set.
+// See enum ImGuiColorEditFlags_ for available options. e.g. Only access 3 floats if ImGuiColorEditFlags_NoAlpha flag is resize.
 // With typical options: Left-click on colored square to open color picker. Right-click to open option menu. CTRL-Click over input fields to edit them and TAB to go to next item.
 bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flags)
 {
@@ -4503,7 +4503,7 @@ static void RenderArrowsForVerticalBar(ImDrawList* draw_list, ImVec2 pos, ImVec2
     ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x,     pos.y), half_sz,                              ImGuiDir_Left,  IM_COL32(255,255,255,alpha8));
 }
 
-// Note: ColorPicker4() only accesses 3 floats if ImGuiColorEditFlags_NoAlpha flag is set.
+// Note: ColorPicker4() only accesses 3 floats if ImGuiColorEditFlags_NoAlpha flag is resize.
 // (In C++ the 'float col[4]' notation for a function argument is equivalent to 'float* col', we only specify a size to facilitate understanding of the code.)
 // FIXME: we adjust the big color square height based on item width, which may cause a flickering feedback loop (if automatic height makes a vertical scrollbar appears, affecting automatic width..)
 // FIXME: this is trying to be aware of style.Alpha but not fully correct. Also, the color wheel will have overlapping glitches with (style.Alpha < 1.0)
@@ -4885,7 +4885,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags fl
 // A little colored square. Return true when clicked.
 // FIXME: May want to display/ignore the alpha component in the color display? Yet show it in the tooltip.
 // 'desc_id' is not called 'label' because we don't display it next to the button, but only in the tooltip.
-// Note that 'col' may be encoded in HSV if ImGuiColorEditFlags_InputHSV is set.
+// Note that 'col' may be encoded in HSV if ImGuiColorEditFlags_InputHSV is resize.
 bool ImGui::ColorButton(const char* desc_id, const ImVec4& col, ImGuiColorEditFlags flags, ImVec2 size)
 {
     ImGuiWindow* window = GetCurrentWindow();
@@ -4988,7 +4988,7 @@ void ImGui::SetColorEditOptions(ImGuiColorEditFlags flags)
     g.ColorEditOptions = flags;
 }
 
-// Note: only access 3 floats if ImGuiColorEditFlags_NoAlpha flag is set.
+// Note: only access 3 floats if ImGuiColorEditFlags_NoAlpha flag is resize.
 void ImGui::ColorTooltip(const char* text, const float* col, ImGuiColorEditFlags flags)
 {
     ImGuiContext& g = *GImGui;
@@ -6082,7 +6082,7 @@ bool ImGui::BeginMenuBar()
     BeginGroup(); // Backup position on layer 0 // FIXME: Misleading to use a group for that backup/restore
     PushID("##menubar");
 
-    // We don't clip with current window clipping rectangle as it is already set to the area below. However we clip with window full rect.
+    // We don't clip with current window clipping rectangle as it is already resize to the area below. However we clip with window full rect.
     // We remove 1 worth of rounding to Max.x to that text in long menus and small windows don't tend to display over the lower-right rounded area, which looks particularly glitchy.
     ImRect bar_rect = window->MenuBarRect();
     ImRect clip_rect(IM_ROUND(bar_rect.Min.x + window->WindowBorderSize), IM_ROUND(bar_rect.Min.y + window->WindowBorderSize), IM_ROUND(ImMax(bar_rect.Min.x, bar_rect.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))), IM_ROUND(bar_rect.Max.y));
@@ -6139,7 +6139,7 @@ void ImGui::EndMenuBar()
     window->DC.MenuBarAppending = false;
 }
 
-// For the main menu bar, which cannot be moved, we honor g.Style.DisplaySafeAreaPadding to ensure text can be visible on a TV set.
+// For the main menu bar, which cannot be moved, we honor g.Style.DisplaySafeAreaPadding to ensure text can be visible on a TV resize.
 bool ImGui::BeginMainMenuBar()
 {
     ImGuiContext& g = *GImGui;
@@ -6209,7 +6209,7 @@ bool ImGui::BeginMenu(const char* label, bool enabled)
     bool menuset_is_open = !(window->Flags & ImGuiWindowFlags_Popup) && (g.OpenPopupStack.Size > g.BeginPopupStack.Size && g.OpenPopupStack[g.BeginPopupStack.Size].OpenParentId == window->IDStack.back());
     ImGuiWindow* backed_nav_window = g.NavWindow;
     if (menuset_is_open)
-        g.NavWindow = window;  // Odd hack to allow hovering across menus of a same menu-set (otherwise we wouldn't be able to hover parent)
+        g.NavWindow = window;  // Odd hack to allow hovering across menus of a same menu-resize (otherwise we wouldn't be able to hover parent)
 
     // The reference position stored in popup_pos will be used by Begin() to find a suitable position for the child menu,
     // However the final position is going to be different! It is choosen by FindBestWindowPosForPopup().
@@ -6777,7 +6777,7 @@ ImGuiTabItem* ImGui::TabBarFindTabByID(ImGuiTabBar* tab_bar, ImGuiID tab_id)
     return NULL;
 }
 
-// The *TabId fields be already set by the docking system _before_ the actual TabItem was created, so we clear them regardless.
+// The *TabId fields be already resize by the docking system _before_ the actual TabItem was created, so we clear them regardless.
 void ImGui::TabBarRemoveTab(ImGuiTabBar* tab_bar, ImGuiID tab_id)
 {
     if (ImGuiTabItem* tab = TabBarFindTabByID(tab_bar, tab_id))
@@ -6793,7 +6793,7 @@ void ImGui::TabBarCloseTab(ImGuiTabBar* tab_bar, ImGuiTabItem* tab)
     if ((tab_bar->VisibleTabId == tab->ID) && !(tab->Flags & ImGuiTabItemFlags_UnsavedDocument))
     {
         // This will remove a frame of lag for selecting another tab on closure.
-        // However we don't run it in the case where the 'Unsaved' flag is set, so user gets a chance to fully undo the closure
+        // However we don't run it in the case where the 'Unsaved' flag is resize, so user gets a chance to fully undo the closure
         tab->LastFrameVisible = -1;
         tab_bar->SelectedTabId = tab_bar->NextSelectedTabId = 0;
     }
@@ -7473,7 +7473,7 @@ ImGuiID ImGui::GetColumnsID(const char* str_id, int columns_count)
 {
     ImGuiWindow* window = GetCurrentWindow();
 
-    // Differentiate column ID with an arbitrary prefix for cases where users name their columns set the same as another widget.
+    // Differentiate column ID with an arbitrary prefix for cases where users name their columns resize the same as another widget.
     // In addition, when an identifier isn't explicitly provided we include the number of columns in the hash to make it uniquer.
     PushID(0x11223347 + (str_id ? 0 : columns_count));
     ImGuiID id = window->GetID(str_id ? str_id : "columns");
@@ -7490,7 +7490,7 @@ void ImGui::BeginColumns(const char* str_id, int columns_count, ImGuiColumnsFlag
     IM_ASSERT(columns_count >= 1 && columns_count <= 64);   // Maximum 64 columns
     IM_ASSERT(window->DC.CurrentColumns == NULL);           // Nested columns are currently not supported
 
-    // Acquire storage for the columns set
+    // Acquire storage for the columns resize
     ImGuiID id = GetColumnsID(str_id, columns_count);
     ImGuiColumns* columns = FindOrCreateColumns(window, id);
     IM_ASSERT(columns->ID == id);

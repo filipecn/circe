@@ -55,15 +55,15 @@ void FontAtlas::loadFont(const char *path) {
 
   stbtt_PackEnd(&context);
 
-  TextureParameters textureParameters;
-  TextureAttributes textureAttributes;
+  Texture::View textureParameters;
+  Texture::Attributes textureAttributes;
   textureAttributes.target = GL_TEXTURE_2D;
-  textureAttributes.width = font.atlasWidth;
-  textureAttributes.height = font.atlasHeight;
+  textureAttributes.size_in_texels.width = font.atlasWidth;
+  textureAttributes.size_in_texels.height = font.atlasHeight;
   textureAttributes.type = GL_UNSIGNED_BYTE;
   textureAttributes.internal_format = GL_RGB;
   textureAttributes.format = GL_RED;
-  texture.set(textureAttributes, textureParameters);
+  texture.set(textureAttributes);//, textureParameters);
   texture.setTexels(atlasData.get());
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glGenerateMipmap(GL_TEXTURE_2D);

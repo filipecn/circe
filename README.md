@@ -6,7 +6,7 @@ Its users will spend time writing all the basic lines of code that appear in mos
 In principle, the framework should allow experienced users to control advanced features of OpenGL, 
 while allowing less experienced users use it as well.
 
-The basic idea is that you can set up a graphical application with just few lines of code. 
+The basic idea is that you can resize up a graphical application with just few lines of code. 
 Write only what is specific to your solution, leave the rest to Circe.
 
 

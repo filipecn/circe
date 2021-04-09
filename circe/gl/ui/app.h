@@ -63,7 +63,7 @@ public:
   size_t addViewport2D(uint x, uint y, uint w, uint h);
   void init();
   int run();
-  void exit();
+  static void exit();
   template <typename T = UserCamera> T *getCamera(size_t i = 0) {
     return static_cast<T *>(viewports[i].camera.get());
   }

@@ -26,7 +26,7 @@
 #define CIRCE_POST_EFFECT_H
 
 #include <circe/gl/graphics/shader.h>
-#include <circe/gl/texture/render_texture.h>
+#include <circe/gl/texture/framebuffer_texture.h>
 
 namespace circe::gl {
 
@@ -38,7 +38,7 @@ public:
   /// Apply effect to texture
   /// \param in procedural texture containing input image
   /// \param out result of effect applied
-  virtual void apply(const RenderTexture &in, RenderTexture &out);
+  virtual void apply(const FramebufferTexture &in, FramebufferTexture &out);
 
 protected:
   std::shared_ptr<ShaderProgram> shader;
@@ -50,14 +50,14 @@ protected:
 class FXAA : public PostEffect {
 public:
   FXAA();
-  void apply(const RenderTexture &in, RenderTexture &out) override;
+  void apply(const FramebufferTexture &in, FramebufferTexture &out) override;
 };
 
 /// Applies gamma correction to image following the equation: color^(1 / gamma)
 class GammaCorrection : public PostEffect {
 public:
   explicit GammaCorrection(float g = 2.f);
-  void apply(const RenderTexture &in, RenderTexture &out) override;
+  void apply(const FramebufferTexture &in, FramebufferTexture &out) override;
   float gamma;
 };
 

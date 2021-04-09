@@ -31,15 +31,15 @@ namespace circe::gl {
 //
 //SceneModel::~SceneModel() { clear(); }
 //
-//bool SceneModel::set(const ponos::RawMesh &raw_mesh) {
+//bool SceneModel::resize(const ponos::RawMesh &raw_mesh) {
 //  clear();
 //  setup_buffer_data_from_mesh(raw_mesh, vertex_data_, index_data_);
 //  BufferDescriptor ver, ind;
 //  create_buffer_description_from_mesh(raw_mesh, ver, ind);
 //  glGenVertexArrays(1, &VAO);
 //  glBindVertexArray(VAO);
-//  vertex_buffer_.set(&vertex_data_[0], ver);
-//  index_buffer_.set(&index_data_[0], ind);
+//  vertex_buffer_.resize(&vertex_data_[0], ver);
+//  index_buffer_.resize(&index_data_[0], ind);
 //  glBindBuffer(GL_ARRAY_BUFFER, 0);
 //  vertex_buffer_.bind();
 //  index_buffer_.bind();
@@ -94,8 +94,8 @@ bool SceneMesh::set(const ponos::RawMesh *rm) {
   glBindVertexArray(VAO);
   vertexBuffer_.set(&vertexData_[0], ver);
   indexBuffer_.set(&indexData_[0], ind);
-  // vertexBuffer_.set(&mesh_->interleavedData[0], ver);
-  // indexBuffer_.set(&mesh_->positionsIndices[0], ind);
+  // vertexBuffer_.resize(&mesh_->interleavedData[0], ver);
+  // indexBuffer_.resize(&mesh_->positionsIndices[0], ind);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
   CHECK_GL_ERRORS;

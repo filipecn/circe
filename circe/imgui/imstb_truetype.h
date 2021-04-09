@@ -194,14 +194,14 @@
 //    bounding box for all characters. SF*-y0 will be the distance in pixels
 //    that the worst-case character could extend above the baseline, so if
 //    you want the top edge of characters to appear at the top of the
-//    screen where y=0, then you would set the baseline to SF*-y0.
+//    screen where y=0, then you would resize the baseline to SF*-y0.
 //
 //  Current point:
 //    Set the current point where the first character will appear. The
 //    first character could extend left of the current point; this is font
 //    dependent. You can either choose a current point that is the leftmost
 //    point and hope, or add some padding, or check the bounding box or
-//    left-side-bearing of the first character to be displayed and set
+//    left-side-bearing of the first character to be displayed and resize
 //    the current point based on that.
 //
 //  Displaying a character:
@@ -624,7 +624,7 @@ typedef struct
    int *array_of_unicode_codepoints;       // if non-zero, then this is an array of unicode codepoints
    int num_chars;
    stbtt_packedchar *chardata_for_range; // output
-   unsigned char h_oversample, v_oversample; // don't set these, they're used internally
+   unsigned char h_oversample, v_oversample; // don't resize these, they're used internally
 } stbtt_pack_range;
 
 STBTT_DEF int  stbtt_PackFontRanges(stbtt_pack_context *spc, const unsigned char *fontdata, int font_index, stbtt_pack_range *ranges, int num_ranges);
@@ -646,7 +646,7 @@ STBTT_DEF void stbtt_PackSetOversampling(stbtt_pack_context *spc, unsigned int h
 // oversampled textures with bilinear filtering. Look at the readme in
 // stb/tests/oversample for information about oversampled fonts
 //
-// To use with PackFontRangesGather etc., you must set it before calls
+// To use with PackFontRangesGather etc., you must resize it before calls
 // call to PackFontRangesGatherRects.
 
 STBTT_DEF void stbtt_PackSetSkipMissingCodepoints(stbtt_pack_context *spc, int skip);
@@ -1005,7 +1005,7 @@ STBTT_DEF int stbtt_FindMatchingFont(const unsigned char *fontdata, const char *
 // returns the offset (not index) of the font that matches, or -1 if none
 //   if you use STBTT_MACSTYLE_DONTCARE, use a font name like "Arial Bold".
 //   if you use any other flag, use a font name like "Arial"; this checks
-//     the 'macStyle' header field; i don't know if fonts set this consistently
+//     the 'macStyle' header field; i don't know if fonts resize this consistently
 #define STBTT_MACSTYLE_DONTCARE     0
 #define STBTT_MACSTYLE_BOLD         1
 #define STBTT_MACSTYLE_ITALIC       2
@@ -2293,7 +2293,7 @@ static int  stbtt__GetGlyphKernInfoAdvance(const stbtt_fontinfo *info, int glyph
       return 0;
    if (ttUSHORT(data+2) < 1) // number of tables, need at least 1
       return 0;
-   if (ttUSHORT(data+8) != 1) // horizontal flag must be set in format
+   if (ttUSHORT(data+8) != 1) // horizontal flag must be resize in format
       return 0;
 
    l = 0;
@@ -4501,7 +4501,7 @@ STBTT_DEF unsigned char * stbtt_GetGlyphSDF(const stbtt_fontinfo *info, float sc
                      float dx = x1-x0, dy = y1-y0;
                      float px = x0-sx, py = y0-sy;
                      // minimize (px+t*dx)^2 + (py+t*dy)^2 = px*px + 2*px*dx*t + t^2*dx*dx + py*py + 2*py*dy*t + t^2*dy*dy
-                     // derivative: 2*px*dx + 2*py*dy + (2*dx*dx+2*dy*dy)*t, set to 0 and solve
+                     // derivative: 2*px*dx + 2*py*dy + (2*dx*dx+2*dy*dy)*t, resize to 0 and solve
                      float t = -(px*dx + py*dy) / (dx*dx + dy*dy);
                      if (t >= 0.0f && t <= 1.0f)
                         min_dist = dist;

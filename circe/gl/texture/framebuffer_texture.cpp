@@ -22,38 +22,38 @@
  *
  */
 
-#include <circe/gl/texture/render_texture.h>
+#include <circe/gl/texture/framebuffer_texture.h>
 #include <circe/gl/utils/open_gl.h>
 
 namespace circe::gl {
 
-RenderTexture::RenderTexture(const TextureAttributes &a,
-                             const TextureParameters &p)
-    : Texture(a, p) {
-  framebuffer.reset(
-      new Framebuffer(attributes_.width, attributes_.height, attributes_.depth));
-  framebuffer->attachColorBuffer(texture_object_, attributes_.target);
-  framebuffer->disable();
+FramebufferTexture::FramebufferTexture() : Texture() {}
+
+FramebufferTexture::FramebufferTexture(const Texture::Attributes &a)
+    : Texture(a) {
+  framebuffer_.resize(attributes_.size_in_texels);
+  framebuffer_.attachColorBuffer(texture_object_, attributes_.target);
+  Framebuffer::disable();
 }
 
-RenderTexture::~RenderTexture() {
+FramebufferTexture::~FramebufferTexture() {
   if (texture_object_)
     glDeleteTextures(1, &texture_object_);
 }
 
-void RenderTexture::render(const std::function<void()>& f) {
-  glViewport(0, 0, static_cast<GLsizei>(attributes_.width),
-             static_cast<GLsizei>(attributes_.height));
-  framebuffer->enable();
+void FramebufferTexture::render(const std::function<void()> &f) {
+  framebuffer_.enable();
+  glViewport(0, 0, static_cast<GLsizei>(attributes_.size_in_texels.width),
+             static_cast<GLsizei>(attributes_.size_in_texels.height));
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   f();
-  framebuffer->disable();
+  Framebuffer::disable();
 }
 
-std::ostream &operator<<(std::ostream &out, RenderTexture &pt) {
-  int width = pt.attributes_.width;
-  int height = pt.attributes_.height;
+std::ostream &operator<<(std::ostream &out, FramebufferTexture &pt) {
+  int width = pt.attributes_.size_in_texels.width;
+  int height = pt.attributes_.size_in_texels.height;
 
   auto *data = new unsigned char[(int) (width * height)];
 
@@ -81,12 +81,11 @@ std::ostream &operator<<(std::ostream &out, RenderTexture &pt) {
   return out;
 }
 
-void RenderTexture::set(const TextureAttributes &a, const TextureParameters &p) {
-  Texture::set(a, p);
-  framebuffer.reset(
-      new Framebuffer(attributes_.width, attributes_.height, attributes_.depth));
-  framebuffer->attachColorBuffer(texture_object_, attributes_.target);
-  framebuffer->disable();
+void FramebufferTexture::set(const Texture::Attributes &a) {
+  Texture::set(a);
+  framebuffer_.resize(attributes_.size_in_texels);
+  framebuffer_.attachColorBuffer(texture_object_, attributes_.target);
+  Framebuffer::disable();
 }
 
 } // namespace circe

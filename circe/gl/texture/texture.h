@@ -25,23 +25,85 @@
 #ifndef CIRCE_IO_TEXTURE_H
 #define CIRCE_IO_TEXTURE_H
 
-#include <circe/gl/texture/texture_parameters.h>
+#include <circe/gl/utils/open_gl.h>
 
 namespace circe::gl {
 
 /// Holds an OpenGL texture object
-/// Texture objects are created and deleted upon initialization and destruction,
+/// \note Texture objects are created and deleted upon initialization and destruction,
 /// respectively. So when using a copy constructor or operator, a full copy of
 /// the texture, including texels, is made.
 class Texture {
 public:
+/** \brief specify a texture image
+ *
+ *  glTexImage3D(GL_TEXTURE_3D, 0, attributes.internalFormat, attributes.width,
+ *  attributes.height, attributes.depth, 0, attributes.format, attributes.type,
+ *  attributes.data);
+ *  glTexImage2D(GL_TEXTURE_2D, 0, attributes.internalFormat, attributes.width,
+ *  attributes.height, 0, attributes.format, attributes.type, attributes.data);
+ */
+  struct Attributes {
+    ponos::size3 size_in_texels;
+    GLint internal_format = 0; //!< the color components in the texture (ex: GL_RGBA8)
+    GLenum format = 0; //!< format of pixel data (ex: GL_RGBA, GL_RED_INTEGER, ...)
+    GLenum type = 0; //!< data type of pixel data (ex: GL_UNSIGNED_BYTE, GL_FLOAT)
+    GLenum target = 0;      //!< target texture (ex: GL_TEXTURE_3D)
+  };
+  // ***********************************************************************
+  //                          TEXTURE ATLAS
+  // ***********************************************************************
+  /// A Texture Atlas arranges sub-regions of the texture. It can be very
+  /// useful to store animation sprites, shadow maps and other resources
+  /// that are usually accessed in the same draw loop.
+  class Atlas {
+  public:
+    struct Region {
+      ponos::size2 offset;
+      ponos::size2 size;
+    };
+    Atlas();
+    ~Atlas();
+    // ***********************************************************************
+    //                              SIZE
+    // ***********************************************************************
+    [[nodiscard]] const ponos::size2 &size_in_texels() const;
+    // ***********************************************************************
+    //                              REGIONS
+    // ***********************************************************************
+    size_t push(const Region &region);
+    const Region &operator[](size_t i) const;
+    Region &operator[](size_t i);
+    [[nodiscard]] const ponos::bbox2 &uv(size_t i) const;
+  private:
+    void updateUVs();
+    std::vector<Region> regions_;
+    std::vector<ponos::bbox2> uvs_;
+    ponos::size2 size_in_texels_;
+  };
   // ***********************************************************************
   //                          TEXTURE VIEW
   // ***********************************************************************
   class View {
   public:
-    View();
+    /// \note Initializes with GL_CLAMP_TO_EDGE wrap mode
+    /// \param target [= GL_TEXTURE_2D]
+    explicit View(GLuint target = GL_TEXTURE_2D);
+    /// \note Initializes with GL_CLAMP_TO_BORDER wrap mode
+    /// \param border_color
+    /// \param target [= GL_TEXTURE_2D]
+    explicit View(circe::Color border_color, GLuint target = GL_TEXTURE_2D);
+    /// \param k
+    /// \return
+    GLuint &operator[](const GLuint &k) { return parameters_[k]; }
+    /// Applies texture parameters to current bound texture object
+    void apply() const;
+
   private:
+    std::map<GLuint, GLuint> parameters_;
+    GLenum target_{GL_TEXTURE_2D};
+    bool using_border_{false};
+    circe::Color border_color_;
   };
   // ***********************************************************************
   //                          STATIC METHODS
@@ -64,7 +126,7 @@ public:
   /// \param a texture attributes
   /// \param p texture parameters
   /// \param data
-  Texture(const TextureAttributes &a, const TextureParameters &p, const void *data = nullptr);
+  explicit Texture(const Attributes &a, const void *data = nullptr);
   Texture(const Texture &other);
   Texture(Texture &&other) noexcept;
   virtual ~Texture();
@@ -76,6 +138,8 @@ public:
   // ***********************************************************************
   //                           METHODS
   // ***********************************************************************
+  void bind() const;
+  void unbind() const;
   /// Binds texture
   /// \param t texture unit (ex: GL_TEXTURE0)
   virtual void bind(GLenum t) const;
@@ -86,32 +150,28 @@ public:
   ///
   void generateMipmap() const;
   // ***********************************************************************
-  //                           GETTERS
+  //                           DATA
   // ***********************************************************************
   /// retrieve texture pixel data
   /// \return list of pixels by row major
   [[nodiscard]] std::vector<unsigned char> texels() const;
+  // ***********************************************************************
+  //                           METRICS
+  // ***********************************************************************
   /// \return texture resolution in texels
   [[nodiscard]] ponos::size3 size() const;
   /// \return opengl object associated to this texture
   [[nodiscard]] GLuint textureObjectId() const;
   /// \return
+  // ***********************************************************************
+  //                           ATTRIBUTES
+  // ***********************************************************************
   [[nodiscard]] GLenum target() const;
-  /// \return
-  [[nodiscard]] const TextureAttributes &attributes() const;
-  /// \return
-  [[nodiscard]] const TextureParameters &parameters() const;
-  // ***********************************************************************
-  //                           SETTERS
-  // ***********************************************************************
   /// Textures can be copied, only moved
   /// \param a texture attributes
   /// \param p texture parameters
   /// \param data
-  virtual void set(const TextureAttributes &a, const TextureParameters &p);
-  /// \param k
-  /// \param value
-  void setParameter(GLuint k, GLuint value);
+  virtual void set(const Attributes &a);
   /// \param texels texture content
   void setTexels(const void *texels) const;
   /// \param new_size
@@ -130,10 +190,8 @@ public:
   friend std::ostream &operator<<(std::ostream &out, Texture &pt);
 
 protected:
-  GLuint texture_object_{};
-  mutable bool parameters_changed_{true};
-  TextureAttributes attributes_;
-  TextureParameters parameters_;
+  Attributes attributes_;
+  GLuint texture_object_{0};  //!< open gl's texture handle identifier
 };
 
 } // namespace circe
