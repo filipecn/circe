@@ -75,6 +75,8 @@ void Framebuffer::attachColorBuffer(GLuint textureId, GLenum target,
                                     GLenum attachmentPoint) const {
   // bind framebuffer
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
+  CHECK_GL_ERRORS;
+  CHECK_FRAMEBUFFER;
   // attach the texture to FBO color attachment point
   glFramebufferTexture2D(GL_FRAMEBUFFER,  // 1. fbo target: GL_FRAMEBUFFER
                          attachmentPoint, // 2. attachment point
@@ -111,6 +113,24 @@ void Framebuffer::render(const std::function<void()> &render_function) const {
   glClear(clear_bitfield_mask);
   render_function();
   disable();
+}
+
+void Framebuffer::setOutputBuffers(const std::vector<GLenum> &buffers) const {
+  enable();
+  CHECK_GL(glDrawBuffers(buffers.size(), buffers.data()));
+  disable();
+}
+
+void Framebuffer::blit(GLbitfield mask, GLenum filter) const {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, render_buffer_object_);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  CHECK_GL(glBlitFramebuffer(0, 0, size_in_pixels_.width, size_in_pixels_.height,
+                             0, 0, size_in_pixels_.width, size_in_pixels_.height, mask, filter));
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+ponos::size2 Framebuffer::size() const {
+  return ponos::size2(size_in_pixels_.width, size_in_pixels_.height);
 }
 
 } // circe namespace

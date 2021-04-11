@@ -321,6 +321,7 @@ std::vector<unsigned char> Texture::texels() const {
 
 void Texture::resize(const ponos::size3 &new_size) {
   attributes_.size_in_texels = new_size;
+  setTexels(nullptr);
 }
 
 void Texture::setInternalFormat(GLint internal_format) {

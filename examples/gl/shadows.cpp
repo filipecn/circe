@@ -28,41 +28,6 @@
 #include <circe/circe.h>
 #include "common.h"
 
-ponos::Path assets_path(std::string(ASSETS_PATH));
-ponos::Path shaders_path(std::string(SHADERS_PATH));
-
-class DepthBufferView {
-public:
-  DepthBufferView() {
-    // setup texture image
-    circe::gl::Texture::Attributes attributes;
-    attributes.target = GL_TEXTURE_2D;
-    attributes.size_in_texels = {256,256,1};
-    attributes.type = GL_UNSIGNED_BYTE;
-    attributes.internal_format = GL_RGBA8;
-    attributes.format = GL_RGBA;
-    image.set(attributes);
-    image.bind();
-    circe::gl::Texture::View().apply();
-    // setup shader
-    if (!program.link(shaders_path, "depth_buffer"))
-      spdlog::error(program.err);
-    // setup screen quad
-    model = circe::Shapes::box({{-1, -1}, {1, 1}}, circe::shape_options::uv);
-  }
-  void update() {
-    image.render([&]() {
-      program.use();
-      program.setUniform("depthMap", 0);
-      model.draw();
-    });
-  }
-
-  circe::gl::SceneModel model;
-  circe::gl::Program program;
-  circe::gl::FramebufferTexture image;
-};
-
 /// Light + Shadow Map
 struct LightObject {
   void update() {
@@ -78,6 +43,8 @@ struct LightObject {
 class ShadowsExample : public circe::gl::BaseApp {
 public:
   ShadowsExample() : BaseApp(800, 800) {
+    ponos::Path assets_path(std::string(ASSETS_PATH));
+    ponos::Path shaders_path(std::string(SHADERS_PATH));
     // setup lights
     for (auto &light : lights) {
       light.model_transform = ponos::translate({0, 1, 3});
@@ -91,11 +58,11 @@ public:
     floor = circe::Shapes::plane(ponos::Plane::XY(), {}, {20, 0, 0}, 20,
                                  circe::shape_options::normal);
     wall = circe::Shapes::plane(ponos::Plane::YZ(), {}, {0, 20, 0}, 20,
-                                 circe::shape_options::normal);
-    xy_wall = circe::Shapes::plane(ponos::Plane::XZ(), {}, {0, 0, 20}, 20,
                                 circe::shape_options::normal);
-    wall.transform = ponos::translate({-4, 0,0});
-    xy_wall.transform = ponos::translate({0, -4,0});
+    xy_wall = circe::Shapes::plane(ponos::Plane::XZ(), {}, {0, 0, 20}, 20,
+                                   circe::shape_options::normal);
+    wall.transform = ponos::translate({-4, 0, 0});
+    xy_wall.transform = ponos::translate({0, -4, 0});
     // resize floor material
     floor_mtl.albedo = vec3_16(.3f, .0f, .0f);
     floor_mtl.ao = 1;
@@ -202,7 +169,10 @@ public:
     light_model.draw();
     light_model.program.setUniform("model", light_box.transform);
     light_box.draw();
-    renderDepthBuffer();
+
+    ImGui::Begin("Shadow Map");
+    depth_buffer_view.render(lights[0].shadow_map.depthMap());
+    ImGui::End();
     // gizmo
     ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
     circe::Gizmo::update(camera, lights[0].model_transform, operation);
@@ -223,16 +193,8 @@ public:
     light_box.transform = t;
   }
 
-  void renderDepthBuffer() {
-    depth_buffer_view.update();
-    ImGui::Begin("Shadow Map");
-    auto texture_id = depth_buffer_view.image.textureObjectId();
-    ImGui::Image((void *) (intptr_t) (texture_id), {256, 256},
-                 {0, 1}, {1, 0});
-    ImGui::End();
-  }
   // imgui
-  DepthBufferView depth_buffer_view;
+  BufferView depth_buffer_view{BufferView::depthBufferView()};
 //  GLuint texture_id{0};
   ImGuizmo::OPERATION operation{ImGuizmo::OPERATION::TRANSLATE};
   // lights

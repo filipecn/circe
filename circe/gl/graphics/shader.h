@@ -143,7 +143,7 @@ public:
   /// \param folder path/to/folder containing shaders
   /// \param shader_name shader name without extension
   /// \return
-  bool link(const ponos::Path& folder, const std::string& shader_name);
+  bool link(const ponos::Path &folder, const std::string &shader_name);
   /// Attach and create program
   /// \param shader_list pre-compiled shader list
   /// \return
@@ -187,6 +187,10 @@ public:
   void setUniform(const std::string &name, const Color &c);
   void setUniform(const std::string &name, int i);
   void setUniform(const std::string &name, float f);
+  template<typename T>
+  void setUniform(const std::string &name, const std::string &field, size_t index, const T &value) {
+    setUniform(name + "[" + std::to_string(index) + "]." + field, value);
+  }
   [[nodiscard]] bool hasUniform(const std::string &name) const;
   // Uniform Blocks
   void setUniformBlockBinding(const std::string &name, GLuint buffer_binding);

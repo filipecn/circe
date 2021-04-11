@@ -37,7 +37,7 @@ public:
   explicit Color(const ponos::vec3 &v) : r(v.x), g(v.y), b(v.z), a(1.f) {}
   Color(float _r, float _g, float _b, float _a = 1.f)
       : r(_r), g(_g), b(_b), a(_a) {}
-  Color withAlpha(float alpha) { return {r, g, b, alpha}; }
+  [[nodiscard]] Color withAlpha(float alpha) const { return {r, g, b, alpha}; }
   [[nodiscard]] const float *asArray() const { return &r; }
   static Color Transparent() { return {0.f, 0.f, 0.f, 0.f}; }
   static Color Black(float alpha = 1.f) { return {0.f, 0.f, 0.f, alpha}; }

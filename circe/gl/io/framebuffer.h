@@ -49,6 +49,7 @@ public:
   // ***********************************************************************
   //                             SIZE
   // ***********************************************************************
+  [[nodiscard]] ponos::size2 size() const;
   /// \param resolution in pixels
   void resize(const ponos::size2 &resolution);
   /// \param resolution in pixels
@@ -67,6 +68,13 @@ public:
   /// \param texture
   /// \param attachment_point
   void attachTexture(const Texture &texture, GLenum attachment_point = GL_COLOR_ATTACHMENT0) const;
+  /// \note call glDrawBuffers
+  /// \param buffers
+  void setOutputBuffers(const std::vector<GLenum> &buffers) const;
+  ///
+  /// \param mask
+  /// \param filter
+  void blit(GLbitfield mask, GLenum filter = GL_NEAREST) const;
   // ***********************************************************************
   //                             RENDERING
   // ***********************************************************************

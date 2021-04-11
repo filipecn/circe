@@ -45,10 +45,10 @@ public:
  */
   struct Attributes {
     ponos::size3 size_in_texels;
-    GLint internal_format = 0; //!< the color components in the texture (ex: GL_RGBA8)
-    GLenum format = 0; //!< format of pixel data (ex: GL_RGBA, GL_RED_INTEGER, ...)
-    GLenum type = 0; //!< data type of pixel data (ex: GL_UNSIGNED_BYTE, GL_FLOAT)
-    GLenum target = 0;      //!< target texture (ex: GL_TEXTURE_3D)
+    GLint internal_format{GL_RGBA8}; //!< the color components in the texture (ex: GL_RGBA8)
+    GLenum format{GL_RGBA}; //!< format of pixel data (ex: GL_RGBA, GL_RED_INTEGER, ...)
+    GLenum type{GL_UNSIGNED_BYTE}; //!< data type of pixel data (ex: GL_UNSIGNED_BYTE, GL_FLOAT)
+    GLenum target{GL_TEXTURE_2D};      //!< target texture (ex: GL_TEXTURE_3D)
   };
   // ***********************************************************************
   //                          TEXTURE ATLAS

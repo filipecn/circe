@@ -47,7 +47,11 @@ Shader::Shader(Shader &other) : type_(other.type_) {
   other.id_ = 0;
 }
 
-Shader::Shader(Shader &&other) noexcept: Shader(other) {}
+Shader::Shader(Shader &&other) noexcept {
+  type_ = other.type_;
+  id_ = other.id_;
+  other.id_ = 0;
+}
 
 Shader::~Shader() {
   glDeleteShader(id_);
@@ -337,7 +341,15 @@ Program::Program(Program &other) : id_(other.id_), attr_locations_(std::move(oth
   other.id_ = 0;
 }
 
-Program::Program(Program &&other) noexcept: Program(other) {}
+Program::Program(Program &&other) noexcept {
+  err = other.err;
+  attr_locations_ = std::move(other.attr_locations_);
+  uniform_locations_ = std::move(other.uniform_locations_);
+  ub_map_name_id_ = std::move(other.ub_map_name_id_);
+  uniforms_ = std::move(other.uniforms_);
+  uniform_blocks_ = std::move(other.uniform_blocks_);
+  linked_ = other.linked_;
+}
 
 Program::~Program() {
   destroy();

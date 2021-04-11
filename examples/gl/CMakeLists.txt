@@ -46,6 +46,7 @@ set(EXAMPLES
         shadows
         skybox
         texture_atlas
+        deferred_rendering
 
         volume_box
         volume_box_2d
