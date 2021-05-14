@@ -24,10 +24,108 @@
 
 #include <circe/gl/texture/texture.h>
 #include <circe/gl/utils/open_gl.h>
+#include <circe/gl/io/framebuffer.h>
+#include <circe/gl/scene/scene_model.h>
+#include <circe/gl/graphics/shader.h>
+#include <circe/scene/shapes.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace circe::gl {
+
+Texture convertToCubemap(const Texture &input, texture_options input_options, ponos::size2 resolution) {
+  bool input_is_hdr = circe::testMaskBit(input_options, circe::texture_options::hdr);
+  bool input_is_equirectangular = testMaskBit(input_options, texture_options::equirectangular);
+  std::string vs;
+  std::string fs;
+  Program program;
+  if (input_is_equirectangular) {
+    vs = "#version 330 core\n"
+         "layout (location = 0) in vec3 aPos;\n"
+         "out vec3 localPos;\n"
+         "uniform mat4 projection;\n"
+         "uniform mat4 view;\n"
+         "void main() {\n"
+         "    localPos = aPos;  \n"
+         "    gl_Position =  projection * view * vec4(localPos, 1.0);\n"
+         "}";
+
+    fs = "#version 330 core\n"
+         "out vec4 FragColor;\n"
+         "in vec3 localPos;\n"
+         "uniform sampler2D equirectangularMap;\n"
+         "const vec2 invAtan = vec2(0.1591, 0.3183);\n"
+         "vec2 SampleSphericalMap(vec3 v) {\n"
+         "    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));\n"
+         "    uv *= invAtan;\n"
+         "    uv += 0.5;\n"
+         "    return uv;\n"
+         "}\n"
+         "void main() {\n"
+         "    vec2 uv = SampleSphericalMap(normalize(localPos));\n"
+         "    vec3 color = texture(equirectangularMap, uv).rgb;\n"
+         "    FragColor = vec4(color, 1.0);\n"
+         "}";
+    program.attach(Shader(GL_VERTEX_SHADER, vs));
+    program.attach(Shader(GL_FRAGMENT_SHADER, fs));
+    if (!program.link())
+      std::cerr << "failed to compile equirectangular map shader!\n";
+    program.use();
+    program.setUniform("equirectangularMap", 0);
+  }
+
+  Texture cubemap;
+  cubemap.setTarget(GL_TEXTURE_CUBE_MAP);
+  cubemap.setFormat(GL_RGB);
+  if (input_is_hdr) {
+    cubemap.setInternalFormat(GL_RGBA16F);
+    cubemap.setType(GL_FLOAT);
+  }
+
+  cubemap.resize(resolution);
+  cubemap.bind();
+
+  circe::gl::Texture::View parameters(GL_TEXTURE_CUBE_MAP);
+  parameters[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
+  parameters[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
+  parameters[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
+  parameters[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
+  parameters[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_EDGE;
+  parameters.apply();
+
+  // render cubemap faces
+  auto projection = ponos::Transform::perspective(90, 1, 0.1, 10);
+  ponos::Transform views[] = {
+      ponos::Transform::lookAt({}, {1, 0, 0}, {0, -1, 0}),
+      ponos::Transform::lookAt({}, {-1, 0, 0}, {0, -1, 0}),
+      ponos::Transform::lookAt({}, {0, 1, 0}, {0, 0, -1}),
+      ponos::Transform::lookAt({}, {0, -1, 0}, {0, 0, 1}),
+      ponos::Transform::lookAt({}, {0, 0, -1}, {0, -1, 0}),
+      ponos::Transform::lookAt({}, {0, 0, 1}, {0, -1, 0}),
+  };
+
+  Framebuffer frambuffer;
+  frambuffer.setRenderBufferStorageInternalFormat(GL_DEPTH_COMPONENT24);
+  frambuffer.resize(resolution);
+  frambuffer.enable();
+  glViewport(0, 0, resolution.width, resolution.height);
+
+  SceneModel cube;
+  cube = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}});
+
+  input.bind();
+  program.use();
+  program.setUniform("projection", projection);
+  for (u32 i = 0; i < 6; ++i) {
+    program.setUniform("view", views[i]);
+    frambuffer.attachColorBuffer(cubemap.textureObjectId(), GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
+    frambuffer.enable();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    cube.draw();
+  }
+  Framebuffer::disable();
+  return cubemap;
+}
 
 Texture::Atlas::Atlas() = default;
 
@@ -90,13 +188,11 @@ const ponos::bbox2 &Texture::Atlas::uv(size_t i) const {
 Texture::View::View(GLuint target) : target_{target} {
   parameters_[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
   parameters_[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
+  parameters_[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_EDGE;
   parameters_[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
   parameters_[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
   parameters_[GL_TEXTURE_BASE_LEVEL] = 0;
   parameters_[GL_TEXTURE_MAX_LEVEL] = 0;
-
-  if (target == GL_TEXTURE_3D)
-    parameters_[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_EDGE;
 }
 
 Texture::View::View(circe::Color border_color, GLuint target) : Texture::View::View(target) {
@@ -104,8 +200,7 @@ Texture::View::View(circe::Color border_color, GLuint target) : Texture::View::V
   border_color_ = border_color;
   parameters_[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_BORDER;
   parameters_[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_BORDER;
-  if (target == GL_TEXTURE_3D)
-    parameters_[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_BORDER;
+  parameters_[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_BORDER;
 }
 
 void Texture::View::apply() const {
@@ -115,24 +210,49 @@ void Texture::View::apply() const {
     glTexParameterfv(target_, GL_TEXTURE_BORDER_COLOR, border_color_.asArray());
 }
 
-Texture Texture::fromFile(const ponos::Path &path) {
+Texture Texture::fromFile(const ponos::Path &path,
+                          circe::texture_options input_options,
+                          circe::texture_options output_options) {
+  // check input options
+  bool input_is_hdr = circe::testMaskBit(input_options, circe::texture_options::hdr);
+  // check output options
+  bool output_is_cubemap = circe::testMaskBit(output_options, circe::texture_options::cubemap);
+  // texture object
+  Texture texture;
+  // read file
   int width, height, channel_count;
-  unsigned char *data = stbi_load(path.fullName().c_str(), &width, &height, &channel_count, 0);
+  void *data;
+  if (input_is_hdr) {
+    stbi_set_flip_vertically_on_load(true);
+    data = stbi_loadf(path.fullName().c_str(), &width, &height, &channel_count, 0);
+    texture.attributes_.target = GL_TEXTURE_2D;
+    texture.attributes_.internal_format = GL_RGB16F;
+    texture.attributes_.format = (channel_count == 3) ? GL_RGB : GL_RGBA;
+    texture.attributes_.type = GL_FLOAT;
+  } else {
+    data = stbi_load(path.fullName().c_str(), &width, &height, &channel_count, 0);
+    texture.attributes_.target = GL_TEXTURE_2D;
+    texture.attributes_.format = (channel_count == 3) ? GL_RGB : GL_RGBA;
+    texture.attributes_.internal_format = GL_RGB;
+    texture.attributes_.type = GL_UNSIGNED_BYTE;
+  }
   if (!data) {
     std::cerr << "Failed to load texture from file " << path << std::endl;
     return Texture();
   }
-  Texture texture;
-  texture.attributes_.target = GL_TEXTURE_2D;
+  // init texture
   texture.attributes_.size_in_texels = ponos::size3(width, height, 1);
-  texture.attributes_.type = GL_UNSIGNED_BYTE;
-  texture.attributes_.format = (channel_count == 3) ? GL_RGB : GL_RGBA;
-  texture.attributes_.internal_format = GL_RGB;
   texture.setTexels(data);
   texture.bind();
+
   circe::gl::Texture::View().apply();
+
   texture.unbind();
   stbi_image_free(data);
+
+  if (output_is_cubemap)
+    return convertToCubemap(texture, input_options, {512, 512});
+
   return texture;
 }
 
@@ -157,11 +277,7 @@ Texture Texture::fromFiles(const std::vector<ponos::Path> &face_paths) {
     texture.attributes_.size_in_texels.height = height;
     texture.attributes_.format = GL_RGB;
     texture.attributes_.internal_format = GL_RGB;
-    // store texels
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                 0, texture.attributes_.internal_format, texture.attributes_.size_in_texels.width,
-                 texture.attributes_.size_in_texels.height, 0, texture.attributes_.format, texture.attributes_.type,
-                 data);
+    texture.setTexels(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, data);
     CHECK_GL_ERRORS;
     stbi_image_free(data);
   }
@@ -225,10 +341,26 @@ void Texture::setTexels(const void *texels) const {
     glTexImage3D(GL_TEXTURE_3D, 0, attributes_.internal_format, attributes_.size_in_texels.width,
                  attributes_.size_in_texels.height, attributes_.size_in_texels.depth, 0, attributes_.format,
                  attributes_.type, texels);
+  else if (attributes_.target == GL_TEXTURE_CUBE_MAP)
+    for (u32 i = 0; i < 6; ++i)
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, attributes_.internal_format, attributes_.size_in_texels.width,
+                   attributes_.size_in_texels.height, 0, attributes_.format, attributes_.type,
+                   texels);
   else
     glTexImage2D(GL_TEXTURE_2D, 0, attributes_.internal_format, attributes_.size_in_texels.width,
                  attributes_.size_in_texels.height, 0, attributes_.format, attributes_.type,
                  texels);
+
+  CHECK_GL_ERRORS;
+  glBindTexture(attributes_.target, 0);
+}
+
+void Texture::setTexels(GLenum target, const void *texels) const {
+  /// bind texture
+  glBindTexture(attributes_.target, texture_object_);
+  glTexImage2D(target, 0, attributes_.internal_format, attributes_.size_in_texels.width,
+               attributes_.size_in_texels.height, 0, attributes_.format, attributes_.type,
+               texels);
   CHECK_GL_ERRORS;
   glBindTexture(attributes_.target, 0);
 }

@@ -37,7 +37,6 @@ public:
     ponos::Path assets_path(std::string(ASSETS_PATH));
     ponos::Path shaders_path(std::string(SHADERS_PATH));
     // scene
-//    model = circe::gl::SceneModel::fromFile("/home/filipecn/Desktop/teapot.obj", circe::shape_options::normal);
     model = circe::Shapes::icosphere({}, 0.2, 5, circe::shape_options::uv | circe::shape_options::normal);
     light_model = circe::Shapes::icosphere({}, 0.02, 2);
     screen_quad = circe::Shapes::box({{-1, -1}, {1, 1}}, circe::shape_options::uv);
@@ -88,9 +87,9 @@ public:
     const unsigned int NR_LIGHTS = 32;
     std::srand(13);
     for (unsigned int i = 0; i < NR_LIGHTS; i++) {
-      ponos::point3 position(((rand() % 100) / 100.0) * 5.0,
-                             ((rand() % 100) / 100.0) * 5.0,
-                             ((rand() % 100) / 100.0) * 5.0);
+      ponos::point3 position(((rand() % 100) / 100.0) * 5.0 - 2.5,
+                             ((rand() % 100) / 100.0) * 5.0 - 2.5,
+                             ((rand() % 100) / 100.0) * 5.0 - 2.5);
       ponos::vec3 color(((rand() % 100) / 200.0f) + 0.5,
                         ((rand() % 100) / 200.0f) + 0.5,
                         ((rand() % 100) / 200.0f) + 0.5);
@@ -122,7 +121,7 @@ public:
       g_pass_program.setUniform("view", camera->getViewTransform());
       for (auto i : ponos::Index3Range<i32>(5, 5, 5)) {
         ponos::vec3 v(i.i, i.j, i.k);
-        g_pass_program.setUniform("model", ponos::translate(v));
+        g_pass_program.setUniform("model", ponos::translate(v - ponos::vec3(2.5, 2.5, 2.5)));
         model.draw();
       }
     });

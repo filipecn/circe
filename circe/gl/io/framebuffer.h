@@ -57,6 +57,10 @@ public:
   // ***********************************************************************
   //                             METHODS
   // ***********************************************************************
+  void setRenderBufferStorageInternalFormat(GLenum format);
+  // ***********************************************************************
+  //                             METHODS
+  // ***********************************************************************
   void enable() const;
   ///
   /// \param textureId
@@ -88,6 +92,8 @@ private:
   ponos::size3 size_in_pixels_;
   GLuint framebuffer_object_{0};
   GLuint render_buffer_object_{0};
+
+  GLenum render_buffer_internal_format_{GL_DEPTH_COMPONENT};
 };
 
 } // circe namespace

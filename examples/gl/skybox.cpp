@@ -37,14 +37,19 @@ public:
     skybox = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}});
     model = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}}, circe::shape_options::normal);
     // textures
-    cubemap = circe::gl::Texture::fromFiles({
-                                                "/home/filipecn/Desktop/skybox/right.jpg",
-                                                "/home/filipecn/Desktop/skybox/left.jpg",
-                                                "/home/filipecn/Desktop/skybox/top.jpg",
-                                                "/home/filipecn/Desktop/skybox/bottom.jpg",
-                                                "/home/filipecn/Desktop/skybox/front.jpg",
-                                                "/home/filipecn/Desktop/skybox/back.jpg",
-                                            });
+//    cubemap = circe::gl::Texture::fromFiles({
+//                                                "/home/filipecn/Desktop/skybox/right.jpg",
+//                                                "/home/filipecn/Desktop/skybox/left.jpg",
+//                                                "/home/filipecn/Desktop/skybox/top.jpg",
+//                                                "/home/filipecn/Desktop/skybox/bottom.jpg",
+//                                                "/home/filipecn/Desktop/skybox/front.jpg",
+//                                                "/home/filipecn/Desktop/skybox/back.jpg",
+//                                            });
+
+    cubemap = circe::gl::Texture::fromFile("/home/filipecn/Desktop/hdr/Ueno-Shrine/03-Ueno-Shrine_3k.hdr",
+                                           circe::texture_options::equirectangular |
+                                               circe::texture_options::hdr,
+                                           circe::texture_options::cubemap);
     cubemap.bind();
     circe::gl::Texture::View parameters(GL_TEXTURE_CUBE_MAP);
     parameters[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
@@ -59,6 +64,11 @@ public:
       spdlog::error("Failed to load model shader: " + skybox.program.err);
     if (!model.program.link(shaders_path, "env_map"))
       spdlog::error("Failed to load model shader: " + model.program.err);
+  }
+
+  void prepareFrame(const circe::gl::ViewportDisplay &display) override {
+    circe::gl::BaseApp::prepareFrame(display);
+    ImGuizmo::BeginFrame();
   }
 
   void render(circe::CameraInterface *camera) override {
@@ -78,8 +88,14 @@ public:
     skybox.program.setUniform("projection", camera->getProjectionTransform());
     skybox.program.setUniform("view", ponos::transpose(m));
     skybox.program.setUniform("skybox", 0);
+//    skybox.program.setUniform("equirectangularMap", 0);
     skybox.draw();
     glDepthFunc(GL_LESS);
+
+    // gizmo
+    ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
+    ponos::Transform t;
+    circe::Gizmo::update(camera, t, ImGuizmo::OPERATION::TRANSLATE);
   }
 
   circe::gl::SceneModel model;

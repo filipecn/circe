@@ -46,6 +46,10 @@ void Framebuffer::resize(const ponos::size2 &resolution) {
   resize({resolution.width, resolution.height, 0});
 }
 
+void Framebuffer::setRenderBufferStorageInternalFormat(GLenum format) {
+  render_buffer_internal_format_ = format;
+}
+
 void Framebuffer::resize(const ponos::size3 &resolution) {
   size_in_pixels_ = resolution;
   // delete any previous buffers
@@ -59,7 +63,8 @@ void Framebuffer::resize(const ponos::size3 &resolution) {
   // create render buffer
   glGenRenderbuffers(1, &render_buffer_object_);
   glBindRenderbuffer(GL_RENDERBUFFER, render_buffer_object_);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, resolution.width, resolution.height);
+  glRenderbufferStorage(GL_RENDERBUFFER, render_buffer_internal_format_,
+                        resolution.width, resolution.height);
   // attach the renderbuffer to depth attachment point
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, // 1. fbo target: GL_FRAMEBUFFER
                             GL_DEPTH_ATTACHMENT, // 2. attachment point
@@ -128,7 +133,6 @@ void Framebuffer::blit(GLbitfield mask, GLenum filter) const {
                              0, 0, size_in_pixels_.width, size_in_pixels_.height, mask, filter));
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
 ponos::size2 Framebuffer::size() const {
   return ponos::size2(size_in_pixels_.width, size_in_pixels_.height);
 }

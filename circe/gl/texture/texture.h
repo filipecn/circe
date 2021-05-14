@@ -26,6 +26,7 @@
 #define CIRCE_IO_TEXTURE_H
 
 #include <circe/gl/utils/open_gl.h>
+#include <circe/texture/texture_options.h>
 
 namespace circe::gl {
 
@@ -87,9 +88,11 @@ public:
   class View {
   public:
     /// \note Initializes with GL_CLAMP_TO_EDGE wrap mode
+    /// \note Initializes with GL_LINEAR filter mode
     /// \param target [= GL_TEXTURE_2D]
     explicit View(GLuint target = GL_TEXTURE_2D);
     /// \note Initializes with GL_CLAMP_TO_BORDER wrap mode
+    /// \note Initializes with GL_LINEAR filter mode
     /// \param border_color
     /// \param target [= GL_TEXTURE_2D]
     explicit View(circe::Color border_color, GLuint target = GL_TEXTURE_2D);
@@ -110,8 +113,12 @@ public:
   // ***********************************************************************
   ///
   /// \param path
+  /// \param input_options
+  /// \param output_options
   /// \return Texture object
-  static Texture fromFile(const ponos::Path &path);
+  static Texture fromFile(const ponos::Path &path,
+                          circe::texture_options input_options = circe::texture_options::none,
+                          circe::texture_options output_options = circe::texture_options::none);
   /// Load images into a cube map texture
   /// \note This function expects the face sequence: right,
   ///   left, top, bottom, front, back
@@ -174,6 +181,10 @@ public:
   virtual void set(const Attributes &a);
   /// \param texels texture content
   void setTexels(const void *texels) const;
+  ///
+  /// \param texels
+  /// \param target
+  void setTexels(GLenum target, const void *texels) const;
   /// \param new_size
   void resize(const ponos::size3 &new_size);
   /// \param new_size

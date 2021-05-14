@@ -72,8 +72,8 @@ public:
     camera->getViewTransform().matrix().column_major(camera_view);
     ImGuizmo::ViewManipulate(camera_view,
                              length,
-                             ImVec2(200 - 128, 200),
-                             ImVec2(128, 128),
+                             ImVec2(position.i, position.j),
+                             ImVec2(size.width, size.height),
                              background_color);
   }
   ///
