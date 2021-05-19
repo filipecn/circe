@@ -33,6 +33,98 @@
 
 namespace circe::gl {
 
+Texture unfoldCubemap(const Texture &cubemap, texture_options output_options) {
+  bool output_is_equirectangular = circe::testMaskBit(output_options, circe::texture_options::equirectangular);
+  Texture output;
+  output.setTarget(GL_TEXTURE_2D);
+  output.setInternalFormat(cubemap.internalFormat());
+  output.setFormat(cubemap.format());
+  output.setType(cubemap.type());
+
+  SceneModel quad;
+  quad = Shapes::box({{-1, -1}, {1, 1}}, shape_options::uv);
+  std::string vs = "#version 330 core                                                                               \n"
+                   "layout (location = 0) in vec3 aPos;                                                             \n"
+                   "layout (location = 1) in vec2 aTexCoords;                                                       \n"
+                   "out vec2 uv;                                                                                    \n"
+                   "void main() {                                                                                   \n"
+                   "    uv = aTexCoords;                                                                            \n"
+                   "    gl_Position = vec4(aPos, 1.0);                                                              \n"
+                   "}";
+  std::string fs;
+  if (output_is_equirectangular) {
+    fs = "#version 330 core                                                                                         \n"
+         "uniform samplerCube cubemap;                                                                              \n"
+         "in vec2 uv;                                                                                               \n"
+         "out vec4 FragColor;                                                                                       \n"
+         "void main() {                                                                                             \n"
+         "  float phi = uv.x * 3.1415 * 2;                                                                          \n"
+         "  float theta = (-uv.y + 0.5) * 3.1415;                                                                   \n"
+         "  vec3 dir = vec3(cos(phi)*cos(theta),sin(theta),sin(phi)*cos(theta));                                    \n"
+         "  vec3 color = texture(cubemap, dir).rgb;                                                                 \n"
+         "  color = color / (color + vec3(1.0));                                                                    \n"
+         "  color = pow(color, vec3(1.0/2.2));                                                                      \n"
+         "  FragColor = vec4(color, 1.0);                                                                           \n"
+         "}";
+    output.resize({cubemap.size().width * 2, cubemap.size().height * 1});
+  } else {
+    fs = "#version 330 core                                                                                         \n"
+         "uniform samplerCube cubemap;                                                                              \n"
+         "in vec2 uv;                                                                                               \n"
+         "out vec4 FragColor;                                                                                       \n"
+         "void main() {                                                                                             \n"
+         "  vec3 color = vec3(0.0,0.0,0.0);                                                                         \n"
+         "  vec2 lp = vec2(mod(uv.x * 4, 1), mod(uv.y * 3, 1));                                                     \n"
+         "  vec2 wp = vec2(uv.x * 4, uv.y * 3);                                                                     \n"
+         "  if(wp.x > 1 && wp.x < 2) {                                                                              \n"
+         "    if(wp.y > 2) // top (+y)                                                                              \n"
+         "      color = texture(cubemap, vec3(-lp.x * 2 + 1, 1, -lp.y * 2 + 1)).rgb;                                \n"
+         "    else if(wp.y < 1) // bottom (-y)                                                                      \n"
+         "      color = texture(cubemap, vec3(-lp.x * 2 + 1, -1, -lp.y * 2 + 1)).rgb;                               \n"
+         "    else // front (-z)                                                                                    \n"
+         "      color = texture(cubemap, vec3(-lp.x * 2 + 1,lp.y * 2 - 1, -1)).rgb;                                 \n"
+         "  } else if(wp.y > 1 && wp.y < 2) {                                                                       \n"
+         "    if(wp.x < 1) // left (+x)                                                                             \n"
+         "      color = texture(cubemap, vec3(1,lp.y * 2 - 1,-lp.x * 2 + 1)).rgb;                                   \n"
+         "    else if(wp.x < 3) // right (-x)                                                                       \n"
+         "      color = texture(cubemap, vec3(-1,lp.y * 2 - 1,lp.x * 2 - 1)).rgb;                                  \n"
+         "    else // back (+z)                                                                                     \n"
+         "      color = texture(cubemap, vec3(lp.x - 2 + 1,lp.y * 2 - 1, 1)).rgb;                                  \n"
+         "  } else { FragColor = vec4(0.0); return; }                                                               \n"
+         "  color = color / (color + vec3(1.0));                                                                    \n"
+         "  color = pow(color, vec3(1.0/2.2));                                                                      \n"
+         "  FragColor = vec4(color, 1.0);                                                                           \n"
+         "}";
+    output.resize({cubemap.size().width * 4, cubemap.size().height * 3});
+  }
+
+  output.bind();
+  Texture::View().apply();
+
+  ////////////////////////////// build shader /////////////////////////////////////////////////////////////////////////
+  Program program;
+  program.attach(Shader(GL_VERTEX_SHADER, vs));
+  program.attach(Shader(GL_FRAGMENT_SHADER, fs));
+  if (!program.link())
+    std::cerr << "failed to compile unfold cubemap shader!\n" << program.err << std::endl;
+
+  Framebuffer framebuffer;
+  framebuffer.setRenderBufferStorageInternalFormat(GL_DEPTH_COMPONENT24);
+  framebuffer.resize(output.size());
+  framebuffer.enable();
+  glViewport(0, 0, output.size().width, output.size().height);
+  framebuffer.attachTexture(output);
+  framebuffer.enable();
+
+  cubemap.bind(GL_TEXTURE0);
+  program.use();
+  program.setUniform("cubemap", 0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  quad.draw();
+  Framebuffer::disable();
+  return output;
+}
+
 Texture convertToCubemap(const Texture &input, texture_options input_options, ponos::size2 resolution) {
   bool input_is_hdr = circe::testMaskBit(input_options, circe::texture_options::hdr);
   bool input_is_equirectangular = testMaskBit(input_options, texture_options::equirectangular);
@@ -69,7 +161,7 @@ Texture convertToCubemap(const Texture &input, texture_options input_options, po
     program.attach(Shader(GL_VERTEX_SHADER, vs));
     program.attach(Shader(GL_FRAGMENT_SHADER, fs));
     if (!program.link())
-      std::cerr << "failed to compile equirectangular map shader!\n";
+      std::cerr << "failed to compile equirectangular map shader!\n" << program.err << std::endl;
     program.use();
     program.setUniform("equirectangularMap", 0);
   }
@@ -285,6 +377,18 @@ Texture Texture::fromFiles(const std::vector<ponos::Path> &face_paths) {
   return texture;
 }
 
+Texture Texture::fromTexture(const Texture &texture, circe::texture_options output_options) {
+  // check input options
+  bool input_is_cubemap = texture.target() == GL_TEXTURE_CUBE_MAP;
+  // check output options
+  bool output_is_cubemap = circe::testMaskBit(output_options, circe::texture_options::cubemap);
+  bool output_is_equirectangular = circe::testMaskBit(output_options, circe::texture_options::equirectangular);
+
+  if (input_is_cubemap && !output_is_cubemap)
+    return unfoldCubemap(texture, output_options);
+  return Texture();
+}
+
 Texture::Texture() {
   glGenTextures(1, &texture_object_);
   ASSERT(texture_object_);
@@ -477,7 +581,6 @@ void Texture::setType(GLenum type) {
 void Texture::setTarget(GLenum _target) {
   attributes_.target = _target;
 }
-
 void Texture::resize(const ponos::size2 &new_size) {
   attributes_.size_in_texels.width = new_size.width;
   attributes_.size_in_texels.height = new_size.height;

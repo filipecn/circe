@@ -125,6 +125,9 @@ public:
   /// \param face_paths
   /// \return
   static Texture fromFiles(const std::vector<ponos::Path> &face_paths);
+
+  static Texture fromTexture(const Texture &texture,
+                             circe::texture_options output_options = circe::texture_options::none);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************

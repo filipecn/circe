@@ -59,7 +59,8 @@ public:
 
     irradiance_map = circe::gl::IBL::irradianceMap(cubemap, {32, 32});
     prefilter_map = circe::gl::IBL::preFilteredEnvironmentMap(cubemap, {128, 128});
-    lut = circe::gl::IBL::brdfIntegrationMap({512,512});
+    lut = circe::gl::IBL::brdfIntegrationMap({512, 512});
+    unfolded = circe::gl::Texture::fromTexture(cubemap);
 
     if (!skybox.program.link(shaders_path, "skybox"))
       spdlog::error("Failed to load model shader: " + skybox.program.err);
@@ -96,9 +97,10 @@ public:
     glDepthFunc(GL_LESS);
 
     ImGui::Begin("Shadow Map");
-    lut.bind(GL_TEXTURE0);
-    auto texture_id = lut.textureObjectId();
-    ImGui::Image((void *) (intptr_t) (texture_id), {256, 256},
+    unfolded.bind(GL_TEXTURE0);
+    auto texture_id = unfolded.textureObjectId();
+    ImGui::Image((void *) (intptr_t) (texture_id),
+                 {static_cast<float>(unfolded.size().width / 2), static_cast<float>(unfolded.size().height / 2)},
                  {0, 1}, {1, 0});
     ImGui::End();
     // gizmo
@@ -109,7 +111,7 @@ public:
 
   circe::gl::SceneModel model;
   circe::gl::SceneModel skybox;
-  circe::gl::Texture cubemap;
+  circe::gl::Texture cubemap, unfolded;
   circe::gl::Texture irradiance_map, prefilter_map, lut;
 };
 
