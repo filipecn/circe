@@ -51,14 +51,15 @@ public:
                                                circe::texture_options::hdr,
                                            circe::texture_options::cubemap);
     cubemap.bind();
-    circe::gl::Texture::View parameters(GL_TEXTURE_CUBE_MAP);
-    parameters[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
-    parameters[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
-    parameters[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE;
-    parameters[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE;
-    parameters[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_EDGE;
-    parameters.apply();
+    circe::gl::Texture::View view(GL_TEXTURE_CUBE_MAP);
+    view[GL_TEXTURE_MIN_FILTER] = GL_LINEAR_MIPMAP_LINEAR;
+    view.apply();
+    cubemap.generateMipmap();
     cubemap.unbind();
+
+    irradiance_map = circe::gl::IBL::irradianceMap(cubemap, {32, 32});
+    prefilter_map = circe::gl::IBL::preFilteredEnvironmentMap(cubemap, {128, 128});
+    lut = circe::gl::IBL::brdfIntegrationMap({512,512});
 
     if (!skybox.program.link(shaders_path, "skybox"))
       spdlog::error("Failed to load model shader: " + skybox.program.err);
@@ -73,7 +74,9 @@ public:
 
   void render(circe::CameraInterface *camera) override {
     glEnable(GL_DEPTH_TEST);
-    cubemap.bind(GL_TEXTURE0);
+//    cubemap.bind(GL_TEXTURE0);
+    prefilter_map.bind(GL_TEXTURE0);
+//    irradiance_map.bind(GL_TEXTURE0);
     model.program.use();
     model.program.setUniform("projection", camera->getProjectionTransform());
     model.program.setUniform("view", camera->getViewTransform());
@@ -92,6 +95,12 @@ public:
     skybox.draw();
     glDepthFunc(GL_LESS);
 
+    ImGui::Begin("Shadow Map");
+    lut.bind(GL_TEXTURE0);
+    auto texture_id = lut.textureObjectId();
+    ImGui::Image((void *) (intptr_t) (texture_id), {256, 256},
+                 {0, 1}, {1, 0});
+    ImGui::End();
     // gizmo
     ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
     ponos::Transform t;
@@ -101,6 +110,7 @@ public:
   circe::gl::SceneModel model;
   circe::gl::SceneModel skybox;
   circe::gl::Texture cubemap;
+  circe::gl::Texture irradiance_map, prefilter_map, lut;
 };
 
 int main() {

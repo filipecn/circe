@@ -67,6 +67,7 @@ set(CIRCE_HEADERS
         circe/colors/color_palette.h
         circe/common/bitmask_operators.h
         circe/gl/graphics/compute_shader.h
+        circe/gl/graphics/ibl.h
         circe/gl/graphics/post_effect.h
         circe/gl/graphics/shader.h
         circe/gl/graphics/shader_manager.h
@@ -140,6 +141,7 @@ set(CIRCE_HEADERS
 
 set(CIRCE_SOURCES
         circe/gl/graphics/compute_shader.cpp
+        circe/gl/graphics/ibl.cpp
         circe/gl/graphics/post_effect.cpp
         circe/gl/graphics/shader.cpp
         circe/gl/graphics/shader_manager.cpp

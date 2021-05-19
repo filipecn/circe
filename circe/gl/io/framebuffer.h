@@ -55,7 +55,7 @@ public:
   /// \param resolution in pixels
   void resize(const ponos::size3 &resolution);
   // ***********************************************************************
-  //                             METHODS
+  //                             RENDER BUFFER
   // ***********************************************************************
   void setRenderBufferStorageInternalFormat(GLenum format);
   // ***********************************************************************
@@ -67,11 +67,12 @@ public:
   /// \param target
   /// \param attachmentPoint
   void attachColorBuffer(GLuint textureId, GLenum target,
-                         GLenum attachmentPoint = GL_COLOR_ATTACHMENT0) const;
+                         GLenum attachmentPoint = GL_COLOR_ATTACHMENT0,
+                         GLint mip_level = 0) const;
   ///
   /// \param texture
   /// \param attachment_point
-  void attachTexture(const Texture &texture, GLenum attachment_point = GL_COLOR_ATTACHMENT0) const;
+  void attachTexture(const Texture &texture, GLenum attachment_point = GL_COLOR_ATTACHMENT0, GLint mip_level = 0) const;
   /// \note call glDrawBuffers
   /// \param buffers
   void setOutputBuffers(const std::vector<GLenum> &buffers) const;

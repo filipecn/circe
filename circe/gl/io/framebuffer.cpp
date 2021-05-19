@@ -26,18 +26,27 @@
 
 namespace circe::gl {
 
-Framebuffer::Framebuffer() = default;
+Framebuffer::Framebuffer() {
+  glGenFramebuffers(1, &framebuffer_object_);
+  ASSERT(framebuffer_object_);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
+  glGenRenderbuffers(1, &render_buffer_object_);
+  ASSERT(render_buffer_object_);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
-Framebuffer::Framebuffer(const ponos::size3 &resolution) {
+Framebuffer::Framebuffer(const ponos::size3 &resolution) : Framebuffer() {
   resize(resolution);
 }
 
-Framebuffer::Framebuffer(const ponos::size2 &resolution) {
+Framebuffer::Framebuffer(const ponos::size2 &resolution) : Framebuffer() {
   resize(resolution);
 }
 
 Framebuffer::~Framebuffer() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  if (render_buffer_object_)
+    glDeleteRenderbuffers(1, &render_buffer_object_);
   if (framebuffer_object_)
     glDeleteFramebuffers(1, &framebuffer_object_);
 }
@@ -52,16 +61,8 @@ void Framebuffer::setRenderBufferStorageInternalFormat(GLenum format) {
 
 void Framebuffer::resize(const ponos::size3 &resolution) {
   size_in_pixels_ = resolution;
-  // delete any previous buffers
-  if (framebuffer_object_)
-    glDeleteFramebuffers(1, &framebuffer_object_);
-  if (render_buffer_object_)
-    glDeleteRenderbuffers(1, &render_buffer_object_);
-  // create frame buffer
-  glGenFramebuffers(1, &framebuffer_object_);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
   // create render buffer
-  glGenRenderbuffers(1, &render_buffer_object_);
   glBindRenderbuffer(GL_RENDERBUFFER, render_buffer_object_);
   glRenderbufferStorage(GL_RENDERBUFFER, render_buffer_internal_format_,
                         resolution.width, resolution.height);
@@ -77,7 +78,7 @@ void Framebuffer::resize(const ponos::size3 &resolution) {
 }
 
 void Framebuffer::attachColorBuffer(GLuint textureId, GLenum target,
-                                    GLenum attachmentPoint) const {
+                                    GLenum attachmentPoint, GLint mip_level) const {
   // bind framebuffer
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
   CHECK_GL_ERRORS;
@@ -87,16 +88,16 @@ void Framebuffer::attachColorBuffer(GLuint textureId, GLenum target,
                          attachmentPoint, // 2. attachment point
                          target,          // 3. tex target: GL_TEXTURE_2D
                          textureId,       // 4. tex ID
-                         0);              // 5. mipmap level: 0(base)
+                         mip_level);      // 5. mipmap level: 0(base)
   CHECK_GL_ERRORS;
   CHECK_FRAMEBUFFER;
   // unbind before leave
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::attachTexture(const Texture &texture, GLenum attachment_point) const {
+void Framebuffer::attachTexture(const Texture &texture, GLenum attachment_point, GLint mip_level) const {
   texture.bind();
-  attachColorBuffer(texture.textureObjectId(), texture.target(), attachment_point);
+  attachColorBuffer(texture.textureObjectId(), texture.target(), attachment_point, mip_level);
   texture.unbind();
 }
 

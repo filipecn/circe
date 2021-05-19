@@ -5,6 +5,7 @@
 #include <circe/imgui/TextEditor.h>
 #include <circe/imgui/ImGuizmo.h>
 #include <circe/gl/graphics/compute_shader.h>
+#include <circe/gl/graphics/ibl.h>
 #include <circe/gl/graphics/shader.h>
 #include <circe/gl/graphics/shader_manager.h>
 #include <circe/gl/graphics/shadow_map.h>

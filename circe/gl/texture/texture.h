@@ -173,7 +173,15 @@ public:
   // ***********************************************************************
   //                           ATTRIBUTES
   // ***********************************************************************
+  /// \return target texture (ex: GL_TEXTURE_3D)
   [[nodiscard]] GLenum target() const;
+  /// \return the color components in the texture (ex: GL_RGBA8)
+  [[nodiscard]] GLint internalFormat() const;
+  /// \return format of pixel data (ex: GL_RGBA, GL_RED_INTEGER, ...)
+  [[nodiscard]] GLenum format() const;
+  /// \return data type of pixel data (ex: GL_UNSIGNED_BYTE, GL_FLOAT)
+  [[nodiscard]] GLenum type() const;
+
   /// Textures can be copied, only moved
   /// \param a texture attributes
   /// \param p texture parameters

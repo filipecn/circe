@@ -191,8 +191,8 @@ Texture::View::View(GLuint target) : target_{target} {
   parameters_[GL_TEXTURE_WRAP_R] = GL_CLAMP_TO_EDGE;
   parameters_[GL_TEXTURE_MIN_FILTER] = GL_LINEAR;
   parameters_[GL_TEXTURE_MAG_FILTER] = GL_LINEAR;
-  parameters_[GL_TEXTURE_BASE_LEVEL] = 0;
-  parameters_[GL_TEXTURE_MAX_LEVEL] = 0;
+//  parameters_[GL_TEXTURE_BASE_LEVEL] = 0;
+//  parameters_[GL_TEXTURE_MAX_LEVEL] = 0;
 }
 
 Texture::View::View(circe::Color border_color, GLuint target) : Texture::View::View(target) {
@@ -399,6 +399,12 @@ ponos::size3 Texture::size() const {
 GLuint Texture::textureObjectId() const { return texture_object_; }
 
 GLenum Texture::target() const { return attributes_.target; }
+
+GLint Texture::internalFormat() const { return attributes_.internal_format; }
+
+GLenum Texture::format() const { return attributes_.format; }
+
+GLenum Texture::type() const { return attributes_.type; }
 
 std::ostream &operator<<(std::ostream &out, Texture &pt) {
   auto width = static_cast<int>(pt.attributes_.size_in_texels.width);
