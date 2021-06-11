@@ -72,7 +72,7 @@ void TextObject::setText(const std::string &text) {
 }
 
 void TextObject::draw(const CameraInterface *c, ponos::Transform t) {
-  UNUSED_VARIABLE(t);
+  PONOS_UNUSED_VARIABLE(t);
   mesh_->bind();
   mesh_->vertexBuffer()->locateAttributes(*shader_.get());
   FontManager::bindTexture(font_id_, GL_TEXTURE0);

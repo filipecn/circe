@@ -103,7 +103,7 @@ VolumeBox2::VolumeBox2() {
 VolumeBox2::~VolumeBox2() = default;
 
 void VolumeBox2::draw(const CameraInterface *camera, ponos::Transform t) {
-  UNUSED_VARIABLE(t);
+  PONOS_UNUSED_VARIABLE(t);
   density_texture_.bind(GL_TEXTURE0);
   shader_->begin();
   shader_->setUniform("model_view_matrix",
@@ -128,7 +128,7 @@ void VolumeBox2::draw(const CameraInterface *camera, ponos::Transform t) {
 }
 
 void VolumeBox2::render(GLenum cullFace) {
-  UNUSED_VARIABLE(cullFace);
+  PONOS_UNUSED_VARIABLE(cullFace);
   //  glEnable(GL_DEPTH_TEST);
   //  glEnable(GL_CULL_FACE);
   //  glFrontFace(GL_CCW);
@@ -253,7 +253,7 @@ VolumeBox::VolumeBox(size_t w, size_t h, size_t d, float *data) : VolumeBox() {
 VolumeBox::~VolumeBox() = default;
 
 void VolumeBox::draw(const CameraInterface *camera, ponos::Transform t) {
-  UNUSED_VARIABLE(t);
+  PONOS_UNUSED_VARIABLE(t);
   densityTexture.bind(GL_TEXTURE0);
   shader_->begin();
   shader_->setUniform("model_view_matrix",

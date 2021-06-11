@@ -68,7 +68,7 @@ void GLBufferInterface::locateAttributes(const ShaderProgram &s, uint d) const {
     else if (attribute.second.size % 2 == 0)
       componentSize = 2;
     size_t n = attribute.second.size / componentSize;
-    FATAL_ASSERT(n != 0);
+    PONOS_ASSERT(n != 0);
     for (size_t i = 0; i < n; i++) {
       glEnableVertexAttribArray(static_cast<GLuint>(loc + i));
       glVertexAttribPointer(static_cast<GLuint>(loc + i), componentSize,
@@ -96,7 +96,7 @@ void GLBufferInterface::locateAttributes(const Program &s, uint d) const {
     else if (attribute.second.size % 2 == 0)
       componentSize = 2;
     size_t n = attribute.second.size / componentSize;
-    FATAL_ASSERT(n != 0);
+    PONOS_ASSERT(n != 0);
     for (size_t i = 0; i < n; i++) {
       glEnableVertexAttribArray(static_cast<GLuint>(loc + i));
       glVertexAttribPointer(static_cast<GLuint>(loc + i), componentSize,

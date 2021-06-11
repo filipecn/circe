@@ -391,7 +391,7 @@ Texture Texture::fromTexture(const Texture &texture, circe::texture_options outp
 
 Texture::Texture() {
   glGenTextures(1, &texture_object_);
-  ASSERT(texture_object_);
+  PONOS_ASSERT(texture_object_);
 }
 
 Texture::Texture(const Texture::Attributes &a, const void *data) : Texture() {

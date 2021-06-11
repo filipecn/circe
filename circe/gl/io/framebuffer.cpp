@@ -28,10 +28,10 @@ namespace circe::gl {
 
 Framebuffer::Framebuffer() {
   glGenFramebuffers(1, &framebuffer_object_);
-  ASSERT(framebuffer_object_);
+  PONOS_ASSERT(framebuffer_object_);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
   glGenRenderbuffers(1, &render_buffer_object_);
-  ASSERT(render_buffer_object_);
+  PONOS_ASSERT(render_buffer_object_);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

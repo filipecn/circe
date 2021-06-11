@@ -1,1 +1,5 @@
- add_subdirectory(gl)
+set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+add_subdirectory(gl)
+if (USE_VULKAN)
+    add_subdirectory(vk)
+endif (USE_VULKAN)

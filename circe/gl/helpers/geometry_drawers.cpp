@@ -28,8 +28,8 @@
 namespace circe::gl {
 
 void fill_box(const ponos::point2 &a, const ponos::point2 &b) {
-  UNUSED_VARIABLE(a);
-  UNUSED_VARIABLE(b);
+  PONOS_UNUSED_VARIABLE(a);
+  PONOS_UNUSED_VARIABLE(b);
   //  glBegin(GL_QUADS);
   //  glVertex(ponos::point2(a.x, a.y));
   //  glVertex(ponos::point2(b.x, a.y));
@@ -39,8 +39,8 @@ void fill_box(const ponos::point2 &a, const ponos::point2 &b) {
 }
 
 void draw_bbox(const ponos::bbox2 &bbox, float *fillColor) {
-  UNUSED_VARIABLE(bbox);
-  UNUSED_VARIABLE(fillColor);
+  PONOS_UNUSED_VARIABLE(bbox);
+  PONOS_UNUSED_VARIABLE(fillColor);
   //  glBegin(GL_LINE_LOOP);
   //  glVertex(ponos::point2(bbox.lower.x, bbox.lower.y));
   //  glVertex(ponos::point2(bbox.upper.x, bbox.lower.y));
@@ -60,9 +60,9 @@ void draw_bbox(const ponos::bbox2 &bbox, float *fillColor) {
 
 void draw_bbox(const ponos::bbox2 &bbox, const Color &edgeColor,
                const Color &fillColor) {
-  UNUSED_VARIABLE(bbox);
-  UNUSED_VARIABLE(edgeColor);
-  UNUSED_VARIABLE(fillColor);
+  PONOS_UNUSED_VARIABLE(bbox);
+  PONOS_UNUSED_VARIABLE(edgeColor);
+  PONOS_UNUSED_VARIABLE(fillColor);
   //  glColor4fv(edgeColor.asArray());
   //  glBegin(GL_LINE_LOOP);
   //  glVertex(ponos::point2(bbox.lower.x, bbox.lower.y));
@@ -80,7 +80,7 @@ void draw_bbox(const ponos::bbox2 &bbox, const Color &edgeColor,
 }
 
 void draw_bbox(const ponos::bbox3 &bbox) {
-  UNUSED_VARIABLE(bbox);
+  PONOS_UNUSED_VARIABLE(bbox);
   //  glBegin(GL_LINE_LOOP);
   //  glVertex(ponos::point3(bbox.lower.x, bbox.lower.y, bbox.lower.z));
   //  glVertex(ponos::point3(bbox.upper.x, bbox.lower.y, bbox.lower.z));
@@ -110,7 +110,7 @@ void draw_bbox(const ponos::bbox3 &bbox) {
 }
 
 void draw_segment(ponos::Segment3 segment) {
-  UNUSED_VARIABLE(segment);
+  PONOS_UNUSED_VARIABLE(segment);
   //  glBegin(GL_LINES);
   //  glVertex(segment.a);
   //  glVertex(segment.b);
@@ -119,8 +119,8 @@ void draw_segment(ponos::Segment3 segment) {
 
 void draw_circle(const ponos::Circle &circle,
                  const ponos::Transform2 *transform) {
-  UNUSED_VARIABLE(circle);
-  UNUSED_VARIABLE(transform);
+  PONOS_UNUSED_VARIABLE(circle);
+  PONOS_UNUSED_VARIABLE(transform);
   //  glBegin(GL_TRIANGLE_FAN);
   //  if (transform != nullptr)
   //    glVertex((*transform)(circle.c));
@@ -140,8 +140,8 @@ void draw_circle(const ponos::Circle &circle,
 }
 
 void draw_sphere(ponos::Sphere sphere, const ponos::Transform *transform) {
-  UNUSED_VARIABLE(sphere);
-  UNUSED_VARIABLE(transform);
+  PONOS_UNUSED_VARIABLE(sphere);
+  PONOS_UNUSED_VARIABLE(transform);
   //  if (transform) {
   //    glPushMatrix();
   //    glApplyTransform(*transform);
@@ -203,8 +203,8 @@ void draw_sphere(ponos::Sphere sphere, const ponos::Transform *transform) {
 
 void draw_polygon(const ponos::Polygon &polygon,
                   const ponos::Transform2 *transform) {
-  UNUSED_VARIABLE(polygon);
-  UNUSED_VARIABLE(transform);
+  PONOS_UNUSED_VARIABLE(polygon);
+  PONOS_UNUSED_VARIABLE(transform);
   //  glBegin(GL_LINE_LOOP);
   //  for (const auto &p : polygon.vertices) {
   //    if (transform != nullptr)
@@ -216,8 +216,8 @@ void draw_polygon(const ponos::Polygon &polygon,
 }
 
 void draw_mesh(const ponos::Mesh2D *m, const ponos::Transform2 *t) {
-  UNUSED_VARIABLE(m);
-  UNUSED_VARIABLE(t);
+  PONOS_UNUSED_VARIABLE(m);
+  PONOS_UNUSED_VARIABLE(t);
   //  glLineWidth(3.f);
   //  const ponos::RawMesh *rm = m->getMesh();
   //  glBegin(GL_LINES);
@@ -255,10 +255,10 @@ void draw_mesh(const ponos::Mesh2D *m, const ponos::Transform2 *t) {
 
 void draw_vector(const ponos::point2 &p, const ponos::vec2 &v, float w,
                  float h) {
-  UNUSED_VARIABLE(p);
-  UNUSED_VARIABLE(v);
-  UNUSED_VARIABLE(w);
-  UNUSED_VARIABLE(h);
+  PONOS_UNUSED_VARIABLE(p);
+  PONOS_UNUSED_VARIABLE(v);
+  PONOS_UNUSED_VARIABLE(w);
+  PONOS_UNUSED_VARIABLE(h);
   //  glBegin(GL_LINES);
   //  glVertex(p);
   //  glVertex(p + v);

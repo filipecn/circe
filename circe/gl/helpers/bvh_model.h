@@ -19,8 +19,8 @@ public:
   /* @inherit */
   void draw(const CameraInterface *camera,
             ponos::Transform transform) override {
-    UNUSED_VARIABLE(camera);
-    UNUSED_VARIABLE(transform);
+    PONOS_UNUSED_VARIABLE(camera);
+    PONOS_UNUSED_VARIABLE(transform);
     ponos::Transform inv = ponos::inverse(bvh->sceneMesh->transform);
     ponos::Ray3 r(ponos::point3(0, 0, 0), ponos::vec3(1, 1, 1));
     //    glBegin(GL_LINES);
@@ -64,7 +64,7 @@ public:
   }
 
   bool intersect(const ponos::Ray3 &r, float *t = nullptr) override {
-    UNUSED_VARIABLE(t);
+    PONOS_UNUSED_VARIABLE(t);
     ray = r;
     return false;
   }

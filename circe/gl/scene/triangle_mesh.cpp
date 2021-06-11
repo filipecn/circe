@@ -11,8 +11,8 @@ TriangleMesh::TriangleMesh(const ponos::RawMesh *m) : SceneMeshObject(m) {}
 
 void TriangleMesh::draw(const CameraInterface *camera,
                         ponos::Transform transform) {
-  UNUSED_VARIABLE(camera);
-  UNUSED_VARIABLE(transform);
+  PONOS_UNUSED_VARIABLE(camera);
+  PONOS_UNUSED_VARIABLE(transform);
 }
 
 } // namespace circe

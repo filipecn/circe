@@ -148,7 +148,7 @@ void InstanceSet::bind(uint b) {
 
 void InstanceSet::draw(const CameraInterface *camera,
                        ponos::Transform transform) {
-  UNUSED_VARIABLE(transform);
+  PONOS_UNUSED_VARIABLE(transform);
   if (!base_mesh_ || !count_)
     return;
   // bind buffers and locate attributes

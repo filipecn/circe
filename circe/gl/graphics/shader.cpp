@@ -136,7 +136,7 @@ ShaderProgram &ShaderProgram::operator=(const ShaderProgram &other) {
 }
 
 ShaderProgram::ShaderProgram(int id) {
-  FATAL_ASSERT(id >= 0);
+  PONOS_ASSERT(id >= 0);
   programId = static_cast<GLuint>(id);
 }
 

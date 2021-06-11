@@ -165,7 +165,7 @@ void GraphicsDisplay::processInput() { glfwPollEvents(); }
 int GraphicsDisplay::keyState(int key) { return glfwGetKey(window, key); }
 
 void GraphicsDisplay::error_callback(int error, const char *description) {
-  UNUSED_VARIABLE(error);
+  PONOS_UNUSED_VARIABLE(error);
   fputs(description, stderr);
 }
 
@@ -181,12 +181,12 @@ void GraphicsDisplay::registerCharFunc(
 }
 
 void GraphicsDisplay::charFunc(unsigned int codepoint) {
-  UNUSED_VARIABLE(codepoint);
+  PONOS_UNUSED_VARIABLE(codepoint);
 }
 
 void GraphicsDisplay::char_callback(GLFWwindow *window,
                                     unsigned int codepoint) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   if (instance_.keyCallback)
     instance_.charCallback(codepoint);
   else
@@ -203,13 +203,13 @@ void GraphicsDisplay::registerDropFunc(
 }
 
 void GraphicsDisplay::dropFunc(int count, const char **filenames) {
-  UNUSED_VARIABLE(count);
-  UNUSED_VARIABLE(filenames);
+  PONOS_UNUSED_VARIABLE(count);
+  PONOS_UNUSED_VARIABLE(filenames);
 }
 
 void GraphicsDisplay::drop_callback(GLFWwindow *window, int count,
                                     const char **filenames) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   if (instance_.keyCallback)
     instance_.dropCallback(count, filenames);
   else
@@ -227,7 +227,7 @@ void GraphicsDisplay::registerKeyFunc(
 
 void GraphicsDisplay::key_callback(GLFWwindow *window, int key, int scancode,
                                    int action, int mods) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   if (instance_.keyCallback)
     instance_.keyCallback(key, scancode, action, mods);
   else
@@ -238,8 +238,8 @@ void GraphicsDisplay::key_callback(GLFWwindow *window, int key, int scancode,
 
 void GraphicsDisplay::keyFunc(int key, int scancode, int action,
                               int modifiers) {
-  UNUSED_VARIABLE(scancode);
-  UNUSED_VARIABLE(modifiers);
+  PONOS_UNUSED_VARIABLE(scancode);
+  PONOS_UNUSED_VARIABLE(modifiers);
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 }
@@ -254,7 +254,7 @@ void GraphicsDisplay::registerButtonFunc(
 
 void GraphicsDisplay::button_callback(GLFWwindow *window, int button,
                                       int action, int mods) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   if (instance_.buttonCallback)
     instance_.buttonCallback(button, action, mods);
   else
@@ -264,9 +264,9 @@ void GraphicsDisplay::button_callback(GLFWwindow *window, int button,
 }
 
 void GraphicsDisplay::buttonFunc(int button, int action, int modifiers) {
-  UNUSED_VARIABLE(button);
-  UNUSED_VARIABLE(action);
-  UNUSED_VARIABLE(modifiers);
+  PONOS_UNUSED_VARIABLE(button);
+  PONOS_UNUSED_VARIABLE(action);
+  PONOS_UNUSED_VARIABLE(modifiers);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +278,7 @@ void GraphicsDisplay::registerMouseFunc(
 }
 
 void GraphicsDisplay::pos_callback(GLFWwindow *window, double x, double y) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   if (instance_.mouseCallback)
     instance_.mouseCallback(x, y);
   else
@@ -288,8 +288,8 @@ void GraphicsDisplay::pos_callback(GLFWwindow *window, double x, double y) {
 }
 
 void GraphicsDisplay::mouseFunc(double x, double y) {
-  UNUSED_VARIABLE(x);
-  UNUSED_VARIABLE(y);
+  PONOS_UNUSED_VARIABLE(x);
+  PONOS_UNUSED_VARIABLE(y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ void GraphicsDisplay::registerScrollFunc(
 }
 
 void GraphicsDisplay::scroll_callback(GLFWwindow *window, double x, double y) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   if (instance_.scrollCallback)
     instance_.scrollCallback(x, y);
   else
@@ -311,8 +311,8 @@ void GraphicsDisplay::scroll_callback(GLFWwindow *window, double x, double y) {
 }
 
 void GraphicsDisplay::scrollFunc(double x, double y) {
-  UNUSED_VARIABLE(x);
-  UNUSED_VARIABLE(y);
+  PONOS_UNUSED_VARIABLE(x);
+  PONOS_UNUSED_VARIABLE(y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +322,7 @@ void GraphicsDisplay::registerResizeFunc(
 }
 
 void GraphicsDisplay::resize_callback(GLFWwindow *window, int w, int h) {
-  UNUSED_VARIABLE(window);
+  PONOS_UNUSED_VARIABLE(window);
   instance_.resizeFunc(w, h);
   if (instance_.resizeCallback) {
     instance_.getWindowSize(w, h);
@@ -333,8 +333,8 @@ void GraphicsDisplay::resize_callback(GLFWwindow *window, int w, int h) {
 }
 
 void GraphicsDisplay::resizeFunc(int w, int h) {
-  UNUSED_VARIABLE(w);
-  UNUSED_VARIABLE(h);
+  PONOS_UNUSED_VARIABLE(w);
+  PONOS_UNUSED_VARIABLE(h);
   glfwGetFramebufferSize(window, &this->width, &this->height);
 }
 

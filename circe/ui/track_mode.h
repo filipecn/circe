@@ -40,15 +40,15 @@ public:
   virtual ~TrackMode() = default;
   /// Renders trackball mode helpers
   /// \param tb trackball reference
-  virtual void draw(const Trackball &tb) { UNUSED_VARIABLE(tb); }
+  virtual void draw(const Trackball &tb) { PONOS_UNUSED_VARIABLE(tb); }
   /// Starts the manipulation (usually triggered by a button press)
   /// \param tb trackball reference
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
   virtual void start(Trackball &tb, const CameraInterface &camera,
                      ponos::point2 p) {
-    UNUSED_VARIABLE(camera);
-    UNUSED_VARIABLE(tb);
+    PONOS_UNUSED_VARIABLE(camera);
+    PONOS_UNUSED_VARIABLE(tb);
     start_ = p;
     dragging_ = true;
   }
@@ -64,15 +64,15 @@ public:
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
   virtual void stop(Trackball &tb, CameraInterface &camera, ponos::point2 p) {
-    UNUSED_VARIABLE(p);
-    UNUSED_VARIABLE(camera);
+    PONOS_UNUSED_VARIABLE(p);
+    PONOS_UNUSED_VARIABLE(camera);
     dragging_ = false;
     ////    camera.applyTransform(tb.transform * partialTransform_);
     ////    tb.transform = ponos::Transform();
     tb.applyPartialTransform();
   }
   /// \return true if active
-  bool isActive() const { return dragging_; }
+  [[nodiscard]] bool isActive() const { return dragging_; }
 
 protected:
   /// Casts a ray from mouse's position to view plane
@@ -102,9 +102,9 @@ public:
               ponos::vec2 d) override {
     if (d == ponos::vec2())
       return;
-    UNUSED_VARIABLE(p);
-    UNUSED_VARIABLE(camera);
-    UNUSED_VARIABLE(tb);
+    PONOS_UNUSED_VARIABLE(p);
+    PONOS_UNUSED_VARIABLE(camera);
+    PONOS_UNUSED_VARIABLE(tb);
     float scale = (d.y < 0.f) ? 1.1f : 0.9f;
     tb.accumulatePartialTransform(ponos::scale(scale, scale, scale));
   }
@@ -116,11 +116,11 @@ public:
   PanMode() : TrackMode() {}
   ~PanMode() override = default;
 
-  void draw(const Trackball &tb) override { UNUSED_VARIABLE(tb); }
+  void draw(const Trackball &tb) override { PONOS_UNUSED_VARIABLE(tb); }
 
   void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
               ponos::vec2 d) override {
-    UNUSED_VARIABLE(d);
+    PONOS_UNUSED_VARIABLE(d);
     if (!dragging_)
       return;
     ponos::point3 a = hitViewPlane(tb, camera, start_);
@@ -140,7 +140,7 @@ public:
 
   void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
               ponos::vec2 d) override {
-    UNUSED_VARIABLE(d);
+    PONOS_UNUSED_VARIABLE(d);
     if (!dragging_)
       return;
     ponos::point3 a = hitViewPlane(tb, camera, start_);
@@ -161,14 +161,14 @@ public:
   RotateMode() : TrackMode() {}
   ~RotateMode() override = default;
   void draw(const Trackball &tb) override {
-    UNUSED_VARIABLE(tb);
+    PONOS_UNUSED_VARIABLE(tb);
 //    ponos::Sphere s(tb.center(), tb.radius() * 2.f);
 //    glColor4f(0, 0, 0, 0.5);
 //    draw_sphere(s);
   }
   void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
               ponos::vec2 d) override {
-    UNUSED_VARIABLE(d);
+    PONOS_UNUSED_VARIABLE(d);
     if (!dragging_ || p == start_)
       return;
     ponos::point3 a = hitSpherePlane(tb, camera, start_);

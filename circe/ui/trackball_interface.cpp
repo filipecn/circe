@@ -33,7 +33,7 @@ void TrackballInterface::draw() { modes_[curMode_]->draw(tb); }
 
 void TrackballInterface::buttonRelease(CameraInterface &camera, int button,
                                        ponos::point2 p) {
-  UNUSED_VARIABLE(button);
+  PONOS_UNUSED_VARIABLE(button);
   if (curMode_ != Mode::NONE)
     modes_[curMode_]->stop(tb, camera, p);
 }

@@ -72,7 +72,7 @@ void CartesianGrid::setDimension(size_t d, int a, int b) {
 }
 
 void CartesianGrid::draw(const CameraInterface *camera, ponos::Transform t) {
-  UNUSED_VARIABLE(t);
+  PONOS_UNUSED_VARIABLE(t);
   glBindVertexArray(VAO_grid_);
   gridShader_->begin();
   gridShader_->setUniform(

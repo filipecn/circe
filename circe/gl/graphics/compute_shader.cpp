@@ -58,7 +58,7 @@ void ComputeShader::bindTexture(GLenum t) const { texture->bind(t); }
 
 void ComputeShader::setBuffer(const char *name, GLuint id,
                               GLuint bindingPoint) {
-  UNUSED_VARIABLE(name);
+  PONOS_UNUSED_VARIABLE(name);
   // blockIndices.emplace_back(glGetProgramResourceIndex(programId,
   // GL_SHADER_STORAGE_BLOCK, name));
   blockIndices.emplace_back(bindingPoint);

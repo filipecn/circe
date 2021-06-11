@@ -37,29 +37,20 @@ public:
     skybox = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}});
     model = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}}, circe::shape_options::normal);
     // textures
-//    cubemap = circe::gl::Texture::fromFiles({
-//                                                "/home/filipecn/Desktop/skybox/right.jpg",
-//                                                "/home/filipecn/Desktop/skybox/left.jpg",
-//                                                "/home/filipecn/Desktop/skybox/top.jpg",
-//                                                "/home/filipecn/Desktop/skybox/bottom.jpg",
-//                                                "/home/filipecn/Desktop/skybox/front.jpg",
-//                                                "/home/filipecn/Desktop/skybox/back.jpg",
-//                                            });
+    cubemap = circe::gl::Texture::fromFiles({
+                                                "/home/filipecn/Desktop/skybox/right.jpg",
+                                                "/home/filipecn/Desktop/skybox/left.jpg",
+                                                "/home/filipecn/Desktop/skybox/top.jpg",
+                                                "/home/filipecn/Desktop/skybox/bottom.jpg",
+                                                "/home/filipecn/Desktop/skybox/front.jpg",
+                                                "/home/filipecn/Desktop/skybox/back.jpg",
+                                            });
 
-    cubemap = circe::gl::Texture::fromFile("/home/filipecn/Desktop/hdr/Ueno-Shrine/03-Ueno-Shrine_3k.hdr",
-                                           circe::texture_options::equirectangular |
-                                               circe::texture_options::hdr,
-                                           circe::texture_options::cubemap);
     cubemap.bind();
     circe::gl::Texture::View view(GL_TEXTURE_CUBE_MAP);
-    view[GL_TEXTURE_MIN_FILTER] = GL_LINEAR_MIPMAP_LINEAR;
     view.apply();
-    cubemap.generateMipmap();
     cubemap.unbind();
 
-    irradiance_map = circe::gl::IBL::irradianceMap(cubemap, {32, 32});
-    prefilter_map = circe::gl::IBL::preFilteredEnvironmentMap(cubemap, {128, 128});
-    lut = circe::gl::IBL::brdfIntegrationMap({512, 512});
     unfolded = circe::gl::Texture::fromTexture(cubemap);
 
     if (!skybox.program.link(shaders_path, "skybox"))
@@ -75,9 +66,7 @@ public:
 
   void render(circe::CameraInterface *camera) override {
     glEnable(GL_DEPTH_TEST);
-//    cubemap.bind(GL_TEXTURE0);
-    prefilter_map.bind(GL_TEXTURE0);
-//    irradiance_map.bind(GL_TEXTURE0);
+    cubemap.bind(GL_TEXTURE0);
     model.program.use();
     model.program.setUniform("projection", camera->getProjectionTransform());
     model.program.setUniform("view", camera->getViewTransform());
@@ -92,11 +81,10 @@ public:
     skybox.program.setUniform("projection", camera->getProjectionTransform());
     skybox.program.setUniform("view", ponos::transpose(m));
     skybox.program.setUniform("skybox", 0);
-//    skybox.program.setUniform("equirectangularMap", 0);
     skybox.draw();
     glDepthFunc(GL_LESS);
 
-    ImGui::Begin("Shadow Map");
+    ImGui::Begin("Cubemap");
     unfolded.bind(GL_TEXTURE0);
     auto texture_id = unfolded.textureObjectId();
     ImGui::Image((void *) (intptr_t) (texture_id),
@@ -112,7 +100,6 @@ public:
   circe::gl::SceneModel model;
   circe::gl::SceneModel skybox;
   circe::gl::Texture cubemap, unfolded;
-  circe::gl::Texture irradiance_map, prefilter_map, lut;
 };
 
 int main() {

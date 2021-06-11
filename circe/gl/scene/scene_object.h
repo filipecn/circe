@@ -53,8 +53,8 @@ public:
   /// \param t **[out]** receives the parametric value of the intersection
   /// \return **true** if intersection is found
   virtual bool intersect(const ponos::Ray3 &r, float *t = nullptr) {
-    UNUSED_VARIABLE(t);
-    UNUSED_VARIABLE(r);
+    PONOS_UNUSED_VARIABLE(t);
+    PONOS_UNUSED_VARIABLE(r);
     return false;
   }
 
@@ -68,8 +68,8 @@ public:
 
 class SceneMeshObject : public SceneObject {
 public:
-  SceneMeshObject() {}
-  SceneMeshObject(const std::string &filename) {
+  SceneMeshObject() = default;
+  explicit SceneMeshObject(const std::string &filename) {
     ponos::RawMeshSPtr rawMesh(new ponos::RawMesh());
     loadOBJ(filename, rawMesh.get());
     rawMesh->computeBBox();
@@ -85,16 +85,16 @@ public:
     mesh_ = createSceneMeshPtr(m);
     shader_ = s;
   }
-  SceneMeshObject(
+  explicit SceneMeshObject(
       const ponos::RawMesh *m,
       std::function<void(ShaderProgram *, const CameraInterface *,
                          ponos::Transform)>
       f =
       [](ShaderProgram *s, const CameraInterface *camera,
          ponos::Transform t) {
-        UNUSED_VARIABLE(s);
-        UNUSED_VARIABLE(camera);
-        UNUSED_VARIABLE(t);
+        PONOS_UNUSED_VARIABLE(s);
+        PONOS_UNUSED_VARIABLE(camera);
+        PONOS_UNUSED_VARIABLE(t);
       },
       ShaderProgramPtr s = nullptr) {
     this->visible = true;

@@ -30,8 +30,8 @@ WireframeMesh::WireframeMesh(const std::string &filename)
     : SceneMeshObject(filename) {}
 
 WireframeMesh::WireframeMesh(ponos::RawMesh *m, const ponos::Transform &t) {
-  UNUSED_VARIABLE(m);
-  UNUSED_VARIABLE(t);
+  PONOS_UNUSED_VARIABLE(m);
+  PONOS_UNUSED_VARIABLE(t);
   // rawMesh = m;
   // setupVertexBuffer();
   // setupIndexBuffer();
@@ -40,7 +40,7 @@ WireframeMesh::WireframeMesh(ponos::RawMesh *m, const ponos::Transform &t) {
 
 void WireframeMesh::draw(const CameraInterface *camera,
                          ponos::Transform transform) {
-  UNUSED_VARIABLE(camera);
+  PONOS_UNUSED_VARIABLE(camera);
   // glPushMatrix();
   // vb->bind();
   // ib->bind();

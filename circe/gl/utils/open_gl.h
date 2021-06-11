@@ -9,23 +9,21 @@
 #include <glad/glad.h>
 #endif // GLAD_ALREADY_INCLUDED
 
-// #include <nanogui/nanogui.h>
 //#include <vulkan/vulkan.h>
 //#define GLFW_INCLUDE_GLU
-//#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#if defined(NANOGUI_GLAD)
-#if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
-#define GLAD_GLAPI_EXPORT
-#endif
-#else
-#if defined(__APPLE__)
-#define GLFW_INCLUDE_GLCOREARB
-#else
-#define GL_GLEXT_PROTOTYPES
-#endif
-#endif
+//#if defined(NANOGUI_GLAD)
+//#if defined(NANOGUI_SHARED) && !defined(GLAD_GLAPI_EXPORT)
+//#define GLAD_GLAPI_EXPORT
+//#endif
+//#else
+//#if defined(__APPLE__)
+//#define GLFW_INCLUDE_GLCOREARB
+//#else
+//#define GL_GLEXT_PROTOTYPES
+//#endif
+//#endif
 
 #include <ponos/ponos.h>
 
@@ -314,7 +312,7 @@ public:
 #endif
 
 inline void glfwError(int id, const char *description) {
-  UNUSED_VARIABLE(id);
+  PONOS_UNUSED_VARIABLE(id);
   std::cerr << description << std::endl;
 }
 

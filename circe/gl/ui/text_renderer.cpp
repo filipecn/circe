@@ -69,9 +69,9 @@ TextRenderer::TextRenderer(float scale, Color c, size_t id)
 
 void TextRenderer::render(std::string s, GLfloat x, GLfloat y, GLfloat scale,
                           Color c) {
-  UNUSED_VARIABLE(x);
-  UNUSED_VARIABLE(y);
-  UNUSED_VARIABLE(scale);
+  PONOS_UNUSED_VARIABLE(x);
+  PONOS_UNUSED_VARIABLE(y);
+  PONOS_UNUSED_VARIABLE(scale);
   atlas.setText(std::move(s));
   atlas.mesh->bind();
   atlas.mesh->vertexBuffer()->locateAttributes(*quad_.shader().get());
@@ -99,7 +99,7 @@ void TextRenderer::render(std::string s, GLfloat x, GLfloat y, GLfloat scale,
 void TextRenderer::render(std::string s, const ponos::point3 &p,
                           const CameraInterface *camera, GLfloat scale,
                           Color c) {
-  UNUSED_VARIABLE(camera);
+  PONOS_UNUSED_VARIABLE(camera);
   atlas.setText(std::move(s));
   atlas.mesh->bind();
   atlas.mesh->vertexBuffer()->locateAttributes(*quad_.shader().get());
