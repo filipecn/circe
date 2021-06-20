@@ -36,6 +36,7 @@ ShaderModule::ShaderModule() = default;
 ShaderModule::ShaderModule(const LogicalDevice::Ref &logical_device,
                            const ponos::Path &filename)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   std::vector<u8> source_code = ponos::FileSystem::readBinaryFile(filename.fullName().c_str());
   if (source_code.empty()) {
     PONOS_LOG_WARNING(ponos::Str::concat("Could not read shader file:", filename))
@@ -57,6 +58,7 @@ ShaderModule::ShaderModule(const LogicalDevice::Ref &logical_device,
 ShaderModule::ShaderModule(const LogicalDevice::Ref &logical_device,
                            std::vector<char> const &source_code)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkShaderModuleCreateInfo shader_module_create_info = {
       VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO, // VkStructureType sType
       nullptr,            // const void                 * pNext
@@ -113,5 +115,9 @@ bool ShaderModule::load(const std::string &filename) {
 }
 
 VkShaderModule ShaderModule::handle() const { return vk_shader_module_; }
+
+bool ShaderModule::good() const {
+  return logical_device_.good() && vk_shader_module_;
+}
 
 } // namespace circe

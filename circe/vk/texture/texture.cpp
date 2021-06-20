@@ -40,6 +40,8 @@ Texture::Texture(const LogicalDevice::Ref &logical_device,
                  const std::string &filename, uint32_t queue_family_index,
                  VkQueue queue)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(queue, "using bad queue.")
   auto tex_image_format = VK_FORMAT_R8G8B8A8_SRGB;
   int tex_width, tex_height, tex_channels;
   stbi_uc *pixels = stbi_load(filename.c_str(), &tex_width, &tex_height,
@@ -102,6 +104,7 @@ Texture::Texture(const LogicalDevice::Ref &logical_device, VkImageType type,
                  uint32_t num_layers, VkSampleCountFlagBits samples,
                  VkImageUsageFlags usage_scenarios, bool cubemap)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   image_.init(logical_device_, type, format, size, num_mipmaps,
               num_layers, samples, usage_scenarios, cubemap);
 }
@@ -134,6 +137,8 @@ bool Texture::good() const {
 
 void Texture::setData(const unsigned char *data, uint32_t queue_family_index,
                       VkQueue queue) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(queue, "using bad queue.")
   VkDeviceSize image_size = image_.size().width * image_.size().height * 4;
   Buffer staging_buffer(logical_device_, image_size,
                         VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -180,6 +185,8 @@ void Texture::generateMipmaps(VkQueue queue, uint32_t queue_family_index) {
     PONOS_LOG_WARNING("texture image format does not support linear blitting!")
     return;
   }
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(queue, "using bad queue.")
   // Perform several image transitions (one for each mip level)
   CommandPool::submitCommandBuffer(
       logical_device_, queue_family_index, queue, [&](CommandBuffer &cb) {

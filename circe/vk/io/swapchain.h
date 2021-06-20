@@ -38,14 +38,14 @@ namespace circe::vk {
 // Different from other high level libraries, such as OpenGL, Vulkan does
 // not have a system of framebuffers. In order to control the buffers that
 // are rendered and presented on the display, Vulkan provides a mechanism
-// called swap chain. The Vulkan swapchain is a queue of images that are
+// called swap chain. The Vulkan swap chain is a queue of images that are
 // presented to the screen in a synchronized manner, following the rules and
-// properties defined on its setup. The swapchain is owned by the
+// properties defined on its setup. The swap chain is owned by the
 // presentation engine, and not by the application. We can't create the
 // images or destroy them, all the application does is to request images, do
 // work and give it back to the presentation engine. In order to use the
-// swapchain, the device has to support the VK_KHR_swapchain extension. The
-// swapchain works following a presentation mode. The presentation mode
+// swap chain, the device has to support the VK_KHR_swap chain extension. The
+// swap chain works following a presentation mode. The presentation mode
 // defines the format of an image, the number of images (double/triple
 // buffering), v-sync and etc. In other words, it defines how images are
 // displayed on screen. Vulkan provides 4 presentation modes:
@@ -65,17 +65,17 @@ namespace circe::vk {
 //    presents an image, the new image replaces the one waiting in the
 //    queue. So the displayed image is always the most recent available.
 /// \note This class uses RAII
-class Swapchain final {
+class SwapChain final {
 public:
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
-  Swapchain();
-  /// \brief Create a Swapchain object
+  SwapChain();
+  /// \brief Create a SwapChain object
   /// \param logical_device **[in]** logical device handle
   /// \param presentation_surface **[in]** surface to which the swap chain will
   /// present
-  /// \param image_count **[in]** swapchain image count (ex: 2 = double
+  /// \param image_count **[in]** swap chain image count (ex: 2 = double
   /// buffering, 3 = triple buffering)
   /// Note: some devices don't support multiple buffers, the min/max number of
   /// images supported can be queried by the physical device object
@@ -83,31 +83,31 @@ public:
   /// space of the presentable images
   /// \param image_size **[in]** image size (in pixels)
   /// \param image_usage **[in]** image usages (ex: if rendering to the image as
-  /// a normal color attachment, use VK_IMAGE_USAGE_COLOR_ATTACHEMENT_BIT. If
+  /// a normal color attachment, use VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT. If
   /// rendering direct to the image, use ..._STORAGE_BIT)
   /// \param surface_transform **[in]** surface transform
   /// \param present_mode **[in]** presentation mode
-  [[maybe_unused]] Swapchain(const LogicalDevice::Ref& logical_device,
-            const SurfaceKHR &presentation_surface, u32 image_count,
-            VkSurfaceFormatKHR surface_format, VkExtent2D image_size,
-            VkImageUsageFlags image_usage,
-            VkSurfaceTransformFlagBitsKHR surface_transform,
-            VkPresentModeKHR present_mode);
-  Swapchain(const Swapchain &other) = delete;
-  Swapchain(Swapchain &&other) noexcept;
-  ~Swapchain();
+  [[maybe_unused]] SwapChain(const LogicalDevice::Ref &logical_device,
+                             const SurfaceKHR &presentation_surface, u32 image_count,
+                             VkSurfaceFormatKHR surface_format, VkExtent2D image_size,
+                             VkImageUsageFlags image_usage,
+                             VkSurfaceTransformFlagBitsKHR surface_transform,
+                             VkPresentModeKHR present_mode);
+  SwapChain(const SwapChain &other) = delete;
+  SwapChain(SwapChain &&other) noexcept;
+  ~SwapChain();
   // ***********************************************************************
   //                           OPERATORS
   // ***********************************************************************
-  Swapchain &operator=(const Swapchain &other) = delete;
-  Swapchain &operator=(Swapchain &&other) noexcept;
+  SwapChain &operator=(const SwapChain &other) = delete;
+  SwapChain &operator=(SwapChain &&other) noexcept;
   // ***********************************************************************
   //                           CREATION
   // ***********************************************************************
   /// \param logical_device **[in]** logical device handle
   /// \param presentation_surface **[in]** surface to which the swap chain will
   /// present
-  /// \param image_count **[in]** swapchain image count (ex: 2 = double
+  /// \param image_count **[in]** swap chain image count (ex: 2 = double
   /// buffering, 3 = triple buffering)
   /// Note: some devices don't support multiple buffers, the min/max number of
   /// images supported can be queried by the physical device object
@@ -115,7 +115,7 @@ public:
   /// space of the presentable images
   /// \param image_size **[in]** image size (in pixels)
   /// \param image_usage **[in]** image usages (ex: if rendering to the image as
-  /// a normal color attachment, use VK_IMAGE_USAGE_COLOR_ATTACHEMENT_BIT. If
+  /// a normal color attachment, use VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT. If
   /// rendering direct to the image, use ..._STORAGE_BIT)
   /// \param surface_transform **[in]** surface transform
   /// \param present_mode **[in]** presentation mode
@@ -125,8 +125,8 @@ public:
             VkImageUsageFlags image_usage,
             VkSurfaceTransformFlagBitsKHR surface_transform,
             VkPresentModeKHR present_mode);
-  /// Initializes swapchain object.
-  /// If this swapchain is already an initialized swapchain, this function will
+  /// Initializes swap chain object.
+  /// If this swap chain is already an initialized swap chain, this function will
   /// destroy it first and recreate it.
   /// \return
   bool init();
@@ -134,7 +134,7 @@ public:
   void destroy();
   /// \param presentation_surface **[in]** surface to which the swap chain will
   /// present
-  /// \param image_count **[in]** swapchain image count (ex: 2 = double
+  /// \param image_count **[in]** swap chain image count (ex: 2 = double
   /// buffering, 3 = triple buffering)
   /// Note: some devices don't support multiple buffers, the min/max number of
   /// images supported can be queried by the physical device object
@@ -142,7 +142,7 @@ public:
   /// space of the presentable images
   /// \param image_size **[in]** image size (in pixels)
   /// \param image_usage **[in]** image usages (ex: if rendering to the image as
-  /// a normal color attachment, use VK_IMAGE_USAGE_COLOR_ATTACHEMENT_BIT. If
+  /// a normal color attachment, use VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT. If
   /// rendering direct to the image, use ..._STORAGE_BIT)
   /// \param surface_transform **[in]** surface transform
   /// \param present_mode **[in]** presentation mode
@@ -178,8 +178,8 @@ public:
   [[nodiscard]] VkSurfaceKHR surface() const;
   [[nodiscard]] VkFormat imageFormat() const;
 
-  void setLogicalDevice(const LogicalDevice::Ref& logical_device);
-  void setPresentationSurface(const SurfaceKHR& surface);
+  void setLogicalDevice(const LogicalDevice::Ref &logical_device);
+  void setPresentationSurface(const SurfaceKHR &surface);
   void setNumberOfImages(u32 image_count);
   void setSurfaceFormat(VkSurfaceFormatKHR surface_format);
   void setImageSize(VkExtent2D image_extent);
@@ -190,7 +190,7 @@ public:
 private:
   VkSwapchainCreateInfoKHR info_ = {};
   LogicalDevice::Ref logical_device_;
-  VkSwapchainKHR vk_swapchain_ = VK_NULL_HANDLE;
+  VkSwapchainKHR vk_swap_chain_ = VK_NULL_HANDLE;
   std::vector<Image::Ref> images_{};
 };
 

@@ -89,7 +89,7 @@ public:
   bool setupDevice(const LogicalDevice &logical_device,
                    u32 queue_family_index);
   /// \return
-  [[nodiscard]] const Swapchain &swapchain() const;
+  [[nodiscard]] const SwapChain &swapchain() const;
   /// \return
   [[nodiscard]] const std::vector<Image::View> &swapchainImageViews() const;
   /// \return
@@ -99,20 +99,20 @@ public:
   // ***********************************************************************
   std::function<void(const ponos::size2 &)> resize_callback;
   std::function<void(CommandBuffer &, u32)> record_command_buffer_callback;
-  std::function<void()> destroy_swapchain_callback;
-  std::function<void()> create_swapchain_callback;
+  std::function<void()> destroy_swap_chain_callback;
+  std::function<void()> create_swap_chain_callback;
   std::function<void(u32)> prepare_frame_callback;
 
   ///
-  void recreateSwapchain();
+  void recreateSwapChain();
 private:
   // ***********************************************************************
-  //                          SWAPCHAIN CREATION
+  //                          SWAP CHAIN CREATION
   // ***********************************************************************
   /// \param surface_capabilities
   /// \param number_of_images
   /// \return
-  static bool selectNumberOfSwapchainImages(
+  static bool selectNumberOfSwapChainImages(
       VkSurfaceCapabilitiesKHR const &surface_capabilities,
       u32 &number_of_images);
   /// \param surface_capabilities
@@ -121,17 +121,17 @@ private:
   static bool chooseSizeOfSwapchainImages(
       VkSurfaceCapabilitiesKHR const &surface_capabilities,
       VkExtent2D &size_of_images);
-  void initSwapchain();
+  void initSwapChain();
   ///
-  void destroySwapchain();
+  void destroySwapChain();
 
   const PhysicalDevice *physical_device_ = nullptr;
   LogicalDevice::Ref logical_device_;
 
   const size_t max_frames_in_flight = 2;
-  // swapchain information
-  Swapchain swapchain_;
-  std::vector<Image::View> swapchain_image_views_;
+  // swap chain information
+  SwapChain swap_chain_;
+  std::vector<Image::View> swap_chain_image_views_;
   // command buffers
   CommandPool draw_command_pool_; //!< command pool used for draw command buffers
   std::vector<CommandBuffer> draw_command_buffers_; //!< command buffers used for rendering

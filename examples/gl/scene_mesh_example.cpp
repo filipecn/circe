@@ -7,7 +7,7 @@ const char *vs = "#version 440 core\n"
                  "layout(location = 1) in vec3 normal;"
                  "layout(location = 2) in vec2 texcoord;"
                  // per instance attributes
-                 "layout(location = 3) uniform mat4 proj;"
+                 "layout(location = 3) uniform mat4 projection;"
                  "layout(location = 4) uniform mat4 model;"
                  //       "uniform vec3 ldir;"
                  // output to fragment shader
@@ -17,7 +17,7 @@ const char *vs = "#version 440 core\n"
                  "vec2 uv;"
                  "} vertex;"
                  "void main() {"
-                 "    gl_Position = proj * model * vec4(position,1);"
+                 "    gl_Position = projection * model * vec4(position,1);"
                  //  "    gl_Position = vec4(position,1);"
                  //   "    vertex.normal = normalize(model * vec4(normal,
                  //   0)).xyz;" "    float intensity = max(dot(vertex.normal,
@@ -63,7 +63,7 @@ int main() {
   s.addVertexAttribute("position", 0);
   s.addVertexAttribute("normal", 1);
   s.addVertexAttribute("texcoord", 2);
-  s.addUniform("proj", 3);
+  s.addUniform("projection", 3);
   s.addUniform("model", 4);
   s.addUniform("tex", 5);
   // create a buffer for particles positions + sizes
@@ -72,7 +72,7 @@ int main() {
     smesh.vertexBuffer()->locateAttributes(s);
     texture.bind(GL_TEXTURE0);
     s.begin();
-    s.setUniform("proj",
+    s.setUniform("projection",
                  ponos::transpose(camera->getProjectionTransform().matrix()));
     s.setUniform("model",
                  ponos::transpose(camera->getViewTransform().matrix()));

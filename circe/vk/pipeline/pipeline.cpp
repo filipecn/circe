@@ -36,6 +36,7 @@ DescriptorSetLayout::DescriptorSetLayout() = default;
 
 DescriptorSetLayout::DescriptorSetLayout(const LogicalDevice::Ref &logical_device)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
 }
 
 DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout &&other) noexcept
@@ -60,6 +61,7 @@ DescriptorSetLayout &DescriptorSetLayout::operator=(DescriptorSetLayout &&other)
 
 bool DescriptorSetLayout::init() {
   destroy();
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkDescriptorSetLayoutCreateInfo info = {
       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0,
       static_cast<u32>(bindings_.size()),
@@ -94,6 +96,7 @@ void DescriptorSetLayout::addLayoutBinding(u32 binding,
 }
 
 VkDescriptorSetLayout DescriptorSetLayout::handle() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad DescriptorSetLayout handle.")
   return vk_descriptor_set_layout_;
 }
 
@@ -103,14 +106,21 @@ DescriptorSetLayout &PipelineLayout::descriptorSetLayout(u32 id) {
 
 PipelineLayout::Ref::Ref(const PipelineLayout *pipeline_layout) : pipeline_layout_{pipeline_layout} {}
 
+bool PipelineLayout::Ref::good() const {
+  return (pipeline_layout_) != nullptr && pipeline_layout_->good();
+}
+
 VkPipelineLayout PipelineLayout::Ref::handle() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad PipelineLayout handle.")
   return (pipeline_layout_) ? pipeline_layout_->handle() : VK_NULL_HANDLE;
 }
 
 PipelineLayout::PipelineLayout() = default;
 
 PipelineLayout::PipelineLayout(const LogicalDevice::Ref &logical_device)
-    : logical_device_(logical_device) {}
+    : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device.good(), "using bad device.")
+}
 
 PipelineLayout::PipelineLayout(PipelineLayout &&other) noexcept {
   logical_device_ = other.logical_device_;
@@ -140,6 +150,7 @@ void PipelineLayout::destroy() {
 }
 
 bool PipelineLayout::init() {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   std::vector<VkDescriptorSetLayout> layout_handles;
   for (auto &ds : descriptor_sets_)
     layout_handles.emplace_back(ds.handle());
@@ -163,6 +174,7 @@ bool PipelineLayout::init(const LogicalDevice::Ref &logical_device) {
 }
 
 VkPipelineLayout PipelineLayout::handle() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad PipelineLayout handle.")
   return vk_pipeline_layout_;
 }
 
@@ -183,11 +195,17 @@ std::vector<DescriptorSetLayout> &PipelineLayout::descriptorSetLayouts() {
   return descriptor_sets_;
 }
 
+bool PipelineLayout::good() const {
+  return logical_device_.good() && vk_pipeline_layout_ != VK_NULL_HANDLE;
+}
+
 DescriptorPool::DescriptorPool() = default;
 
 DescriptorPool::DescriptorPool(const LogicalDevice::Ref &logical_device,
                                u32 max_sets)
-    : max_sets_(max_sets), logical_device_(logical_device) {}
+    : max_sets_(max_sets), logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+}
 
 DescriptorPool::DescriptorPool(DescriptorPool &&other) noexcept {
   max_sets_ = other.max_sets_;
@@ -214,6 +232,7 @@ DescriptorPool &DescriptorPool::operator=(DescriptorPool &&other) noexcept {
 
 bool DescriptorPool::init() {
   destroy();
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkDescriptorPoolCreateInfo info = {
       VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr,
       VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, sets_count_,
@@ -244,12 +263,14 @@ void DescriptorPool::setPoolSize(VkDescriptorType type,
 }
 
 VkDescriptorPool DescriptorPool::handle() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad DescriptorPool handle.")
   return vk_descriptor_pool_;
 }
 
 bool DescriptorPool::allocate(
     std::vector<DescriptorSetLayout> &descriptor_set_layouts,
     std::vector<VkDescriptorSet> &descriptor_sets) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   if (vk_descriptor_pool_ == VK_NULL_HANDLE)
     PONOS_RETURN_IF_NOT_WITH_LOG(init(), false, "unable to init descriptor pool")
   std::vector<VkDescriptorSetLayout> dsls;
@@ -268,6 +289,8 @@ bool DescriptorPool::allocate(
 }
 
 bool DescriptorPool::free(const std::vector<VkDescriptorSet> &descriptor_sets) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(vk_descriptor_pool_, "using bad descriptor pool handle.")
   R_CHECK_VULKAN(
       vkFreeDescriptorSets(logical_device_.handle(), vk_descriptor_pool_,
                            descriptor_sets.size(), descriptor_sets.data()), false)
@@ -275,9 +298,15 @@ bool DescriptorPool::free(const std::vector<VkDescriptorSet> &descriptor_sets) {
 }
 
 bool DescriptorPool::reset() {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(vk_descriptor_pool_, "using bad descriptor pool handle.")
   R_CHECK_VULKAN(
       vkResetDescriptorPool(logical_device_.handle(), vk_descriptor_pool_, 0), false)
   return true;
+}
+
+bool DescriptorPool::good() const {
+  return logical_device_.good() && vk_descriptor_pool_ != VK_NULL_HANDLE;
 }
 
 PipelineShaderStage::PipelineShaderStage() = default;
@@ -333,6 +362,7 @@ void PipelineShaderStage::set(VkShaderStageFlagBits stage,
                               std::string name,
                               const void *specialization_info_data,
                               size_t specialization_info_data_size) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(module.good(), "using bad shader module.")
   stage_ = stage;
   module_ = module.handle();
   name_ = std::move(name);
@@ -364,7 +394,9 @@ const VkSpecializationInfo *PipelineShaderStage::specializationInfo() const {
 Pipeline::Pipeline() = default;
 
 Pipeline::Pipeline(const LogicalDevice::Ref &logical_device)
-    : logical_device_(logical_device) {}
+    : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+}
 
 Pipeline::Pipeline(Pipeline &&other) noexcept {
   destroy();
@@ -386,6 +418,7 @@ void Pipeline::destroy() {
 }
 
 bool Pipeline::saveCache(const std::string &path) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   size_t cache_data_size;
   // Determine the size of the cache data
   R_CHECK_VULKAN(vkGetPipelineCacheData(logical_device_.handle(),
@@ -412,9 +445,15 @@ bool Pipeline::saveCache(const std::string &path) {
   return result == VK_SUCCESS;
 }
 
-VkPipelineCache Pipeline::cache() const { return vk_pipeline_cache_; }
+VkPipelineCache Pipeline::cache() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(good() && vk_pipeline_cache_, "Accessing bad Pipeline Cache handle.")
+  return vk_pipeline_cache_;
+}
 
-VkPipeline Pipeline::handle() const { return vk_pipeline_; }
+VkPipeline Pipeline::handle() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad Pipeline handle.")
+  return vk_pipeline_;
+}
 
 void Pipeline::addShaderStage(const PipelineShaderStage &stage) {
   VkPipelineShaderStageCreateInfo info = {
@@ -428,23 +467,60 @@ void Pipeline::addShaderStage(const PipelineShaderStage &stage) {
   shader_stage_infos_.emplace_back(info);
 }
 
+bool Pipeline::good() const {
+  return logical_device_.good() && vk_pipeline_ != VK_NULL_HANDLE;
+}
+
+ComputePipeline::ComputePipeline() {
+  info_.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+  info_.pNext = nullptr;
+  info_.flags = 0;
+}
+
 ComputePipeline::ComputePipeline(const LogicalDevice::Ref &logical_device,
                                  const PipelineShaderStage &stage,
-                                 PipelineLayout &layout, Pipeline *cache,
+                                 const PipelineLayout::Ref &layout,
                                  ComputePipeline *base_pipeline,
                                  u32 base_pipeline_index)
     : Pipeline(logical_device) {
-  VkComputePipelineCreateInfo info = {
-      VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
-      nullptr,
-      0,
-      this->shader_stage_infos_[0],
-      layout.handle(),
-      (base_pipeline ? base_pipeline->handle() : VK_NULL_HANDLE),
-      static_cast<int32_t>(base_pipeline_index)};
-  vkCreateComputePipelines(this->logical_device_.handle(),
-                           (cache ? cache->cache() : VK_NULL_HANDLE), 1, &info,
-                           nullptr, &this->vk_pipeline_);
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(layout.good(), "using bad pipeline layout.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(base_pipeline ? base_pipeline->good() : true, "using bad base pipeline.")
+
+  info_.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+  info_.pNext = nullptr;
+  info_.flags = 0;
+  info_.layout = layout.handle();
+  info_.basePipelineHandle = (base_pipeline ? base_pipeline->handle() : VK_NULL_HANDLE);
+  info_.basePipelineIndex = base_pipeline_index;
+}
+
+ComputePipeline::ComputePipeline(ComputePipeline &&other) noexcept {
+  *this = std::move(other);
+}
+
+ComputePipeline &ComputePipeline::operator=(ComputePipeline &&other) noexcept {
+  destroy();
+  // pipeline
+  logical_device_ = other.logical_device_;
+  vk_pipeline_ = other.vk_pipeline_;
+  vk_pipeline_cache_ = other.vk_pipeline_cache_;
+  other.vk_pipeline_ = VK_NULL_HANDLE;
+  other.vk_pipeline_cache_ = VK_NULL_HANDLE;
+  shader_stage_infos_ = std::move(other.shader_stage_infos_);
+  // compute pipeline
+  info_ = other.info_;
+  return *this;
+}
+
+bool ComputePipeline::init(Pipeline *cache) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  // TODO check shader_stage_infos_ array
+  info_.stage = this->shader_stage_infos_[0];
+  R_CHECK_VULKAN(vkCreateComputePipelines(this->logical_device_.handle(),
+                                          (cache ? cache->cache() : VK_NULL_HANDLE), 1, &info_,
+                                          nullptr, &this->vk_pipeline_), false)
+  return true;
 }
 
 GraphicsPipeline::VertexInputState::VertexInputState() {
@@ -570,6 +646,7 @@ GraphicsPipeline::GraphicsPipeline(const LogicalDevice::Ref &logical_device,
                                    u32 base_pipeline_index)
     : Pipeline(logical_device), layout_(layout), renderpass_(renderpass),
       flags_(flags) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(base_pipeline ? base_pipeline->good() : true, "using bad base pipeline.")
   info_.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
   info_.flags = flags;
   info_.subpass = subpass;
@@ -610,6 +687,9 @@ GraphicsPipeline &GraphicsPipeline::operator=(GraphicsPipeline &&other) noexcept
 }
 
 bool GraphicsPipeline::init() {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(layout_.good(), "using bad pipeline layout.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(renderpass_.good(), "using bad renderpass.")
   destroy();
   info_.layout = layout_.handle();
   info_.renderPass = renderpass_.handle();

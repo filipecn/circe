@@ -68,6 +68,7 @@ public:
   //                           METHODS
   // ***********************************************************************
   void destroy();
+  [[nodiscard]] bool good() const;
   void setDevice(const LogicalDevice::Ref &logical_device);
   bool load(const std::string& filename);
   [[nodiscard]] VkShaderModule handle() const;

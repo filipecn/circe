@@ -632,7 +632,7 @@ public:
       VkPhysicalDevice physical_device, VkSurfaceKHR presentation_surface,
       VkSurfaceFormatKHR desired_surface_format, VkFormat &image_format,
       VkColorSpaceKHR &image_color_space);
-  /// \brief Create a Swapchain object
+  /// \brief Create a SwapChain object
   /// \param logical_device **[in]** logical device handle
   /// \param presentation_surface **[in]** surface handle
   /// \param image_count **[in]** swapchain image count

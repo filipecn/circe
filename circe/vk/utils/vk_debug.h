@@ -58,8 +58,7 @@ inline std::string vulkanResultString(VkResult err) {
   case VK_ERROR_INITIALIZATION_FAILED:
     return "VK_ERROR_INITIALIZATION_FAILED Initialization of an object could "
            "not be completed for implementation-specific reasons.";
-  case VK_ERROR_DEVICE_LOST:
-    return "VK_ERROR_DEVICE_LOST The logical or physical device has been lost. ";
+  case VK_ERROR_DEVICE_LOST:return "VK_ERROR_DEVICE_LOST The logical or physical device has been lost. ";
   case VK_ERROR_MEMORY_MAP_FAILED:return "VK_ERROR_MEMORY_MAP_FAILED Mapping of a memory object has failed.";
   case VK_ERROR_LAYER_NOT_PRESENT:
     return "VK_ERROR_LAYER_NOT_PRESENT A requested layer is not present or "
@@ -145,6 +144,13 @@ inline std::string vulkanResultString(VkResult err) {
   }
   return "UNDEFINED";
 }
+
+#define PONOS_VALIDATE_EXP_WITH_WARNING(A, M)   \
+  {                                             \
+    if(!(A))                                    \
+      PONOS_LOG_WARNING(M)                      \
+  }
+
 ///
 #define CHECK_VULKAN(A)                                                        \
   {                                                                            \

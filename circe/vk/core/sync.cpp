@@ -32,6 +32,7 @@ namespace circe::vk {
 
 Fence::Fence(const LogicalDevice::Ref &logical_device, VkFenceCreateFlags flags)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkFenceCreateInfo info = {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, nullptr,
                             flags};
   VkResult result =
@@ -52,28 +53,37 @@ Fence::Fence(Fence &&other) noexcept
 }
 
 Fence::~Fence() {
-  if (vk_fence_ != VK_NULL_HANDLE)
+  if (vk_fence_ != VK_NULL_HANDLE) {
     vkDestroyFence(logical_device_.handle(), vk_fence_, nullptr);
+    vk_fence_ = VK_NULL_HANDLE;
+  }
 }
 
 VkFence Fence::handle() const { return vk_fence_; }
 
 VkResult Fence::status() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(vk_fence_, "using bad fence.")
   return vkGetFenceStatus(logical_device_.handle(), vk_fence_);
 }
 
 void Fence::wait() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(vk_fence_, "using bad fence.")
   vkWaitForFences(logical_device_.handle(), 1, &vk_fence_, VK_TRUE,
                   UINT64_MAX);
 }
 
 void Fence::reset() const {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  PONOS_VALIDATE_EXP_WITH_WARNING(vk_fence_, "using bad fence.")
   vkResetFences(logical_device_.handle(), 1, &vk_fence_);
 }
 
 Semaphore::Semaphore(const LogicalDevice::Ref &logical_device,
                      VkSemaphoreCreateFlags flags)
     : logical_device_(logical_device) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkSemaphoreCreateInfo info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
                                 nullptr, flags};
   VkResult result = vkCreateSemaphore(logical_device.handle(), &info, nullptr,
@@ -96,8 +106,10 @@ Semaphore::Semaphore(Semaphore &&other) noexcept
 }
 
 Semaphore::~Semaphore() {
-  if (vk_semaphore_ != VK_NULL_HANDLE)
+  if (logical_device_.good() && vk_semaphore_ != VK_NULL_HANDLE) {
     vkDestroySemaphore(logical_device_.handle(), vk_semaphore_, nullptr);
+    vk_semaphore_ = VK_NULL_HANDLE;
+  }
 }
 
 VkSemaphore Semaphore::handle() const { return vk_semaphore_; }
@@ -109,6 +121,7 @@ ImageMemoryBarrier::ImageMemoryBarrier() {
 ImageMemoryBarrier::ImageMemoryBarrier(const Image &image,
                                        VkImageLayout old_layout,
                                        VkImageLayout new_layout) {
+  PONOS_VALIDATE_EXP_WITH_WARNING(image.good(), "using bad image.")
   vk_image_memory_barrier_.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
   vk_image_memory_barrier_.oldLayout = old_layout;
   vk_image_memory_barrier_.newLayout = new_layout;

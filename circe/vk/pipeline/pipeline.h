@@ -97,6 +97,8 @@ public:
     Ref() = default;
     ~Ref() = default;
 
+    [[nodiscard]] bool good() const;
+
     [[nodiscard]] VkPipelineLayout handle() const;
   private:
     explicit Ref(const PipelineLayout *pipeline_layout);
@@ -124,6 +126,7 @@ public:
   bool init();
   bool init(const LogicalDevice::Ref &logical_device);
   void destroy();
+  [[nodiscard]] bool good() const;
   // ***********************************************************************
   //                           METHODS
   // ***********************************************************************
@@ -193,6 +196,7 @@ public:
   bool init();
   bool init(const LogicalDevice::Ref &logical_device, u32 max_sets);
   void destroy();
+  [[nodiscard]] bool good() const;
   // ***********************************************************************
   //                           METHODS
   // ***********************************************************************
@@ -324,6 +328,7 @@ public:
   //                           CREATION
   // ***********************************************************************
   void destroy();
+  [[nodiscard]] bool good() const;
   // ***********************************************************************
   //                           METHODS
   // ***********************************************************************
@@ -354,6 +359,7 @@ public:
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
+  ComputePipeline();
   ////\brief Construct a new Compute Pipeline object
   ///
   ///\param logical_device **[in]**
@@ -363,10 +369,25 @@ public:
   ///\param base_pipeline **[in]**
   ///\param base_pipeline_index **[in]**
   ComputePipeline(const LogicalDevice::Ref &logical_device,
-                  const PipelineShaderStage &stage, PipelineLayout &layout,
-                  Pipeline *cache = nullptr,
+                  const PipelineShaderStage &stage, const PipelineLayout::Ref &layout,
                   ComputePipeline *base_pipeline = nullptr,
                   u32 base_pipeline_index = 0);
+  ComputePipeline(const ComputePipeline &other) = delete;
+  ComputePipeline(ComputePipeline &&other) noexcept;
+  // ***********************************************************************
+  //                           OPERATORS
+  // ***********************************************************************
+  ComputePipeline &operator=(const ComputePipeline &other) = delete;
+  ComputePipeline &operator=(ComputePipeline &&other) noexcept;
+  // ***********************************************************************
+  //                           CREATION
+  // ***********************************************************************
+  bool init(Pipeline* cache = nullptr);
+  // ***********************************************************************
+  //                           METHODS
+  // ***********************************************************************
+private:
+  VkComputePipelineCreateInfo info_{};
 };
 
 class GraphicsPipeline : public Pipeline {

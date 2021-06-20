@@ -30,7 +30,7 @@
 
 namespace circe::vk {
 
-bool RenderEngine::selectNumberOfSwapchainImages(
+bool RenderEngine::selectNumberOfSwapChainImages(
     VkSurfaceCapabilitiesKHR const &surface_capabilities,
     uint32_t &number_of_images) {
   number_of_images = surface_capabilities.minImageCount + 1;
@@ -65,22 +65,22 @@ bool RenderEngine::chooseSizeOfSwapchainImages(
   return true;
 }
 
-void RenderEngine::initSwapchain() {
+void RenderEngine::initSwapChain() {
   // init swapchain object
-  swapchain_.init();
+  swap_chain_.init();
   // init swapchain image views
-  const auto &swap_chain_images = swapchain_.images();
+  const auto &swap_chain_images = swap_chain_.images();
   for (const auto &swap_chain_image : swap_chain_images)
-    swapchain_image_views_.push_back(swap_chain_image.view(VK_IMAGE_VIEW_TYPE_2D,
-                                                           swapchain_.imageFormat(),
-                                                           VK_IMAGE_ASPECT_COLOR_BIT));
+    swap_chain_image_views_.push_back(swap_chain_image.view(VK_IMAGE_VIEW_TYPE_2D,
+                                                            swap_chain_.imageFormat(),
+                                                            VK_IMAGE_ASPECT_COLOR_BIT));
   // init command buffers
   draw_command_pool_.allocateCommandBuffers(VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                                            swapchain_image_views_.size(),
+                                            swap_chain_image_views_.size(),
                                             draw_command_buffers_);
 }
 
-void RenderEngine::destroySwapchain() {
+void RenderEngine::destroySwapChain() {
   // We must destroy the objects in the following order:
   // 1. color image (anti-aliasing resources)
   // 2. depth buffer
@@ -91,26 +91,26 @@ void RenderEngine::destroySwapchain() {
   // 7. renderpass
   // 8. swapchain image views
   // 9. swapchain
-  if (destroy_swapchain_callback)
-    destroy_swapchain_callback();
+  if (destroy_swap_chain_callback)
+    destroy_swap_chain_callback();
   draw_command_pool_.freeCommandBuffers(draw_command_buffers_);
-  swapchain_image_views_.clear();
-  swapchain_.destroy();
+  swap_chain_image_views_.clear();
+  swap_chain_.destroy();
 }
 
-void RenderEngine::recreateSwapchain() {
+void RenderEngine::recreateSwapChain() {
   // TODO: graphics_display_->waitForValidWindowSize(); -> not working, why?
   vkDeviceWaitIdle(logical_device_.handle());
   // re-initialize swapchain
-  destroySwapchain();
-  initSwapchain();
+  destroySwapChain();
+  initSwapChain();
   // process callbacks
   if (framebuffer_resized_ && resize_callback)
     resize_callback(resolution_);
-  if (create_swapchain_callback)
-    create_swapchain_callback();
+  if (create_swap_chain_callback)
+    create_swap_chain_callback();
   if (record_command_buffer_callback)
-    for (size_t i = 0; i < swapchain_image_views_.size(); ++i)
+    for (size_t i = 0; i < swap_chain_image_views_.size(); ++i)
       record_command_buffer_callback(draw_command_buffers_[i], i);
 }
 
@@ -129,7 +129,7 @@ bool RenderEngine::setupDevice(const LogicalDevice &logical_device,
   physical_device_ = logical_device.physicalDevice();
   logical_device_ = logical_device.ref();
 
-  swapchain_.setLogicalDevice(logical_device_);
+  swap_chain_.setLogicalDevice(logical_device_);
   PONOS_RETURN_IF_NOT(draw_command_pool_.init(logical_device_,
                                               VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
                                               queue_family_index), false)
@@ -146,23 +146,23 @@ bool RenderEngine::setupDevice(const LogicalDevice &logical_device,
 bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
                                           VkFormat desired_format,
                                           VkColorSpaceKHR desired_color_space) {
-  swapchain_.setPresentationSurface(surface);
+  swap_chain_.setPresentationSurface(surface);
   // PRESENTATION MODE
   {
     VkPresentModeKHR present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
-    PONOS_RETURN_IF_NOT(physical_device_->selectPresentationMode(swapchain_.surface(),
+    PONOS_RETURN_IF_NOT(physical_device_->selectPresentationMode(swap_chain_.surface(),
                                                                  VK_PRESENT_MODE_MAILBOX_KHR,
                                                                  present_mode), false)
-    swapchain_.setPresentMode(present_mode);
+    swap_chain_.setPresentMode(present_mode);
   }
   // CHECK SURFACE CAPABILITIES
   VkSurfaceCapabilitiesKHR surface_capabilities;
-  PONOS_RETURN_IF_NOT(physical_device_->surfaceCapabilities(swapchain_.surface(), surface_capabilities), false)
+  PONOS_RETURN_IF_NOT(physical_device_->surfaceCapabilities(swap_chain_.surface(), surface_capabilities), false)
   // GET NUMBER OF SWAPCHAIN IMAGES
   {
     uint32_t number_of_images = 0;
-    selectNumberOfSwapchainImages(surface_capabilities, number_of_images);
-    swapchain_.setNumberOfImages(number_of_images);
+    selectNumberOfSwapChainImages(surface_capabilities, number_of_images);
+    swap_chain_.setNumberOfImages(number_of_images);
   }
   // QUERY IMAGE SIZE
   {
@@ -170,7 +170,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
     PONOS_RETURN_IF_NOT(chooseSizeOfSwapchainImages(surface_capabilities, swap_chain_image_size), false)
     if ((0 == swap_chain_image_size.width) || (0 == swap_chain_image_size.height))
       return false;
-    swapchain_.setImageSize(swap_chain_image_size);
+    swap_chain_.setImageSize(swap_chain_image_size);
   }
   // USAGE
   {
@@ -178,7 +178,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     if (image_usage != VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
       return false;
-    swapchain_.setImageUsage(image_usage);
+    swap_chain_.setImageUsage(image_usage);
   }
   // IMAGE TRANSFORM
   {
@@ -186,17 +186,17 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
     if (surface_capabilities.supportedTransforms &
         VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
       surface_transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-    swapchain_.setSurfaceTransform(surface_transform);
+    swap_chain_.setSurfaceTransform(surface_transform);
   }
   // COLOR SPACE
   {
     VkFormat image_format;
     VkColorSpaceKHR image_color_space;
-    PONOS_RETURN_IF_NOT(physical_device_->selectFormatOfSwapchainImages(swapchain_.surface(),
+    PONOS_RETURN_IF_NOT(physical_device_->selectFormatOfSwapchainImages(swap_chain_.surface(),
                                                                         {desired_format, desired_color_space},
                                                                         image_format,
                                                                         image_color_space), false)
-    swapchain_.setSurfaceFormat({image_format, image_color_space});
+    swap_chain_.setSurfaceFormat({image_format, image_color_space});
   }
   return true;
 }
@@ -207,7 +207,7 @@ void RenderEngine::resize(const ponos::size2 &resolution) {
 }
 
 void RenderEngine::destroy() {
-  destroySwapchain();
+  destroySwapChain();
   render_finished_semaphores_.clear();
   image_available_semaphores_.clear();
   in_flight_fences_.clear();
@@ -215,12 +215,12 @@ void RenderEngine::destroy() {
   draw_command_pool_.destroy();
 }
 
-const Swapchain &RenderEngine::swapchain() const {
-  return swapchain_;
+const SwapChain &RenderEngine::swapchain() const {
+  return swap_chain_;
 }
 
 const std::vector<Image::View> &RenderEngine::swapchainImageViews() const {
-  return swapchain_image_views_;
+  return swap_chain_image_views_;
 }
 
 std::vector<CommandBuffer> &RenderEngine::commandBuffers() {
@@ -228,8 +228,8 @@ std::vector<CommandBuffer> &RenderEngine::commandBuffers() {
 }
 
 void RenderEngine::init() {
-  initSwapchain();
-  images_in_flight_.resize(swapchain_image_views_.size(), VK_NULL_HANDLE);
+  initSwapChain();
+  images_in_flight_.resize(swap_chain_image_views_.size(), VK_NULL_HANDLE);
 }
 
 void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
@@ -237,13 +237,13 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
   in_flight_fences_[current_frame].wait();
   uint32_t image_index = 0;
   auto next_image_result =
-      swapchain_.nextImage(image_available_semaphores_[current_frame].handle(),
-                           VK_NULL_HANDLE, image_index);
+      swap_chain_.nextImage(image_available_semaphores_[current_frame].handle(),
+                            VK_NULL_HANDLE, image_index);
   if (next_image_result == VK_ERROR_OUT_OF_DATE_KHR) {
     // when a swapchain is not valid/adequate anymore we need to recreate the
     // swapchain with new parameters. For that, we need to destroy the old
     // swapchain and the objects related to the swapchain, to recreate them later
-    recreateSwapchain();
+    recreateSwapChain();
     return;
   } else if (next_image_result != VK_SUCCESS &&
       next_image_result != VK_SUBOPTIMAL_KHR) {
@@ -290,7 +290,7 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
   presentInfo.waitSemaphoreCount = 1;
   presentInfo.pWaitSemaphores = signalSemaphores;
 
-  VkSwapchainKHR swapChains[] = {swapchain_.handle()};
+  VkSwapchainKHR swapChains[] = {swap_chain_.handle()};
   presentInfo.swapchainCount = 1;
   presentInfo.pSwapchains = swapChains;
 
@@ -300,7 +300,7 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
 
   if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR ||
       framebuffer_resized_) {
-    recreateSwapchain();
+    recreateSwapChain();
     framebuffer_resized_ = false;
   } else if (next_image_result != VK_SUCCESS) {
     PONOS_LOG_ERROR("error on presenting swapchain image!")

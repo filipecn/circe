@@ -81,8 +81,8 @@ void BaseApp::initRenderEngine() {
                                           queue_families_.family("graphics").family_index.value()))
   PONOS_ASSERT(render_engine_.setPresentationSurface(presentation_surface_))
   // register callbacks
-  render_engine_.create_swapchain_callback = [&]() { createSwapchain(); };
-  render_engine_.destroy_swapchain_callback = [&]() { destroySwapchain(); };
+  render_engine_.create_swap_chain_callback = [&]() { createSwapChain(); };
+  render_engine_.destroy_swap_chain_callback = [&]() { destroySwapChain(); };
   render_engine_.prepare_frame_callback = [&](uint32_t index) {
     prepareFrameImage(index);
   };
@@ -150,7 +150,7 @@ void BaseApp::init() {
   initRenderpass();
 }
 
-void BaseApp::createSwapchain() {
+void BaseApp::createSwapChain() {
   const auto &swapchain = render_engine_.swapchain();
 
   // COLOR RESOURCES (anti-aliasing)
@@ -184,7 +184,7 @@ void BaseApp::createSwapchain() {
   }
 }
 
-void BaseApp::destroySwapchain() {
+void BaseApp::destroySwapChain() {
   // destroy presentation objects
   color_image_view_.destroy();
   color_image_.destroy();
@@ -198,7 +198,7 @@ void BaseApp::destroySwapchain() {
 int BaseApp::run() {
   init();
   prepare();
-  render_engine_.recreateSwapchain();
+  render_engine_.recreateSwapChain();
   auto draw_callback = [&]() {
     nextFrame();
   };
