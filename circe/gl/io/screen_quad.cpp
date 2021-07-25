@@ -26,7 +26,7 @@
 #include "screen_quad.h"
 #include "buffer.h"
 #include <circe/gl/graphics/shader.h>
-#include <ponos/structures/raw_mesh.h>
+#include <hermes/data_structures/raw_mesh.h>
 
 namespace circe::gl {
 

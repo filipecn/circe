@@ -28,7 +28,7 @@
 #ifndef CIRCE_CIRCE_GL_HELPERS_SEGMENT_MODEL_H
 #define CIRCE_CIRCE_GL_HELPERS_SEGMENT_MODEL_H
 
-#include <ponos/geometry/segment.h>
+#include <hermes/geometry/segment.h>
 #include <circe/gl/scene/scene_object.h>
 #include <circe/gl/scene/scene_model.h>
 
@@ -42,7 +42,7 @@ public:
   ///
   /// \param bbox
   SegmentModel() = default;
-  explicit SegmentModel(const ponos::Segment3 &s);
+  explicit SegmentModel(const hermes::Segment3 &s);
   ~SegmentModel() override;
   // ***********************************************************************
   //                           OPERATORS
@@ -50,18 +50,18 @@ public:
   ///
   /// \param s
   /// \return
-  SegmentModel &operator=(const ponos::Segment3 &s);
+  SegmentModel &operator=(const hermes::Segment3 &s);
   // ***********************************************************************
   //                             METHODS
   // ***********************************************************************
   ///
   /// \param camera
   /// \param t
-  void draw(const CameraInterface *camera, ponos::Transform t) override;
+  void draw(const CameraInterface *camera, hermes::Transform t) override;
   // ***********************************************************************
   //                          PUBLIC FIELDS
   // ***********************************************************************
-  ponos::Transform transform;
+  hermes::Transform transform;
   circe::Color color{1.f, 1.f, 1.f, .5f};
 
 private:

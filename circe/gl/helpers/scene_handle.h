@@ -36,7 +36,7 @@ public:
   CircleHandle() {
     fillColor = selectedColor = Color::Blue();
     fillColor.a = 0.1f;
-    circle.c = ponos::point2();
+    circle.c = hermes::point2();
     circle.r = 0.1f;
   }
   void draw() const {
@@ -46,12 +46,12 @@ public:
     // draw_circle(circle, &this->transform);
   }
 
-  bool intersect(const ponos::Ray3 &r, float *t = nullptr) override {
-    return ponos::distance2(circle.c, ponos::point2(r.o.x, r.o.y)) <=
-           ponos::SQR(circle.r);
+  bool intersect(const hermes::Ray3 &r, float *t = nullptr) override {
+    return hermes::distance2(circle.c, hermes::point2(r.o.x, r.o.y)) <=
+           hermes::Numbers::sqr(circle.r);
   }
 
-  ponos::Circle circle;
+  hermes::Circle circle;
   Color fillColor;
   Color selectedColor;
   std::function<void(T *)> updateCallback;

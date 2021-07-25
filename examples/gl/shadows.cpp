@@ -31,11 +31,11 @@
 /// Light + Shadow Map
 struct LightObject {
   void update() {
-    light.direction = ponos::vec3(model_transform(ponos::point3(0, 0, 0)));
+    light.direction = hermes::vec3(model_transform(hermes::point3(0, 0, 0)));
     shadow_map.setLight(light);
   }
 
-  ponos::Transform model_transform;
+  hermes::Transform model_transform;
   circe::Light light;
   circe::gl::ShadowMap shadow_map;
 };
@@ -43,26 +43,26 @@ struct LightObject {
 class ShadowsExample : public circe::gl::BaseApp {
 public:
   ShadowsExample() : BaseApp(800, 800) {
-    ponos::Path assets_path(std::string(ASSETS_PATH));
-    ponos::Path shaders_path(std::string(SHADERS_PATH));
+    hermes::Path assets_path(std::string(ASSETS_PATH));
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
     // setup lights
     for (auto &light : lights) {
-      light.model_transform = ponos::translate({0, 1, 3});
-      light.shadow_map.setLightProjection(ponos::Transform::ortho(-10., 10., -10., 10., 0., 30));
+      light.model_transform = hermes::Transform::translate({0, 1, 3});
+      light.shadow_map.setLightProjection(hermes::Transform::ortho(-10., 10., -10., 10., 0., 30));
     }
     // setup meshes
     light_box = circe::Shapes::box({{-10, -10, 0}, {10, 10, 30}}, circe::shape_options::wireframe);
     light_model = circe::Shapes::icosphere({}, 0.3, 3);
     ball = circe::Shapes::icosphere({3, 3, 0}, 0.5, 5, circe::shape_options::normal);
     mesh = circe::gl::SceneModel::fromFile("/home/filipecn/Desktop/teapot.obj", circe::shape_options::normal);
-    floor = circe::Shapes::plane(ponos::Plane::XY(), {}, {20, 0, 0}, 20,
+    floor = circe::Shapes::plane(hermes::Plane::XY(), {}, {20, 0, 0}, 20,
                                  circe::shape_options::normal);
-    wall = circe::Shapes::plane(ponos::Plane::YZ(), {}, {0, 20, 0}, 20,
+    wall = circe::Shapes::plane(hermes::Plane::YZ(), {}, {0, 20, 0}, 20,
                                 circe::shape_options::normal);
-    xy_wall = circe::Shapes::plane(ponos::Plane::XZ(), {}, {0, 0, 20}, 20,
+    xy_wall = circe::Shapes::plane(hermes::Plane::XZ(), {}, {0, 0, 20}, 20,
                                    circe::shape_options::normal);
-    wall.transform = ponos::translate({-4, 0, 0});
-    xy_wall.transform = ponos::translate({0, -4, 0});
+    wall.transform = hermes::Transform::translate({-4, 0, 0});
+    xy_wall.transform = hermes::Transform::translate({0, -4, 0});
     // resize floor material
     floor_mtl.albedo = vec3_16(.3f, .0f, .0f);
     floor_mtl.ao = 1;
@@ -80,14 +80,14 @@ public:
     ball_mtl.roughness = 0.35;
     // setup shader program
     if (!light_model.program.link(shaders_path, "color"))
-      spdlog::error("Failed to load model shader: " + light_model.program.err);
+      hermes::Log::error("Failed to load model shader: " + light_model.program.err);
     if (!program.link(shaders_path, "pbr"))
-      spdlog::error("Failed to load model shader: " + program.err);
+      hermes::Log::error("Failed to load model shader: " + program.err);
     // setup UBO
     ubo.push(program);
     program.setUniformBlockBinding("PBR", 0);
     // setup SSBO
-    ponos::AoS aos;
+    hermes::AoS aos;
     aos.pushField<vec3_16>("position");
     aos.pushField<vec3_16>("color");
     aos.resize(1);
@@ -189,7 +189,7 @@ public:
                 lights[0].light.direction.z);
     ssbo.memory()->unmap();
     // update debug box
-    auto t = ponos::inverse(ponos::Transform::lookAt(ponos::point3() + lights[0].light.direction));
+    auto t = hermes::inverse(hermes::Transform::lookAt(hermes::point3() + lights[0].light.direction));
     light_box.transform = t;
   }
 

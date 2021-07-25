@@ -29,7 +29,6 @@
 #include <circe/ui/track_mode.h>
 #include <circe/ui/trackball.h>
 
-#include <ponos/ponos.h>
 #include <vector>
 
 namespace circe {
@@ -50,21 +49,21 @@ public:
   /// \param camera
   /// \param button button code
   /// \param p normalized mouse position
-  void buttonRelease(CameraInterface &camera, int button, ponos::point2 p);
+  void buttonRelease(CameraInterface &camera, int button, hermes::point2 p);
   /// process mouse button press event
   /// \param camera
   /// \param button button code
   /// \param p normalized mouse position
-  void buttonPress(const CameraInterface &camera, int button, ponos::point2 p);
+  void buttonPress(const CameraInterface &camera, int button, hermes::point2 p);
   /// process mouse move event
   /// \param camera
   /// \param p normalized mouse position
-  void mouseMove(CameraInterface &camera, ponos::point2 p);
+  void mouseMove(CameraInterface &camera, hermes::point2 p);
   /// process mouse wheel event
   /// \param camera
   /// \param p normalized mouse position
   /// \param d scroll vector
-  void mouseScroll(CameraInterface &camera, ponos::point2 p, ponos::vec2 d);
+  void mouseScroll(CameraInterface &camera, hermes::point2 p, hermes::vec2 d);
   /// Attaches a new mode to the interface
   /// \param button button to be mapped to mode
   /// \param mode attached mode

@@ -34,7 +34,7 @@ class VolumeBox2 : public SceneMeshObject {
 public:
   VolumeBox2(u32 w, u32 h, float *data = nullptr);
   ~VolumeBox2() override;
-  void draw(const CameraInterface *camera, ponos::Transform t) override;
+  void draw(const CameraInterface *camera, hermes::Transform t) override;
   /// \return
   const Texture &texture() const;
   /// \return
@@ -43,8 +43,8 @@ public:
   void update(float *data);
 
   float absorption = 1.f;
-  ponos::vec3 light_intensity = ponos::vec3(1);
-  ponos::vec2 light_position = ponos::vec2();
+  hermes::vec3 light_intensity = hermes::vec3(1);
+  hermes::vec2 light_position = hermes::vec2();
 private:
   VolumeBox2();
   void render(GLenum cullFace);
@@ -59,7 +59,7 @@ public:
   /// \param data [default = nullptr] initial data
   VolumeBox(size_t w, size_t h, size_t d, float *data = nullptr);
   ~VolumeBox() override;
-  void draw(const CameraInterface *camera, ponos::Transform t) override;
+  void draw(const CameraInterface *camera, hermes::Transform t) override;
   /// \return
   const Texture &texture() const;
   /// \return
@@ -68,8 +68,8 @@ public:
   void update(float *data);
 
   float absorption = 1.f;
-  ponos::vec3 lightIntensity = ponos::vec3(1);
-  ponos::vec3 lightPos = ponos::vec3();
+  hermes::vec3 lightIntensity = hermes::vec3(1);
+  hermes::vec3 lightPos = hermes::vec3();
 
 private:
   VolumeBox();

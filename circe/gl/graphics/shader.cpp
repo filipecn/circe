@@ -23,7 +23,7 @@
  */
 
 #include <circe/gl/graphics/shader.h>
-#include <ponos/common/file_system.h>
+#include <hermes/common/file_system.h>
 #include <iomanip>    // std::setw
 #include <ios>        // std::left
 
@@ -37,7 +37,7 @@ Shader::Shader(GLuint type, const std::string &code) :
     compile(code, type);
 }
 
-Shader::Shader(const ponos::Path &code, GLuint type) : Shader(type, "") {
+Shader::Shader(const hermes::Path &code, GLuint type) : Shader(type, "") {
   compile(code, type);
 }
 
@@ -101,7 +101,7 @@ bool Shader::compile(const std::string &code, GLuint type) {
   return compile(code);
 }
 
-bool Shader::compile(const ponos::Path &file, GLuint type) {
+bool Shader::compile(const hermes::Path &file, GLuint type) {
   setType(type);
   return compile(file.read());
 }
@@ -136,7 +136,7 @@ ShaderProgram &ShaderProgram::operator=(const ShaderProgram &other) {
 }
 
 ShaderProgram::ShaderProgram(int id) {
-  PONOS_ASSERT(id >= 0);
+  HERMES_ASSERT(id >= 0);
   programId = static_cast<GLuint>(id);
 }
 
@@ -194,7 +194,7 @@ void ShaderProgram::addUniform(const std::string &name, GLint location) {
   uniformLocations[name] = location;
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::Transform &t) {
+void ShaderProgram::setUniform(const char *name, const hermes::Transform &t) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -204,7 +204,7 @@ void ShaderProgram::setUniform(const char *name, const ponos::Transform &t) {
   glUniformMatrix4fv(loc, 1, GL_FALSE, &t.matrix()[0][0]);
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::mat4 &m) {
+void ShaderProgram::setUniform(const char *name, const hermes::mat4 &m) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -214,7 +214,7 @@ void ShaderProgram::setUniform(const char *name, const ponos::mat4 &m) {
   glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::mat3 &m) {
+void ShaderProgram::setUniform(const char *name, const hermes::mat3 &m) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -224,7 +224,7 @@ void ShaderProgram::setUniform(const char *name, const ponos::mat3 &m) {
   glUniformMatrix3fv(loc, 1, GL_FALSE, &m[0][0]);
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::vec4 &v) {
+void ShaderProgram::setUniform(const char *name, const hermes::vec4 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -234,7 +234,7 @@ void ShaderProgram::setUniform(const char *name, const ponos::vec4 &v) {
   glUniform4fv(loc, 1, &v.x);
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::vec3 &v) {
+void ShaderProgram::setUniform(const char *name, const hermes::vec3 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -244,7 +244,7 @@ void ShaderProgram::setUniform(const char *name, const ponos::vec3 &v) {
   glUniform3fv(loc, 1, &v.x);
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::point3 &v) {
+void ShaderProgram::setUniform(const char *name, const hermes::point3 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -254,7 +254,7 @@ void ShaderProgram::setUniform(const char *name, const ponos::point3 &v) {
   CHECK_GL(glUniform3fv(loc, 1, &v.x));
 }
 
-void ShaderProgram::setUniform(const char *name, const ponos::vec2 &v) {
+void ShaderProgram::setUniform(const char *name, const hermes::vec2 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
     std::cerr << "Attribute " << name
@@ -311,7 +311,7 @@ GLint ShaderProgram::getUniLoc(const GLchar *name) {
 
 Program::Program() = default;
 
-Program::Program(const std::vector<ponos::Path> &files) : Program() {
+Program::Program(const std::vector<hermes::Path> &files) : Program() {
   std::vector<Shader> shaders;
   for (const auto &file : files) {
     GLuint type = GL_VERTEX_SHADER;
@@ -328,7 +328,7 @@ Program::Program(const std::vector<ponos::Path> &files) : Program() {
   link(shaders);
 }
 
-Program::Program(std::initializer_list<ponos::Path> files) : Program() {
+Program::Program(std::initializer_list<hermes::Path> files) : Program() {
   link(files);
 }
 
@@ -383,9 +383,9 @@ bool Program::link() {
   return true;
 }
 
-bool Program::link(const ponos::Path &folder, const std::string &shader_name) {
-  std::vector<ponos::Path> shaders;
-  auto ls = ponos::FileSystem::ls(folder);
+bool Program::link(const hermes::Path &folder, const std::string &shader_name) {
+  std::vector<hermes::Path> shaders;
+  auto ls = hermes::FileSystem::ls(folder);
   std::vector<std::string> extensions = {"vert", "frag"};
   for (const auto &f : ls)
     if (f.isFile() && f.name().substr(0, f.name().size() - 5) == shader_name) {
@@ -405,7 +405,7 @@ bool Program::link(const std::vector<Shader> &shaders) {
   return link();
 }
 
-bool Program::link(const std::vector<ponos::Path> &shader_file_list) {
+bool Program::link(const std::vector<hermes::Path> &shader_file_list) {
   if (shader_file_list.empty()) {
     err = "Empty list of shader files.";
     return false;
@@ -506,7 +506,7 @@ void Program::cacheLocations() {
       const auto &u = uniforms_.back();
       for (int j = 1; j < u.array_size; ++j) {
         Uniform au = u;
-        au.name = ponos::Str::replace_r(u.name, "[0]", std::to_string(j));
+        au.name = hermes::Str::replace_r(u.name, "[0]", std::to_string(j));
         au.index = i + j;
         au.location = u.location + j;
         uniform_locations_[au.name] = au.location;
@@ -569,70 +569,64 @@ int Program::locateAttribute(const std::string &name) const {
 
 GLuint Program::id() const { return id_; }
 
-void Program::setUniform(const std::string &name, const ponos::Transform &t) const {
+void Program::setUniform(const std::string &name, const hermes::Transform &t) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Must be added first.)\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniformMatrix4fv(loc, 1, GL_TRUE, &t.matrix()[0][0]);
 }
 
-void Program::setUniform(const std::string &name, const ponos::mat4 &m) {
+void Program::setUniform(const std::string &name, const hermes::mat4 &m) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
 }
 
-void Program::setUniform(const std::string &name, const ponos::mat3 &m) {
+void Program::setUniform(const std::string &name, const hermes::mat3 &m) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniformMatrix3fv(loc, 1, GL_FALSE, &m[0][0]);
 }
 
-void Program::setUniform(const std::string &name, const ponos::vec4 &v) {
+void Program::setUniform(const std::string &name, const hermes::vec4 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniform4fv(loc, 1, &v.x);
 }
 
-void Program::setUniform(const std::string &name, const ponos::vec3 &v) {
+void Program::setUniform(const std::string &name, const hermes::vec3 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name << " not located.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniform3fv(loc, 1, &v.x);
 }
 
-void Program::setUniform(const std::string &name, const ponos::point3 &v) {
+void Program::setUniform(const std::string &name, const hermes::point3 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   CHECK_GL(glUniform3fv(loc, 1, &v.x));
 }
 
-void Program::setUniform(const std::string &name, const ponos::vec2 &v) {
+void Program::setUniform(const std::string &name, const hermes::vec2 &v) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniform2fv(loc, 1, &v.x);
@@ -641,8 +635,7 @@ void Program::setUniform(const std::string &name, const ponos::vec2 &v) {
 void Program::setUniform(const std::string &name, const Color &c) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniform4fv(loc, 1, &c.r);
@@ -651,8 +644,7 @@ void Program::setUniform(const std::string &name, const Color &c) {
 void Program::setUniform(const std::string &name, int i) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniform1i(loc, i);
@@ -661,8 +653,7 @@ void Program::setUniform(const std::string &name, int i) {
 void Program::setUniform(const std::string &name, float f) {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    std::cerr << "Attribute " << name
-              << " not located. (Probably has not been added.\n";
+    hermes::Log::warn("Shader attribute {} not located.", name);
     return;
   }
   glUniform1f(loc, f);
@@ -671,7 +662,7 @@ void Program::setUniform(const std::string &name, float f) {
 void Program::setUniformBlockBinding(const std::string &name, GLuint buffer_binding) {
   auto it = ub_map_name_id_.find(name);
   if (it == ub_map_name_id_.end())
-    spdlog::warn("Invalid Uniform Block Name");
+    hermes::Log::warn("Invalid Uniform Block Name");
   else {
     uniform_blocks_[it->second].buffer_binding = buffer_binding;
     glUniformBlockBinding(id_, uniform_blocks_[it->second].index, buffer_binding);

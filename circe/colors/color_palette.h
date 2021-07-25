@@ -16,7 +16,7 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TOsurfaceRT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
@@ -25,7 +25,7 @@
 #define CIRCE_COLORS_COLOR_PALETTE_H
 
 #include <circe/colors/color.h>
-#include <ponos/numeric/numeric.h>
+#include <hermes/numeric/numeric.h>
 
 #include <initializer_list>
 #include <vector>
@@ -34,19 +34,19 @@ namespace circe {
 
 class ProceduralColorPalette {
 public:
-  ProceduralColorPalette(const ponos::vec3 &A, const ponos::vec3 &B,
-                         const ponos::vec3 &C, const ponos::vec3 &D)
+  ProceduralColorPalette(const hermes::vec3 &A, const hermes::vec3 &B,
+                         const hermes::vec3 &C, const hermes::vec3 &D)
       : a(A), b(B), c(C), d(D) {}
 
   Color operator()(float t) {
-    return Color(a + b * cos((c * t + d) * ponos::Constants::two_pi));
+    return Color(a + b * cos((c * t + d) * hermes::Constants::two_pi));
   }
-  ponos::vec3 a, b, c, d;
+  hermes::vec3 a, b, c, d;
 };
 
 // ProceduralColorPalette palette(
-//    ponos::vec3(0.5, 0.5, 0.5), ponos::vec3(0.5, 0.5, 0.5),
-//    ponos::vec3(1.0, 1.0, 1.0), ponos::vec3(0.00, 0.33, 0.67));
+//    hermes::vec3(0.5, 0.5, 0.5), hermes::vec3(0.5, 0.5, 0.5),
+//    hermes::vec3(1.0, 1.0, 1.0), hermes::vec3(0.00, 0.33, 0.67));
 
 class ColorPalette {
 public:
@@ -72,13 +72,13 @@ public:
     }
   }
   Color operator()(float t, float alpha = -1) const {
-    float ind = ponos::lerp(t, 0.f, static_cast<float>(colors.size()));
-    float r = ind - ponos::floor2Int(ind);
+    float ind = hermes::interpolation::lerp(t, 0.f, static_cast<float>(colors.size()));
+    float r = ind - hermes::Numbers::floor2Int(ind);
     Color c;
-    if (ponos::ceil2Int(ind) >= static_cast<int>(colors.size()))
+    if (hermes::Numbers::ceil2Int(ind) >= static_cast<int>(colors.size()))
       c = colors[colors.size() - 1];
     else
-      c = mix(r, colors[ponos::floor2Int(ind)], colors[ponos::ceil2Int(ind)]);
+      c = mix(r, colors[hermes::Numbers::floor2Int(ind)], colors[hermes::Numbers::ceil2Int(ind)]);
     if (alpha >= 0.0)
       c.a = alpha;
     else

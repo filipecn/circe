@@ -25,7 +25,7 @@
 #ifndef CIRCE_SCENE_MESH_UTILS_H
 #define CIRCE_SCENE_MESH_UTILS_H
 
-#include <ponos/ponos.h>
+#include <hermes/data_structures/raw_mesh.h>
 
 namespace circe::gl {
 
@@ -34,11 +34,11 @@ namespace circe::gl {
 /// \param o **[in]** offset
 /// \return pointer to a <RawMesh> object with the list of vertices and indices
 /// that describe a grid in the 3D space.
-ponos::RawMesh *create_grid_mesh(const ponos::size3 &d, float s,
-                                 const ponos::vec3 &o);
+hermes::RawMesh *create_grid_mesh(const hermes::size3 &d, float s,
+                                 const hermes::vec3 &o);
 /// \param m **[in]** base mesh
 /// \return RawMesh representing the edges of **m**.
-ponos::RawMesh *create_wireframe_mesh(const ponos::RawMesh *m);
+hermes::RawMesh *create_wireframe_mesh(const hermes::RawMesh *m);
 /// Generates an icosphere's triangle mesh
 /// \param center center
 /// \param radius radius
@@ -46,7 +46,7 @@ ponos::RawMesh *create_wireframe_mesh(const ponos::RawMesh *m);
 /// \param generateNormals include normals
 /// \param genereateUVs include texture coordinates
 /// \return RawMesh representing the icosphere
-ponos::RawMesh *create_icosphere_mesh(const ponos::point3 &center, float radius,
+hermes::RawMesh *create_icosphere_mesh(const hermes::point3 &center, float radius,
                                       size_t divisions,
                                       bool generateNormals = false,
                                       bool genereateUVs = false);
@@ -56,7 +56,7 @@ ponos::RawMesh *create_icosphere_mesh(const ponos::point3 &center, float radius,
 /// \param generateNormals include normals
 /// \param generateUVs include texture coordinates
 /// \return Raw Mesh smart pointer
-ponos::RawMeshSPtr create_cube_mesh(const ponos::point3 &center, float size,
+hermes::RawMeshSPtr create_cube_mesh(const hermes::point3 &center, float size,
                                     bool generateNormals = false,
                                     bool generateUVs = false);
 

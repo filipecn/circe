@@ -30,9 +30,9 @@
 
 namespace circe::gl {
 
-BBoxModel::BBoxModel(const ponos::bbox3 &bbox) {
+BBoxModel::BBoxModel(const hermes::bbox3 &bbox) {
   // initiate model with unit box
-  auto model = Shapes::box(ponos::bbox3::unitBox(), shape_options::wireframe);
+  auto model = Shapes::box(hermes::bbox3::unitBox(), shape_options::wireframe);
   mesh_ = std::move(model);
   // update
   updateTransform(bbox);
@@ -46,28 +46,28 @@ BBoxModel::BBoxModel(const ponos::bbox3 &bbox) {
   shaders.emplace_back(GL_VERTEX_SHADER, vs_code);
   shaders.emplace_back(GL_FRAGMENT_SHADER, fs_code);
   if (!mesh_.program.link(shaders))
-    spdlog::error("Failed to compile BBoxModel Shader Program:\n {}", mesh_.program.err);
+    hermes::Log::error("Failed to compile BBoxModel Shader Program:\n {}", mesh_.program.err);
 }
 
 BBoxModel::~BBoxModel() = default;
 
-BBoxModel &BBoxModel::operator=(const ponos::bbox3 &bbox) {
+BBoxModel &BBoxModel::operator=(const hermes::bbox3 &bbox) {
   updateTransform(bbox);
   return *this;
 }
 
-void BBoxModel::draw(const CameraInterface *camera, ponos::Transform t) {
+void BBoxModel::draw(const CameraInterface *camera, hermes::Transform t) {
   mesh_.program.use();
   mesh_.program.setUniform("color", color);
-  mesh_.program.setUniform("view", ponos::transpose(camera->getViewTransform().matrix()));
-  mesh_.program.setUniform("projection", ponos::transpose(camera->getProjectionTransform().matrix()));
-  mesh_.program.setUniform("model", ponos::transpose(mesh_.transform.matrix()));
+  mesh_.program.setUniform("view", hermes::transpose(camera->getViewTransform().matrix()));
+  mesh_.program.setUniform("projection", hermes::transpose(camera->getProjectionTransform().matrix()));
+  mesh_.program.setUniform("model", hermes::transpose(mesh_.transform.matrix()));
   mesh_.draw();
 }
 
-void BBoxModel::updateTransform(const ponos::bbox3 &bbox) {
-  mesh_.transform = ponos::translate(static_cast<ponos::vec3>(bbox.lower))
-      * ponos::scale(bbox.size(0), bbox.size(1), bbox.size(2));
+void BBoxModel::updateTransform(const hermes::bbox3 &bbox) {
+  mesh_.transform = hermes::Transform::translate(static_cast<hermes::vec3>(bbox.lower))
+      * hermes::Transform::scale(bbox.size(0), bbox.size(1), bbox.size(2));
 }
 
 }

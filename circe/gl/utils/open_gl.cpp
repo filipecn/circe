@@ -209,15 +209,15 @@ void getGlVersion(int *major, int *minor) {
   }
 }
 
-//void glVertex(ponos::point3 v) { glVertex3f(v.x, v.y, v.z); }
+//void glVertex(hermes::point3 v) { glVertex3f(v.x, v.y, v.z); }
 //
-//void glVertex(ponos::point2 v) { glVertex2f(v.x, v.y); }
+//void glVertex(hermes::point2 v) { glVertex2f(v.x, v.y); }
 //
-//void glVertex(ponos::vec2 v) { glVertex2f(v.x, v.y); }
+//void glVertex(hermes::vec2 v) { glVertex2f(v.x, v.y); }
 
 //void glColor(Color c) { glColor4f(c.r, c.g, c.b, c.a); }
 
-void glApplyTransform(const ponos::Transform &transform) {
+void glApplyTransform(const hermes::Transform &transform) {
   std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
   exit(-1);
   float m[16];
@@ -225,23 +225,23 @@ void glApplyTransform(const ponos::Transform &transform) {
   glMultMatrixf(m);
 }
 
-ponos::Transform glGetProjectionTransform() {
+hermes::Transform glGetProjectionTransform() {
   std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
   exit(-1);
   float m[16];
   glGetFloatv(GL_PROJECTION_MATRIX, m);
-  return ponos::Transform(ponos::mat4(m, true));
+  return hermes::Transform(hermes::mat4(m, true));
 }
 
-ponos::Transform glGetModelviewTransform() {
+hermes::Transform glGetModelviewTransform() {
   std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
   exit(-1);
   float m[16];
   glGetFloatv(GL_MODELVIEW_MATRIX, m);
-  return ponos::Transform(ponos::mat4(m, true));
+  return hermes::Transform(hermes::mat4(m, true));
 }
 
-ponos::Transform glGetMVPTransform() {
+hermes::Transform glGetMVPTransform() {
   std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
   exit(-1);
   return glGetProjectionTransform() * glGetModelviewTransform();

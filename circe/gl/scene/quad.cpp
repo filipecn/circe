@@ -71,7 +71,7 @@ Quad::Quad() {
   this->mesh_ = createSceneMeshPtr(&rawMesh_);
 }
 
-void Quad::set(const ponos::point2 &pm, const ponos::point2 &pM) {
+void Quad::set(const hermes::point2 &pm, const hermes::point2 &pM) {
   rawMesh_.interleavedData[0] = pm.x;
   rawMesh_.interleavedData[1] = pm.y;
   rawMesh_.interleavedData[4] = pM.x;
@@ -85,17 +85,17 @@ void Quad::set(const ponos::point2 &pm, const ponos::point2 &pM) {
   //   glBindVertexArray(0);
 }
 
-void Quad::draw(const CameraInterface *camera, ponos::Transform t) {
+void Quad::draw(const CameraInterface *camera, hermes::Transform t) {
   //   glBindVertexArray(VAO);
   this->mesh_->bind();
   mesh_->vertexBuffer()->locateAttributes(*shader_.get());
   shader_->begin();
-  shader_->setUniform("model", ponos::transpose(t.matrix()));
+  shader_->setUniform("model", hermes::transpose(t.matrix()));
   shader_->setUniform("view",
-                      ponos::transpose(camera->getViewTransform().matrix()));
+                      hermes::transpose(camera->getViewTransform().matrix()));
   shader_->setUniform(
       "projection",
-      ponos::transpose(camera->getProjectionTransform().matrix()));
+      hermes::transpose(camera->getProjectionTransform().matrix()));
   glDrawElements(GL_TRIANGLES,
                  mesh_->indexBuffer()->bufferDescriptor.element_count *
                      mesh_->indexBuffer()->bufferDescriptor.element_size,

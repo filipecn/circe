@@ -29,11 +29,12 @@
 #define PONOS_CIRCE_CIRCE_SCENE_SHAPES_H
 
 #include <vector>
-#include <ponos/structures/n_mesh.h>
-#include <ponos/geometry/point.h>
-#include <ponos/geometry/plane.h>
-#include <ponos/geometry/segment.h>
+#include <hermes/data_structures/n_mesh.h>
+#include <hermes/geometry/point.h>
+#include <hermes/geometry/plane.h>
+#include <hermes/geometry/segment.h>
 #include <circe/scene/model.h>
+#include <hermes/data_structures/raw_mesh.h>
 
 namespace circe {
 
@@ -43,10 +44,10 @@ public:
   /// \param mesh
   /// \param options
   /// \return
-  static Model fromNMesh(const ponos::NMesh &mesh,
+  static Model fromNMesh(const hermes::NMesh &mesh,
                          shape_options options = shape_options::none);
   template<u64 N>
-  static Model fromPMesh(const ponos::PMesh<N> &mesh,
+  static Model fromPMesh(const hermes::PMesh<N> &mesh,
                          shape_options options = shape_options::none) {
     Model model;
     // process options
@@ -59,32 +60,32 @@ public:
     const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
 
     // setup fields
-    ponos::AoS aos;
-    const u64 position_id = aos.pushField<ponos::point3>("position");
-    const u64 normal_id = generate_normals ? aos.pushField<ponos::vec3>("normal") : 0;
-    const u64 uv_id = generate_uvs ? aos.pushField<ponos::point2>("uvs") : 0;
-    const u64 tangent_id = generate_tangents ? aos.pushField<ponos::vec3>("tangents") : 0;
-    const u64 bitangent_id = generate_bitangents ? aos.pushField<ponos::vec3>("bitangents") : 0;
+    hermes::AoS aos;
+    const u64 position_id = aos.pushField<hermes::point3>("position");
+    const u64 normal_id = generate_normals ? aos.pushField<hermes::vec3>("normal") : 0;
+    const u64 uv_id = generate_uvs ? aos.pushField<hermes::point2>("uvs") : 0;
+    const u64 tangent_id = generate_tangents ? aos.pushField<hermes::vec3>("tangents") : 0;
+    const u64 bitangent_id = generate_bitangents ? aos.pushField<hermes::vec3>("bitangents") : 0;
 
     // get a copy of positions
     auto vertex_positions = mesh.positions();
 
     std::vector<i32> indices;
     if (testMaskBit(options, shape_options::wireframe)) {
-      model.setPrimitiveType(ponos::GeometricPrimitiveType::LINES);
+      model.setPrimitiveType(hermes::GeometricPrimitiveType::LINES);
       for (auto f : mesh.faces()) {
-        u64 a = ponos::Constants::greatest<u64>();
+        u64 a = hermes::Numbers::greatest<u64>();
         u64 b = a;
         f.vertices(a, b);
         indices.emplace_back(a);
         indices.emplace_back(b);
       }
     } else if (testMaskBit(options, shape_options::vertices)) {
-      model.setPrimitiveType(ponos::GeometricPrimitiveType::POINTS);
+      model.setPrimitiveType(hermes::GeometricPrimitiveType::POINTS);
       for (u64 i = 0; i < mesh.vertexCount(); ++i)
         indices.emplace_back(i);
     } else {
-      model.setPrimitiveType(ponos::GeometricPrimitiveType::TRIANGLES);
+      model.setPrimitiveType(hermes::GeometricPrimitiveType::TRIANGLES);
       for (auto c : mesh.cells()) {
         if (N == 3) {
           // the cell is already a triangle
@@ -107,7 +108,7 @@ public:
 
     // copy vertex positions
     aos.resize(vertex_positions.size());
-    auto position_field = aos.field<ponos::point3>(position_id) = vertex_positions;
+    auto position_field = aos.field<hermes::point3>(position_id) = vertex_positions;
 
     model = std::move(aos);
     model = indices;
@@ -125,7 +126,7 @@ public:
   /// \param divisions
   /// \param options
   /// \return
-  static Model icosphere(const ponos::point3 &center, real_t radius,
+  static Model icosphere(const hermes::point3 &center, real_t radius,
                          u32 divisions, shape_options options = shape_options::none);
   ///
   /// \param divisions
@@ -139,21 +140,21 @@ public:
   /// \param divisions
   /// \param options
   /// \return
-  static Model plane(const ponos::Plane &plane,
-                     const ponos::point3 &center,
-                     const ponos::vec3 &extension,
+  static Model plane(const hermes::Plane &plane,
+                     const hermes::point3 &center,
+                     const hermes::vec3 &extension,
                      u32 divisions = 1, shape_options options = shape_options::none);
   ///
   /// \param box
   /// \param options
   /// \return
-  static Model box(const ponos::bbox3 &box, shape_options options = shape_options::none);
-  static Model box(const ponos::bbox2 &box, shape_options options = shape_options::none);
+  static Model box(const hermes::bbox3 &box, shape_options options = shape_options::none);
+  static Model box(const hermes::bbox2 &box, shape_options options = shape_options::none);
   ///
   /// \param s
   /// \param options
   /// \return
-  static Model segment(const ponos::Segment3 &s,
+  static Model segment(const hermes::Segment3 &s,
                        shape_options options = shape_options::none);
 };
 

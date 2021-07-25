@@ -50,7 +50,7 @@ struct ObjIndexKeyHash : public std::unary_function<ObjIndexKey, int> {
 
 namespace circe {
 
-Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
+Model io::readOBJ(const hermes::Path &path, shape_options options, u32 mesh_id) {
   Model model;
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
@@ -58,24 +58,24 @@ Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
   std::string warn;
   std::string err;
   if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.fullName().c_str())) {
-    spdlog::error("Failed to load obj file {} : {}.", path.fullName(), err);
+    hermes::Log::error("Failed to load obj file {} : {}.", path.fullName(), err);
     return model;
   }
   if (!warn.empty())
-    spdlog::warn("Load obj: {}", warn);
+    hermes::Log::warn("Load obj: {}", warn);
 
   u64 position_id{0}, normal_id{0}, color_id{0}, uv_id{0};
   if (!attrib.vertices.empty())
-    position_id = model.pushAttribute<ponos::point3>("position");
+    position_id = model.pushAttribute<hermes::point3>("position");
   if (!attrib.normals.empty() || testMaskBit(options, shape_options::normal))
-    normal_id = model.pushAttribute<ponos::vec3>("normal");
+    normal_id = model.pushAttribute<hermes::vec3>("normal");
   if (!attrib.colors.empty())
-    color_id = model.pushAttribute<ponos::vec3>("color");
+    color_id = model.pushAttribute<hermes::vec3>("color");
   if (!attrib.texcoords.empty())
-    uv_id = model.pushAttribute<ponos::point2>("uv");
+    uv_id = model.pushAttribute<hermes::point2>("uv");
 
   if (mesh_id >= shapes.size()) {
-    spdlog::error("readOBJ: Shape not found!");
+    hermes::Log::error("readOBJ: Shape not found!");
     return model;
   }
 
@@ -114,40 +114,40 @@ Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
     const auto &idx = vertex.first;
     // add new vertex
     if (!attrib.vertices.empty())
-      model.attributeValue<ponos::point3>(position_id, vertex.second) = {
+      model.attributeValue<hermes::point3>(position_id, vertex.second) = {
           attrib.vertices[3 * idx.vertex_index + 0],
           attrib.vertices[3 * idx.vertex_index + 1],
           attrib.vertices[3 * idx.vertex_index + 2]};
     if (!attrib.normals.empty())
-      model.attributeValue<ponos::vec3>(normal_id, vertex.second) = {
+      model.attributeValue<hermes::vec3>(normal_id, vertex.second) = {
           attrib.normals[3 * idx.normal_index + 0],
           attrib.normals[3 * idx.normal_index + 1],
           attrib.normals[3 * idx.normal_index + 2]};
     if (!attrib.colors.empty())
-      model.attributeValue<ponos::vec3>(color_id, vertex.second) = {
+      model.attributeValue<hermes::vec3>(color_id, vertex.second) = {
           attrib.colors[3 * idx.vertex_index + 0],
           attrib.colors[3 * idx.vertex_index + 1],
           attrib.colors[3 * idx.vertex_index + 2]};
     if (!attrib.texcoords.empty())
-      model.attributeValue<ponos::vec2>(uv_id, vertex.second) = {
+      model.attributeValue<hermes::vec2>(uv_id, vertex.second) = {
           attrib.texcoords[2 * idx.uv_index + 0],
           attrib.texcoords[2 * idx.uv_index + 1]};
   }
   // check if we need to generate normals
   if (!attrib.normals.empty() && normal_id) {
     std::vector<u8> face_count(attrib.vertices.size() / 3, 0);
-    std::vector<ponos::vec3> normals(attrib.vertices.size() / 3, ponos::vec3());
+    std::vector<hermes::vec3> normals(attrib.vertices.size() / 3, hermes::vec3());
     index_offset = 0;
     for (auto fv : shape.mesh.num_face_vertices) {
       // loop over vertices in the face
-      ponos::vec3 face_vertices[3];
+      hermes::vec3 face_vertices[3];
       for (u64 v = 0; v < 3; ++v) {
         auto idx = shape.mesh.indices[index_offset + v];
         face_vertices[v] = {attrib.vertices[3 * idx.vertex_index + 0],
                             attrib.vertices[3 * idx.vertex_index + 1],
                             attrib.vertices[3 * idx.vertex_index + 2]};
       }
-      auto normal = ponos::cross(face_vertices[1] - face_vertices[0],
+      auto normal = hermes::cross(face_vertices[1] - face_vertices[0],
                                  face_vertices[2] - face_vertices[1]);
       for (u64 v = 0; v < fv; ++v) {
         auto idx = shape.mesh.indices[index_offset + v];
@@ -158,8 +158,8 @@ Model io::readOBJ(const ponos::Path &path, shape_options options, u32 mesh_id) {
     }
     // store normals
     for (const auto &vertex : index_map)
-      model.attributeValue<ponos::vec3>(normal_id, vertex.second) =
-          ponos::normalize(normals[vertex.first.vertex_index]);// / (f32) face_count[vertex.second]);
+      model.attributeValue<hermes::vec3>(normal_id, vertex.second) =
+          hermes::normalize(normals[vertex.first.vertex_index]);// / (f32) face_count[vertex.second]);
   }
   model.setIndices(std::move(index_data));
   return model;

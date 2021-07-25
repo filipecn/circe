@@ -31,7 +31,7 @@ namespace circe::gl {
 //
 //SceneModel::~SceneModel() { clear(); }
 //
-//bool SceneModel::resize(const ponos::RawMesh &raw_mesh) {
+//bool SceneModel::resize(const hermes::RawMesh &raw_mesh) {
 //  clear();
 //  setup_buffer_data_from_mesh(raw_mesh, vertex_data_, index_data_);
 //  BufferDescriptor ver, ind;
@@ -72,7 +72,7 @@ namespace circe::gl {
 //too
 //}
 
-SceneMesh::SceneMesh(const ponos::RawMesh *rm) : mesh_(rm) {
+SceneMesh::SceneMesh(const hermes::RawMesh *rm) : mesh_(rm) {
   set(rm);
 }
 
@@ -81,7 +81,7 @@ SceneMesh::~SceneMesh() {
   glDeleteVertexArrays(1, &VAO);
 }
 
-bool SceneMesh::set(const ponos::RawMesh *rm) {
+bool SceneMesh::set(const hermes::RawMesh *rm) {
   mesh_ = rm;
   glBindVertexArray(0);
   glDeleteVertexArrays(1, &VAO);
@@ -112,7 +112,7 @@ const GLVertexBuffer *SceneMesh::vertexBuffer() const { return &vertexBuffer_; }
 
 const GLIndexBuffer *SceneMesh::indexBuffer() const { return &indexBuffer_; }
 
-const ponos::RawMesh *SceneMesh::rawMesh() const { return mesh_; }
+const hermes::RawMesh *SceneMesh::rawMesh() const { return mesh_; }
 
 void SceneMesh::unbind() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);

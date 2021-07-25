@@ -60,10 +60,12 @@ public:
     std::vector<circe::gl::Shader> shaders;
     shaders.emplace_back(GL_VERTEX_SHADER, vert_source);
     shaders.emplace_back(GL_FRAGMENT_SHADER,
-                         (ponos::Str(frag_base) +
-                             "    FragColor = vec4(vec3(tex), 1.0);}").str());
+                         (hermes::Str(frag_base) +
+                             "    FragColor = vec4(vec3(texture(tex, fuv).r), 1.0);}").str());
+
     BufferView bf;
-    bf.program.link(shaders);
+    if (!bf.program.link(shaders))
+      hermes::Log::error("shader error: {}", bf.program.err);
     bf.program.use();
     bf.program.setUniform("tex", 0);
     return bf;
@@ -75,14 +77,14 @@ public:
     shaders.emplace_back(GL_VERTEX_SHADER, vert_source);
     if (normalize_data)
       shaders.emplace_back(GL_FRAGMENT_SHADER,
-                           (ponos::Str(frag_base) +
+                           (hermes::Str(frag_base) +
                                "    vec3 v = normalize(texture(tex, fuv).rgb);\n"
                                "    v += vec3(1.0,1.0,1.0);\n"
                                "    v /= vec3(2.0,2.0,2.0);\n"
                                "    FragColor = vec4(v, 1.0);}").str());
     else
       shaders.emplace_back(GL_FRAGMENT_SHADER,
-                           (ponos::Str(frag_base) +
+                           (hermes::Str(frag_base) +
                                "    vec3 v = texture(tex, fuv).rgb;\n"
                                "    FragColor = vec4(v, 1.0);}").str());
     BufferView bf;
@@ -97,7 +99,7 @@ public:
     std::vector<circe::gl::Shader> shaders;
     shaders.emplace_back(GL_VERTEX_SHADER, vert_source);
     shaders.emplace_back(GL_FRAGMENT_SHADER,
-                         (ponos::Str(frag_base) +
+                         (hermes::Str(frag_base) +
                              "    FragColor = texture(tex, fuv).rgba;}").str());
     BufferView bf;
     bf.program.link(shaders);
@@ -113,9 +115,9 @@ public:
 
     char component_names[5] = "rgba";
     shaders.emplace_back(GL_FRAGMENT_SHADER,
-                         (ponos::Str(frag_base) <<
-                                                "    float v = texture(tex, fuv)." << component_names[c]
-                                                << ";\nFragColor = vec4(v,v,v,1.0);}").str());
+                         (hermes::Str(frag_base) <<
+                                                 "    float v = texture(tex, fuv)." << component_names[c]
+                                                 << ";\nFragColor = vec4(v,v,v,1.0);}").str());
     BufferView bf;
     bf.program.link(shaders);
     bf.program.use();
@@ -133,7 +135,7 @@ public:
 
   /// \param input
   /// \param rect imgui size
-  void render(const circe::gl::Texture &input, const ponos::size2 &rect = {256, 256}) {
+  void render(const circe::gl::Texture &input, const hermes::size2 &rect = {256, 256}) {
     if (input.size().slice(0, 1) != buffer_texture.size().slice(0, 1))
       buffer_texture.resize(input.size());
     if (framebuffer.size() != buffer_texture.size().slice(0, 1))

@@ -29,9 +29,9 @@ namespace circe::gl {
 WireframeMesh::WireframeMesh(const std::string &filename)
     : SceneMeshObject(filename) {}
 
-WireframeMesh::WireframeMesh(ponos::RawMesh *m, const ponos::Transform &t) {
-  PONOS_UNUSED_VARIABLE(m);
-  PONOS_UNUSED_VARIABLE(t);
+WireframeMesh::WireframeMesh(hermes::RawMesh *m, const hermes::Transform &t) {
+  HERMES_UNUSED_VARIABLE(m);
+  HERMES_UNUSED_VARIABLE(t);
   // rawMesh = m;
   // setupVertexBuffer();
   // setupIndexBuffer();
@@ -39,8 +39,8 @@ WireframeMesh::WireframeMesh(ponos::RawMesh *m, const ponos::Transform &t) {
 }
 
 void WireframeMesh::draw(const CameraInterface *camera,
-                         ponos::Transform transform) {
-  PONOS_UNUSED_VARIABLE(camera);
+                         hermes::Transform transform) {
+  HERMES_UNUSED_VARIABLE(camera);
   // glPushMatrix();
   // vb->bind();
   // ib->bind();
@@ -59,7 +59,7 @@ void WireframeMesh::draw(const CameraInterface *camera,
 void WireframeMesh::setupIndexBuffer() {
   // BufferDescriptor indexDescriptor =
   // create_index_buffer_descriptor(1, rawMesh->positionsIndices.size(),
-  //  ponos::GeometricPrimitiveType::LINES);
+  //  hermes::GeometricPrimitiveType::LINES);
   // ib.reset(new IndexBuffer(&rawMesh->positionsIndices[0], indexDescriptor));
 }
 

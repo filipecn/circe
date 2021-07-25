@@ -31,7 +31,7 @@
 
 #include <circe/scene/model.h>
 #include <circe/scene/shapes.h>
-#include <ponos/common/file_system.h>
+#include <hermes/common/file_system.h>
 
 namespace circe {
 
@@ -42,7 +42,7 @@ public:
   /// \param options
   /// \param mesh_id
   /// \return
-  static Model readOBJ(const ponos::Path &path, shape_options options = shape_options::none, u32 mesh_id = 0);
+  static Model readOBJ(const hermes::Path &path, shape_options options = shape_options::none, u32 mesh_id = 0);
 };
 
 }

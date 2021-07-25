@@ -39,7 +39,7 @@ public:
   std::shared_ptr<ShaderProgram> shader;
 
 private:
-  ponos::RawMesh mesh_;
+  hermes::RawMesh mesh_;
   std::shared_ptr<GLVertexBuffer> vb_;
   std::shared_ptr<GLIndexBuffer> ib_;
   GLuint VAO;

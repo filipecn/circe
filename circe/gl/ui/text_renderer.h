@@ -58,16 +58,16 @@ public:
   /// \param p pixel position (in world coordinates)
   /// \param scale
   /// \param c color
-  void render(std::string s, const ponos::point3 &p,
+  void render(std::string s, const hermes::point3 &p,
               const CameraInterface *camera, GLfloat scale, circe::Color c);
   /// \param c camera pointer
   void setCamera(const CameraInterface *c);
   /// \param p position (world coordinates)
   /// \return text renderer reference
-  TextRenderer &at(const ponos::point3 &p);
+  TextRenderer &at(const hermes::point3 &p);
   /// \param p position (screen coordinates)
   /// \return text renderer reference
-  TextRenderer &at(const ponos::point2 &p);
+  TextRenderer &at(const hermes::point2 &p);
   /// \param s scale
   /// \return text renderer reference
   TextRenderer &withScale(float s);
@@ -98,7 +98,7 @@ private:
   bool usingCamera_ = false;
   bool usingDynamicScale_ = false;
   bool usingDynamicColor_ = false;
-  ponos::point3 position_;
+  hermes::point3 position_;
   float dynamicScale_ = 1.f;
   Color dynamicColor_;
   const CameraInterface *camera_ = nullptr; //!< reference camera

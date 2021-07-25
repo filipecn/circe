@@ -16,12 +16,12 @@
 #include <circe/gl/helpers/cartesian_grid.h>
 #include <circe/gl/helpers/geometry_drawers.h>
 #include <circe/ui/gizmo.h>
-#include <circe/gl/helpers/grid_model.h>
+//#include <circe/gl/helpers/grid_model.h>
 //#include <circe/helpers/hemesh_model.h>
 #include <circe/gl/helpers/quad_tree_model.h>
 #include <circe/gl/helpers/scene_handle.h>
 //#include <circe/helpers/tmesh_model.h>
-#include <circe/gl/helpers/vector_grid.h>
+//#include <circe/gl/helpers/vector_grid.h>
 #include <circe/gl/io/buffer.h>
 #include <circe/gl/storage/vertex_array_object.h>
 #include <circe/gl/io/display_renderer.h>

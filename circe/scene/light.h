@@ -29,7 +29,7 @@
 #define PONOS_CIRCE_CIRCE_SCENE_LIGHT_H
 
 #include <circe/colors/color.h>
-#include <ponos/geometry/vector.h>
+#include <hermes/geometry/vector.h>
 
 namespace circe {
 
@@ -40,8 +40,8 @@ struct Light {
   Color diffuse;
   Color specular;
   LightTypes type;
-  ponos::vec3 direction;
-  ponos::point3 point;
+  hermes::vec3 direction;
+  hermes::point3 point;
 };
 
 }

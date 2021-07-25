@@ -25,11 +25,10 @@
 #ifndef CIRCE_HELPERS_CARTESIAN_GRID_H
 #define CIRCE_HELPERS_CARTESIAN_GRID_H
 
-#include <ponos/ponos.h>
-
 #include <circe/colors/color_palette.h>
 #include <circe/gl/scene/scene_object.h>
 #include <circe/gl/utils/open_gl.h>
+#include <hermes/numeric/interval.h>
 
 namespace circe::gl {
 
@@ -58,11 +57,11 @@ public:
    */
   void setDimension(size_t d, int a, int b);
   /* @inherit */
-  void draw(const CameraInterface *camera, ponos::Transform t) override;
+  void draw(const CameraInterface *camera, hermes::Transform t) override;
 
   Color gridColor;
   Color xAxisColor, yAxisColor, zAxisColor;
-  ponos::Interval<int> planes[3];
+  hermes::Interval<int> planes[3];
 
 private:
   void updateBuffers();
@@ -70,7 +69,7 @@ private:
   GLuint VAO_grid_ = 0;
   std::shared_ptr<ShaderProgram> gridShader_;
   std::shared_ptr<GLVertexBuffer> vb;
-  ponos::RawMesh mesh;
+  hermes::RawMesh mesh;
 };
 
 } // namespace circe

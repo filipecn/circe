@@ -29,9 +29,9 @@
 
 namespace circe::gl {
 
-ShadowMap::ShadowMap(const ponos::size2 &size) : size_(size),
+ShadowMap::ShadowMap(const hermes::size2 &size) : size_(size),
                                                  projection_transform_{
-                                                     ponos::Transform::ortho(-10, 10, -10, 10, -10, 10)} {
+                                                     hermes::Transform::ortho(-10, 10, -10, 10, -10, 10)} {
   // setup shader program
   Shader vertex_shader(GL_VERTEX_SHADER, "#version 430 core\n"
                                          "layout (location = 0) in vec3 position;\n"
@@ -85,7 +85,7 @@ void ShadowMap::render(const std::function<void(const Program &)> &f) {
   depth_map_.bind(GL_TEXTURE0);
   program_.use();
   program_.setUniform("lightSpaceMatrix", light_transform_);
-  program_.setUniform("model", ponos::Transform());
+  program_.setUniform("model", hermes::Transform());
   if (f)
     f(program_);
   circe::gl::Framebuffer::disable();
@@ -97,10 +97,10 @@ void ShadowMap::bind() const {
 
 void ShadowMap::setLight(const Light &light) {
   light_ = light;
-  light_transform_ = projection_transform_ * ponos::Transform::lookAt(ponos::point3() + light_.direction);
+  light_transform_ = projection_transform_ * hermes::Transform::lookAt(hermes::point3() + light_.direction);
 }
 
-const ponos::Transform &ShadowMap::light_transform() const { return light_transform_; }
+const hermes::Transform &ShadowMap::light_transform() const { return light_transform_; }
 
 const Texture &ShadowMap::depthMap() const {
   return depth_map_;

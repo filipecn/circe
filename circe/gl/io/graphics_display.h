@@ -28,8 +28,6 @@
 #include <circe/scene/camera_interface.h>
 #include <circe/gl/utils/open_gl.h>
 
-#include <ponos/ponos.h>
-
 #include <functional>
 #include <memory>
 
@@ -60,28 +58,28 @@ public:
   /* get
    * \returns mouse position (screen space)
    */
-  ponos::point2 getMousePos();
+  hermes::point2 getMousePos();
   /* get
    * \returns mouse position (NDC **[-1, 1]**)
    */
-  ponos::point2 getMouseNPos();
+  hermes::point2 getMouseNPos();
   /** \brief convert
    * \param p **[in]** point (in norm dev coordinates)
    * \returns **p** mapped to view coordinates
    */
-  ponos::point3 normDevCoordToViewCoord(ponos::point3 p);
+  hermes::point3 normDevCoordToViewCoord(hermes::point3 p);
   /* convert
    * \param p **[in]** point (in view space)
    * \returns **p** mapped to NDC (**[-1,1]**)
    */
-  ponos::point3 viewCoordToNormDevCoord(ponos::point3 p);
+  hermes::point3 viewCoordToNormDevCoord(hermes::point3 p);
   /* convert
    * \param c **[in]** camera
    * \param p **[in]** point (in screen space)
    * \returns the unprojected point by the inverse of the camera transform to
    * world space
    */
-  ponos::point3 unProject(const CameraInterface &c, ponos::point3 p);
+  hermes::point3 unProject(const CameraInterface &c, hermes::point3 p);
   /* main loop
    * Starts the application, opens the window and enters in the main loop.
    */

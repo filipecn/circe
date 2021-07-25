@@ -63,7 +63,7 @@ TextObject::TextObject(int id) : font_id_(id) {
   shader_->addUniform("projection_matrix", 2);
   shader_->addUniform("text", 3);
   shader_->addUniform("textColor", 4);
-  raw_mesh_ = std::make_shared<ponos::RawMesh>();
+  raw_mesh_ = std::make_shared<hermes::RawMesh>();
 }
 
 void TextObject::setText(const std::string &text) {
@@ -71,23 +71,23 @@ void TextObject::setText(const std::string &text) {
   mesh_.reset(new SceneMesh(raw_mesh_.get()));
 }
 
-void TextObject::draw(const CameraInterface *c, ponos::Transform t) {
-  PONOS_UNUSED_VARIABLE(t);
+void TextObject::draw(const CameraInterface *c, hermes::Transform t) {
+  HERMES_UNUSED_VARIABLE(t);
   mesh_->bind();
   mesh_->vertexBuffer()->locateAttributes(*shader_.get());
   FontManager::bindTexture(font_id_, GL_TEXTURE0);
   shader_->begin();
-  shader_->setUniform("textColor", ponos::vec4(text_color.r, text_color.g,
-                                               text_color.b, text_color.a));
+  shader_->setUniform("textColor", hermes::vec4(text_color.r, text_color.g,
+                                                text_color.b, text_color.a));
   shader_->setUniform(
       "model_matrix",
-      ponos::transpose((ponos::translate(ponos::vec3(position)) *
-                        ponos::scale(text_size, text_size, text_size))
-                           .matrix()));
+      hermes::transpose((hermes::Transform::translate(hermes::vec3(position)) *
+          hermes::Transform::scale(text_size, text_size, text_size))
+                            .matrix()));
   shader_->setUniform("view_matrix",
-                      ponos::transpose(c->getViewTransform().matrix()));
+                      hermes::transpose(c->getViewTransform().matrix()));
   shader_->setUniform("projection_matrix",
-                      ponos::transpose(c->getProjectionTransform().matrix()));
+                      hermes::transpose(c->getProjectionTransform().matrix()));
   shader_->setUniform("text", 0);
   CHECK_GL_ERRORS;
   auto ib = mesh_->indexBuffer();

@@ -23,113 +23,113 @@
  */
 
 #include <circe/gl/helpers/geometry_drawers.h>
-#include <ponos/numeric/numeric.h>
+#include <hermes/numeric/numeric.h>
 
 namespace circe::gl {
 
-void fill_box(const ponos::point2 &a, const ponos::point2 &b) {
-  PONOS_UNUSED_VARIABLE(a);
-  PONOS_UNUSED_VARIABLE(b);
+void fill_box(const hermes::point2 &a, const hermes::point2 &b) {
+  HERMES_UNUSED_VARIABLE(a);
+  HERMES_UNUSED_VARIABLE(b);
   //  glBegin(GL_QUADS);
-  //  glVertex(ponos::point2(a.x, a.y));
-  //  glVertex(ponos::point2(b.x, a.y));
-  //  glVertex(ponos::point2(b.x, b.y));
-  //  glVertex(ponos::point2(a.x, b.y));
+  //  glVertex(hermes::point2(a.x, a.y));
+  //  glVertex(hermes::point2(b.x, a.y));
+  //  glVertex(hermes::point2(b.x, b.y));
+  //  glVertex(hermes::point2(a.x, b.y));
   //  glEnd();
 }
 
-void draw_bbox(const ponos::bbox2 &bbox, float *fillColor) {
-  PONOS_UNUSED_VARIABLE(bbox);
-  PONOS_UNUSED_VARIABLE(fillColor);
+void draw_bbox(const hermes::bbox2 &bbox, float *fillColor) {
+  HERMES_UNUSED_VARIABLE(bbox);
+  HERMES_UNUSED_VARIABLE(fillColor);
   //  glBegin(GL_LINE_LOOP);
-  //  glVertex(ponos::point2(bbox.lower.x, bbox.lower.y));
-  //  glVertex(ponos::point2(bbox.upper.x, bbox.lower.y));
-  //  glVertex(ponos::point2(bbox.upper.x, bbox.upper.y));
-  //  glVertex(ponos::point2(bbox.lower.x, bbox.upper.y));
+  //  glVertex(hermes::point2(bbox.lower.x, bbox.lower.y));
+  //  glVertex(hermes::point2(bbox.upper.x, bbox.lower.y));
+  //  glVertex(hermes::point2(bbox.upper.x, bbox.upper.y));
+  //  glVertex(hermes::point2(bbox.lower.x, bbox.upper.y));
   //  glEnd();
   //  if (fillColor) {
   //    glColor4fv(fillColor);
   //    glBegin(GL_QUADS);
-  //    glVertex(ponos::point2(bbox.lower.x, bbox.lower.y));
-  //    glVertex(ponos::point2(bbox.upper.x, bbox.lower.y));
-  //    glVertex(ponos::point2(bbox.upper.x, bbox.upper.y));
-  //    glVertex(ponos::point2(bbox.lower.x, bbox.upper.y));
+  //    glVertex(hermes::point2(bbox.lower.x, bbox.lower.y));
+  //    glVertex(hermes::point2(bbox.upper.x, bbox.lower.y));
+  //    glVertex(hermes::point2(bbox.upper.x, bbox.upper.y));
+  //    glVertex(hermes::point2(bbox.lower.x, bbox.upper.y));
   //    glEnd();
   //  }
 }
 
-void draw_bbox(const ponos::bbox2 &bbox, const Color &edgeColor,
+void draw_bbox(const hermes::bbox2 &bbox, const Color &edgeColor,
                const Color &fillColor) {
-  PONOS_UNUSED_VARIABLE(bbox);
-  PONOS_UNUSED_VARIABLE(edgeColor);
-  PONOS_UNUSED_VARIABLE(fillColor);
+  HERMES_UNUSED_VARIABLE(bbox);
+  HERMES_UNUSED_VARIABLE(edgeColor);
+  HERMES_UNUSED_VARIABLE(fillColor);
   //  glColor4fv(edgeColor.asArray());
   //  glBegin(GL_LINE_LOOP);
-  //  glVertex(ponos::point2(bbox.lower.x, bbox.lower.y));
-  //  glVertex(ponos::point2(bbox.upper.x, bbox.lower.y));
-  //  glVertex(ponos::point2(bbox.upper.x, bbox.upper.y));
-  //  glVertex(ponos::point2(bbox.lower.x, bbox.upper.y));
+  //  glVertex(hermes::point2(bbox.lower.x, bbox.lower.y));
+  //  glVertex(hermes::point2(bbox.upper.x, bbox.lower.y));
+  //  glVertex(hermes::point2(bbox.upper.x, bbox.upper.y));
+  //  glVertex(hermes::point2(bbox.lower.x, bbox.upper.y));
   //  glEnd();
   //  glColor4fv(fillColor.asArray());
   //  glBegin(GL_QUADS);
-  //  glVertex(ponos::point2(bbox.lower.x, bbox.lower.y));
-  //  glVertex(ponos::point2(bbox.upper.x, bbox.lower.y));
-  //  glVertex(ponos::point2(bbox.upper.x, bbox.upper.y));
-  //  glVertex(ponos::point2(bbox.lower.x, bbox.upper.y));
+  //  glVertex(hermes::point2(bbox.lower.x, bbox.lower.y));
+  //  glVertex(hermes::point2(bbox.upper.x, bbox.lower.y));
+  //  glVertex(hermes::point2(bbox.upper.x, bbox.upper.y));
+  //  glVertex(hermes::point2(bbox.lower.x, bbox.upper.y));
   //  glEnd();
 }
 
-void draw_bbox(const ponos::bbox3 &bbox) {
-  PONOS_UNUSED_VARIABLE(bbox);
+void draw_bbox(const hermes::bbox3 &bbox) {
+  HERMES_UNUSED_VARIABLE(bbox);
   //  glBegin(GL_LINE_LOOP);
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.lower.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.lower.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.upper.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.upper.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.lower.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.lower.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.upper.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.upper.y, bbox.lower.z));
   //  glEnd();
   //  glBegin(GL_LINE_LOOP);
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.lower.y, bbox.upper.z));
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.lower.y, bbox.upper.z));
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.upper.y, bbox.upper.z));
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.upper.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.lower.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.lower.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.upper.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.upper.y, bbox.upper.z));
   //  glEnd();
   //  glBegin(GL_LINES);
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.lower.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.lower.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.lower.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.lower.y, bbox.upper.z));
   //
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.lower.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.lower.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.lower.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.lower.y, bbox.upper.z));
   //
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.upper.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.upper.x, bbox.upper.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.upper.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.upper.x, bbox.upper.y, bbox.upper.z));
   //
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.upper.y, bbox.lower.z));
-  //  glVertex(ponos::point3(bbox.lower.x, bbox.upper.y, bbox.upper.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.upper.y, bbox.lower.z));
+  //  glVertex(hermes::point3(bbox.lower.x, bbox.upper.y, bbox.upper.z));
   //
   //  glEnd();
 }
 
-void draw_segment(ponos::Segment3 segment) {
-  PONOS_UNUSED_VARIABLE(segment);
+void draw_segment(hermes::Segment3 segment) {
+  HERMES_UNUSED_VARIABLE(segment);
   //  glBegin(GL_LINES);
   //  glVertex(segment.a);
   //  glVertex(segment.b);
   //  glEnd();
 }
 
-void draw_circle(const ponos::Circle &circle,
-                 const ponos::Transform2 *transform) {
-  PONOS_UNUSED_VARIABLE(circle);
-  PONOS_UNUSED_VARIABLE(transform);
+void draw_circle(const hermes::Circle &circle,
+                 const hermes::Transform2 *transform) {
+  HERMES_UNUSED_VARIABLE(circle);
+  HERMES_UNUSED_VARIABLE(transform);
   //  glBegin(GL_TRIANGLE_FAN);
   //  if (transform != nullptr)
   //    glVertex((*transform)(circle.c));
   //  else
   //    glVertex(circle.c);
   //  float angle = 0.0;
-  //  float step = ponos::Constants::two_pi / 100.f;
-  //  while (angle < ponos::Constants::two_pi + step) {
-  //    ponos::vec2 pp(circle.r * cosf(angle), circle.r * sinf(angle));
+  //  float step = hermes::Constants::two_pi / 100.f;
+  //  while (angle < hermes::Constants::two_pi + step) {
+  //    hermes::vec2 pp(circle.r * cosf(angle), circle.r * sinf(angle));
   //    if (transform != nullptr)
   //      glVertex((*transform)(circle.c + pp));
   //    else
@@ -139,59 +139,59 @@ void draw_circle(const ponos::Circle &circle,
   //  glEnd();
 }
 
-void draw_sphere(ponos::Sphere sphere, const ponos::Transform *transform) {
-  PONOS_UNUSED_VARIABLE(sphere);
-  PONOS_UNUSED_VARIABLE(transform);
+void draw_sphere(hermes::Sphere sphere, const hermes::Transform *transform) {
+  HERMES_UNUSED_VARIABLE(sphere);
+  HERMES_UNUSED_VARIABLE(transform);
   //  if (transform) {
   //    glPushMatrix();
   //    glApplyTransform(*transform);
   //  }
-  //  const float vStep = ponos::Constants::pi / 20.f;
-  //  const float hStep = ponos::Constants::pi / 20.f;
+  //  const float vStep = hermes::Constants::pi / 20.f;
+  //  const float hStep = hermes::Constants::pi / 20.f;
   //  glBegin(GL_TRIANGLES);
   //   south pole
-  //  ponos::point3 pole(0.f, -sphere.r, 0.f);
-  //  for (float angle = 0.f; angle < ponos::Constants::two_pi; angle += hStep)
+  //  hermes::point3 pole(0.f, -sphere.r, 0.f);
+  //  for (float angle = 0.f; angle < hermes::Constants::two_pi; angle += hStep)
   //  {
   //    float r = sphere.r * sinf(vStep);
-  //    glVertex(sphere.c + ponos::vec3(pole));
-  //    glVertex(sphere.c + ponos::vec3(pole) +
-  //             r * ponos::vec3(cosf(angle), -sinf(vStep), sinf(angle)));
-  //    glVertex(sphere.c + ponos::vec3(pole) +
-  //             r * ponos::vec3(cosf(angle + hStep), -sinf(vStep),
+  //    glVertex(sphere.c + hermes::vec3(pole));
+  //    glVertex(sphere.c + hermes::vec3(pole) +
+  //             r * hermes::vec3(cosf(angle), -sinf(vStep), sinf(angle)));
+  //    glVertex(sphere.c + hermes::vec3(pole) +
+  //             r * hermes::vec3(cosf(angle + hStep), -sinf(vStep),
   //                             sinf(angle + hStep)));
   //  }
   //   north pole
-  //  pole = ponos::point3(0.f, sphere.r, 0.f);
-  //  for (float angle = 0.f; angle < ponos::Constants::two_pi; angle += hStep)
+  //  pole = hermes::point3(0.f, sphere.r, 0.f);
+  //  for (float angle = 0.f; angle < hermes::Constants::two_pi; angle += hStep)
   //  {
   //    float r = sphere.r * sinf(vStep);
-  //    glVertex(sphere.c + ponos::vec3(pole));
-  //    glVertex(sphere.c + ponos::vec3(pole) +
-  //             r * ponos::vec3(cosf(angle), -sinf(vStep), sinf(angle)));
-  //    glVertex(sphere.c + ponos::vec3(pole) +
-  //             r * ponos::vec3(cosf(angle + hStep), -sinf(vStep),
+  //    glVertex(sphere.c + hermes::vec3(pole));
+  //    glVertex(sphere.c + hermes::vec3(pole) +
+  //             r * hermes::vec3(cosf(angle), -sinf(vStep), sinf(angle)));
+  //    glVertex(sphere.c + hermes::vec3(pole) +
+  //             r * hermes::vec3(cosf(angle + hStep), -sinf(vStep),
   //                             sinf(angle + hStep)));
   //  }
   //
   //  glEnd();
   //  glBegin(GL_QUADS);
-  //  for (float vAngle = vStep; vAngle <= ponos::Constants::pi - vStep;
+  //  for (float vAngle = vStep; vAngle <= hermes::Constants::pi - vStep;
   //       vAngle += vStep) {
   //    float r = sphere.r * sinf(vAngle);
   //    float R = sphere.r * sinf(vAngle + vStep);
-  //    for (float angle = 0.f; angle < ponos::Constants::two_pi; angle +=
+  //    for (float angle = 0.f; angle < hermes::Constants::two_pi; angle +=
   //    hStep) {
-  //      glVertex(sphere.c + ponos::vec3(r * cosf(angle), sphere.r *
+  //      glVertex(sphere.c + hermes::vec3(r * cosf(angle), sphere.r *
   //      cosf(vAngle),
   //                                      r * sinf(angle)));
-  //      glVertex(sphere.c + ponos::vec3(r * cosf(angle + hStep),
+  //      glVertex(sphere.c + hermes::vec3(r * cosf(angle + hStep),
   //                                      sphere.r * cosf(vAngle),
   //                                      r * sinf(angle + hStep)));
-  //      glVertex(sphere.c + ponos::vec3(R * cosf(angle + hStep),
+  //      glVertex(sphere.c + hermes::vec3(R * cosf(angle + hStep),
   //                                      sphere.r * cosf(vAngle + vStep),
   //                                      R * sinf(angle + hStep)));
-  //      glVertex(sphere.c + ponos::vec3(R * cosf(angle),
+  //      glVertex(sphere.c + hermes::vec3(R * cosf(angle),
   //                                      sphere.r * cosf(vAngle + vStep),
   //                                      R * sinf(angle)));
   //    }
@@ -201,10 +201,10 @@ void draw_sphere(ponos::Sphere sphere, const ponos::Transform *transform) {
   //    glPopMatrix();
 }
 
-void draw_polygon(const ponos::Polygon &polygon,
-                  const ponos::Transform2 *transform) {
-  PONOS_UNUSED_VARIABLE(polygon);
-  PONOS_UNUSED_VARIABLE(transform);
+//void draw_polygon(const hermes::Polygon &polygon,
+//                  const hermes::Transform2 *transform) {
+//  HERMES_UNUSED_VARIABLE(polygon);
+//  HERMES_UNUSED_VARIABLE(transform);
   //  glBegin(GL_LINE_LOOP);
   //  for (const auto &p : polygon.vertices) {
   //    if (transform != nullptr)
@@ -213,16 +213,16 @@ void draw_polygon(const ponos::Polygon &polygon,
   //      glVertex(p);
   //  }
   //  glEnd();
-}
+//}
 
-void draw_mesh(const ponos::Mesh2D *m, const ponos::Transform2 *t) {
-  PONOS_UNUSED_VARIABLE(m);
-  PONOS_UNUSED_VARIABLE(t);
+//void draw_mesh(const hermes::Mesh2D *m, const hermes::Transform2 *t) {
+//  HERMES_UNUSED_VARIABLE(m);
+//  HERMES_UNUSED_VARIABLE(t);
   //  glLineWidth(3.f);
-  //  const ponos::RawMesh *rm = m->getMesh();
+  //  const hermes::RawMesh *rm = m->getMesh();
   //  glBegin(GL_LINES);
   //  for (size_t i = 0; i < rm->meshDescriptor.count; i++) {
-  //    ponos::point2 a(
+  //    hermes::point2 a(
   //        rm->positions[rm->indices[i * rm->meshDescriptor.elementSize + 0]
   //                              .positionIndex *
   //                          2 +
@@ -231,7 +231,7 @@ void draw_mesh(const ponos::Mesh2D *m, const ponos::Transform2 *t) {
   //                              .positionIndex *
   //                          2 +
   //                      1]);
-  //    ponos::point2 b(
+  //    hermes::point2 b(
   //        rm->positions[rm->indices[i * rm->meshDescriptor.elementSize + 1]
   //                              .positionIndex *
   //                          2 +
@@ -251,14 +251,14 @@ void draw_mesh(const ponos::Mesh2D *m, const ponos::Transform2 *t) {
   //  }
   //  glEnd();
   //  glLineWidth(1.f);
-}
+//}
 
-void draw_vector(const ponos::point2 &p, const ponos::vec2 &v, float w,
+void draw_vector(const hermes::point2 &p, const hermes::vec2 &v, float w,
                  float h) {
-  PONOS_UNUSED_VARIABLE(p);
-  PONOS_UNUSED_VARIABLE(v);
-  PONOS_UNUSED_VARIABLE(w);
-  PONOS_UNUSED_VARIABLE(h);
+  HERMES_UNUSED_VARIABLE(p);
+  HERMES_UNUSED_VARIABLE(v);
+  HERMES_UNUSED_VARIABLE(w);
+  HERMES_UNUSED_VARIABLE(h);
   //  glBegin(GL_LINES);
   //  glVertex(p);
   //  glVertex(p + v);

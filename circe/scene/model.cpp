@@ -30,7 +30,7 @@
 
 namespace circe {
 
-Model Model::fromFile(const ponos::Path &path, shape_options options) {
+Model Model::fromFile(const hermes::Path &path, shape_options options) {
   if (path.extension() == "obj")
     return std::move(io::readOBJ(path, options | shape_options::unique_positions));
   return std::move(Model());
@@ -60,12 +60,12 @@ Model &Model::operator=(const Model &other) {
   return *this;
 }
 
-Model &Model::operator=(ponos::AoS &&data) {
-  data_ = std::forward<ponos::AoS>(data);
+Model &Model::operator=(hermes::AoS &&data) {
+  data_ = std::forward<hermes::AoS>(data);
   return *this;
 }
 
-Model &Model::operator=(const ponos::AoS &data) {
+Model &Model::operator=(const hermes::AoS &data) {
   data_ = data;
   return *this;
 }
@@ -87,24 +87,24 @@ void Model::setIndices(std::vector<i32> &&indices) {
   indices_ = indices;
 }
 
-void Model::setPrimitiveType(ponos::GeometricPrimitiveType primitive_type) {
+void Model::setPrimitiveType(hermes::GeometricPrimitiveType primitive_type) {
   element_type_ = primitive_type;
 }
 
 std::ostream &operator<<(std::ostream &o, const Model &model) {
-  auto ESTR = [](ponos::GeometricPrimitiveType p) -> std::string {
+  auto ESTR = [](hermes::GeometricPrimitiveType p) -> std::string {
 #define ES(P) \
     if(p == P) return #P
-    ES(ponos::GeometricPrimitiveType::POINTS);
-    ES(ponos::GeometricPrimitiveType::LINES);
-    ES(ponos::GeometricPrimitiveType::LINE_STRIP);
-    ES(ponos::GeometricPrimitiveType::LINE_LOOP);
-    ES(ponos::GeometricPrimitiveType::TRIANGLES);
-    ES(ponos::GeometricPrimitiveType::TRIANGLE_STRIP);
-    ES(ponos::GeometricPrimitiveType::TRIANGLE_FAN);
-    ES(ponos::GeometricPrimitiveType::QUADS);
-    ES(ponos::GeometricPrimitiveType::TETRAHEDRA);
-    ES(ponos::GeometricPrimitiveType::CUSTOM);
+    ES(hermes::GeometricPrimitiveType::POINTS);
+    ES(hermes::GeometricPrimitiveType::LINES);
+    ES(hermes::GeometricPrimitiveType::LINE_STRIP);
+    ES(hermes::GeometricPrimitiveType::LINE_LOOP);
+    ES(hermes::GeometricPrimitiveType::TRIANGLES);
+    ES(hermes::GeometricPrimitiveType::TRIANGLE_STRIP);
+    ES(hermes::GeometricPrimitiveType::TRIANGLE_FAN);
+    ES(hermes::GeometricPrimitiveType::QUADS);
+    ES(hermes::GeometricPrimitiveType::TETRAHEDRA);
+    ES(hermes::GeometricPrimitiveType::CUSTOM);
     return "ERR";
 #undef ES
   };
@@ -116,26 +116,26 @@ std::ostream &operator<<(std::ostream &o, const Model &model) {
   o << std::endl;
   return o;
 }
-ponos::bbox3 Model::boundingBox() const {
-  return ponos::bbox3();
+hermes::bbox3 Model::boundingBox() const {
+  return hermes::bbox3();
 }
 
-void Model::fitToBox(const ponos::bbox3 &box) {
+void Model::fitToBox(const hermes::bbox3 &box) {
 
 }
 u64 Model::elementCount() const {
   if (indices_.empty())
     return 0;
   switch (element_type_) {
-  case ponos::GeometricPrimitiveType::TRIANGLES: return indices_.size() / 3;
-  case ponos::GeometricPrimitiveType::LINES: return indices_.size() / 2;
-  case ponos::GeometricPrimitiveType::POINTS:
-  case ponos::GeometricPrimitiveType::LINE_LOOP: return indices_.size();
-  case ponos::GeometricPrimitiveType::LINE_STRIP: return indices_.size() - 1;
-  case ponos::GeometricPrimitiveType::TRIANGLE_STRIP:
-  case ponos::GeometricPrimitiveType::TRIANGLE_FAN: return indices_.size() - 2;
-  case ponos::GeometricPrimitiveType::QUADS:
-  case ponos::GeometricPrimitiveType::TETRAHEDRA: return indices_.size() / 4;
+  case hermes::GeometricPrimitiveType::TRIANGLES: return indices_.size() / 3;
+  case hermes::GeometricPrimitiveType::LINES: return indices_.size() / 2;
+  case hermes::GeometricPrimitiveType::POINTS:
+  case hermes::GeometricPrimitiveType::LINE_LOOP: return indices_.size();
+  case hermes::GeometricPrimitiveType::LINE_STRIP: return indices_.size() - 1;
+  case hermes::GeometricPrimitiveType::TRIANGLE_STRIP:
+  case hermes::GeometricPrimitiveType::TRIANGLE_FAN: return indices_.size() - 2;
+  case hermes::GeometricPrimitiveType::QUADS:
+  case hermes::GeometricPrimitiveType::TETRAHEDRA: return indices_.size() / 4;
   default: return indices_.size();
   }
 }

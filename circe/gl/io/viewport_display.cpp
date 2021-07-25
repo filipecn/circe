@@ -40,7 +40,7 @@ void ViewportDisplay::mouse(double x, double y) {
 }
 
 void ViewportDisplay::scroll(double dx, double dy) {
-  camera->mouseScroll(getMouseNPos(), ponos::vec2(dx, dy));
+  camera->mouseScroll(getMouseNPos(), hermes::vec2(dx, dy));
 }
 
 void ViewportDisplay::button(int b, int a, int m) {
@@ -54,34 +54,34 @@ void ViewportDisplay::key(int k, int scancode, int action, int modifiers) const 
     keyCallback(k, scancode, action, modifiers);
 }
 
-ponos::point2 ViewportDisplay::getMouseNPos() {
+hermes::point2 ViewportDisplay::getMouseNPos() {
   int viewport[] = {0, 0, width, height};
-  ponos::point2 mp =
-      GraphicsDisplay::instance().getMousePos() - ponos::vec2(x, y);
-  return ponos::point2((mp.x - viewport[0]) / viewport[2] * 2.0 - 1.0,
+  hermes::point2 mp =
+      GraphicsDisplay::instance().getMousePos() - hermes::vec2(x, y);
+  return hermes::point2((mp.x - viewport[0]) / viewport[2] * 2.0 - 1.0,
                        (mp.y - viewport[1]) / viewport[3] * 2.0 - 1.0);
 }
 
 bool ViewportDisplay::hasMouseFocus() const {
-  ponos::point2 mp =
-      GraphicsDisplay::instance().getMousePos() - ponos::vec2(x, y);
+  hermes::point2 mp =
+      GraphicsDisplay::instance().getMousePos() - hermes::vec2(x, y);
   return (mp.x >= 0.f && mp.x <= width && mp.y >= 0.f && mp.y <= height);
 }
 
-ponos::point3 ViewportDisplay::viewCoordToNormDevCoord(ponos::point3 p) const {
+hermes::point3 ViewportDisplay::viewCoordToNormDevCoord(hermes::point3 p) const {
   float v[] = {0, 0, static_cast<float>(width), static_cast<float>(height)};
-  return ponos::point3((p.x - v[0]) / (v[2] / 2.0) - 1.0,
+  return hermes::point3((p.x - v[0]) / (v[2] / 2.0) - 1.0,
                        (p.y - v[1]) / (v[3] / 2.0) - 1.0, 2 * p.z - 1.0);
 }
 
-ponos::point3 ViewportDisplay::unProject(const CameraInterface &c,
-                                         ponos::point3 p) {
-  return ponos::inverse(c.getTransform()) * p;
+hermes::point3 ViewportDisplay::unProject(const CameraInterface &c,
+                                         hermes::point3 p) {
+  return hermes::inverse(c.getTransform()) * p;
 }
 
-ponos::point3 ViewportDisplay::unProject() {
-  return ponos::inverse(camera->getTransform()) *
-      ponos::point3(getMouseNPos().x, getMouseNPos().y, 0.f);
+hermes::point3 ViewportDisplay::unProject() {
+  return hermes::inverse(camera->getTransform()) *
+      hermes::point3(getMouseNPos().x, getMouseNPos().y, 0.f);
 }
 
 } // namespace circe

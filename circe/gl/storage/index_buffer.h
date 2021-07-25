@@ -84,7 +84,7 @@ public:
       break;
     case GL_QUADS: element_count = data.size() / 4;
       break;
-    default:spdlog::warn("Element type considered GL_POINTS on index buffer assignment.");
+    default: hermes::Log::warn("Element type considered GL_POINTS on index buffer assignment.");
       element_count = data.size();
     }
     setData(reinterpret_cast<const void *>(data.data()));

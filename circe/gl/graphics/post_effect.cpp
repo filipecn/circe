@@ -131,7 +131,7 @@ FXAA::FXAA() {
 void FXAA::apply(const FramebufferTexture &in, FramebufferTexture &out) {
   in.bind(GL_TEXTURE0);
   shader->setUniform("tex", 0);
-  shader->setUniform("texSize", ponos::vec2(in.size()[0], in.size()[1]));
+  shader->setUniform("texSize", hermes::vec2(in.size()[0], in.size()[1]));
   out.render([&]() {
     shader->begin();
     glDrawArrays(GL_TRIANGLES, 0, 3);

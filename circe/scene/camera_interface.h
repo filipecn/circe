@@ -25,9 +25,11 @@
 #ifndef CIRCE_SCENE_CAMERA_H
 #define CIRCE_SCENE_CAMERA_H
 
-#include <ponos/ponos.h>
-
+#include <hermes/geometry/transform.h>
 #include <circe/scene/camera_projection.h>
+#include <hermes/geometry/line.h>
+#include <hermes/geometry/plane.h>
+#include <hermes/geometry/frustum.h>
 
 #include <utility>
 
@@ -40,12 +42,12 @@ public:
   virtual ~CameraInterface() = default;
   /// \param p normalized mouse position
   /// \return camera's ray in world space
-  [[nodiscard]] virtual ponos::Ray3 pickRay(ponos::point2 p) const {
-    ponos::point3 O = ponos::inverse(model * view)(
-        ponos::inverse(projection->transform) * ponos::point3(p.x, p.y, 0.f));
-    ponos::point3 D = ponos::inverse(model * view)(
-        ponos::inverse(projection->transform) * ponos::point3(p.x, p.y, 1.f));
-    return ponos::Ray3(O, D - O);
+  [[nodiscard]] virtual hermes::Ray3 pickRay(hermes::point2 p) const {
+    hermes::point3 O = hermes::inverse(model * view)(
+        hermes::inverse(projection->transform) * hermes::point3(p.x, p.y, 0.f));
+    hermes::point3 D = hermes::inverse(model * view)(
+        hermes::inverse(projection->transform) * hermes::point3(p.x, p.y, 1.f));
+    return hermes::Ray3(O, D - O);
   }
 
   template<typename T, class... P>
@@ -56,7 +58,7 @@ public:
   /// \param h height in pixels
   virtual void resize(float w, float h) {
     projection->ratio = w / h;
-    projection->clip_size = ponos::vec2(zoom, zoom);
+    projection->clip_size = hermes::vec2(zoom, zoom);
     if (w < h)
       projection->clip_size.y = projection->clip_size.x / projection->ratio;
     else
@@ -65,7 +67,7 @@ public:
     update();
   }
   /// \return MVP transform
-  [[nodiscard]] virtual ponos::Transform getTransform() const {
+  [[nodiscard]] virtual hermes::Transform getTransform() const {
     return projection->transform * view * model;
     return model * view * projection->transform;
   }
@@ -74,25 +76,25 @@ public:
     return projection.get();
   }
   /// \return projection transform
-  [[nodiscard]] ponos::Transform getProjectionTransform() const {
+  [[nodiscard]] hermes::Transform getProjectionTransform() const {
     return projection->transform;
   }
   /// \return model transform
-  [[nodiscard]] virtual ponos::Matrix3x3<real_t> getNormalMatrix() const { return normal; }
-  [[nodiscard]] virtual ponos::Transform getModelTransform() const { return model; }
-  [[nodiscard]] virtual ponos::Transform getViewTransform() const { return view; }
+  [[nodiscard]] virtual hermes::Matrix3x3<real_t> getNormalMatrix() const { return normal; }
+  [[nodiscard]] virtual hermes::Transform getModelTransform() const { return model; }
+  [[nodiscard]] virtual hermes::Transform getViewTransform() const { return view; }
   /// \param p normalized mouse position
   /// \return line object in world space
-  [[nodiscard]] virtual ponos::Line viewLineFromWindow(ponos::point2 p) const {
-    ponos::point3 O = ponos::inverse(model * view)(
-        ponos::inverse(projection->transform) * ponos::point3(p.x, p.y, 0.f));
-    ponos::point3 D = ponos::inverse(model * view)(
-        ponos::inverse(projection->transform) * ponos::point3(p.x, p.y, 1.f));
+  [[nodiscard]] virtual hermes::Line viewLineFromWindow(hermes::point2 p) const {
+    hermes::point3 O = hermes::inverse(model * view)(
+        hermes::inverse(projection->transform) * hermes::point3(p.x, p.y, 0.f));
+    hermes::point3 D = hermes::inverse(model * view)(
+        hermes::inverse(projection->transform) * hermes::point3(p.x, p.y, 1.f));
     return {O, D - O};
   }
   /// Applies **t** to camera transform (usually model transformation)
   /// \param t transform
-  virtual void applyTransform(const ponos::Transform &t) {
+  virtual void applyTransform(const hermes::Transform &t) {
     pos = target + t(pos - target) + t.getTranslate();
     target += t.getTranslate();
     up = t(up);
@@ -101,27 +103,27 @@ public:
   }
   /// \param p point in world space
   /// \return plane containing **p**, perpendicular to camera's view axis
-  [[nodiscard]] virtual ponos::Plane viewPlane(ponos::point3 p) const {
-    ponos::vec3 n = pos - p;
+  [[nodiscard]] virtual hermes::Plane viewPlane(hermes::point3 p) const {
+    hermes::vec3 n = pos - p;
     if (fabs(n.length()) < 1e-8)
-      n = ponos::vec3(0, 0, 0);
+      n = hermes::vec3(0, 0, 0);
     else
-      n = ponos::normalize(n);
-    return {ponos::normal3(n), ponos::dot(n, ponos::vec3(p.x, p.y, p.z))};
+      n = hermes::normalize(n);
+    return {hermes::normal3(n), hermes::dot(n, hermes::vec3(p.x, p.y, p.z))};
   }
   /// \return up vector
-  [[nodiscard]] virtual ponos::vec3 getUpVector() const { return up; };
+  [[nodiscard]] virtual hermes::vec3 getUpVector() const { return up; };
   /// \return eye position
-  [[nodiscard]] virtual ponos::point3 getPosition() const { return pos; };
+  [[nodiscard]] virtual hermes::point3 getPosition() const { return pos; };
   /// \return  target position
-  [[nodiscard]] virtual ponos::point3 getTarget() const { return target; }
+  [[nodiscard]] virtual hermes::point3 getTarget() const { return target; }
   /// \param p target position
-  virtual void setTarget(ponos::point3 p) {
+  virtual void setTarget(hermes::point3 p) {
     target = p;
     update();
   }
   /// \param p eye position
-  virtual void setPosition(ponos::point3 p) {
+  virtual void setPosition(hermes::point3 p) {
     pos = p;
     update();
   }
@@ -142,18 +144,18 @@ public:
   }
   [[nodiscard]] virtual float getNear() const { return projection->near; }
   [[nodiscard]] virtual float getFar() const { return projection->far; }
-  [[nodiscard]] virtual const ponos::Frustum &getFrustum() const { return frustum; }
+  [[nodiscard]] virtual const hermes::Frustum &getFrustum() const { return frustum; }
   ///
   virtual void update() = 0;
 
 protected:
-  ponos::Transform view;
-  ponos::Transform model;
-  ponos::Frustum frustum;
-  ponos::Matrix3x3<real_t> normal;
-  ponos::vec3 up;
-  ponos::point3 pos;
-  ponos::point3 target;
+  hermes::Transform view, inv_view;
+  hermes::Transform model, inv_model;
+  hermes::Frustum frustum;
+  hermes::Matrix3x3<real_t> normal;
+  hermes::vec3 up;
+  hermes::point3 pos;
+  hermes::point3 target;
   std::unique_ptr<CameraProjection> projection;
   float zoom{1.};
 };

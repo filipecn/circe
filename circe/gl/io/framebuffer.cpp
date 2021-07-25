@@ -28,18 +28,18 @@ namespace circe::gl {
 
 Framebuffer::Framebuffer() {
   glGenFramebuffers(1, &framebuffer_object_);
-  PONOS_ASSERT(framebuffer_object_);
+  HERMES_ASSERT(framebuffer_object_);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
   glGenRenderbuffers(1, &render_buffer_object_);
-  PONOS_ASSERT(render_buffer_object_);
+  HERMES_ASSERT(render_buffer_object_);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Framebuffer::Framebuffer(const ponos::size3 &resolution) : Framebuffer() {
+Framebuffer::Framebuffer(const hermes::size3 &resolution) : Framebuffer() {
   resize(resolution);
 }
 
-Framebuffer::Framebuffer(const ponos::size2 &resolution) : Framebuffer() {
+Framebuffer::Framebuffer(const hermes::size2 &resolution) : Framebuffer() {
   resize(resolution);
 }
 
@@ -51,7 +51,7 @@ Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &framebuffer_object_);
 }
 
-void Framebuffer::resize(const ponos::size2 &resolution) {
+void Framebuffer::resize(const hermes::size2 &resolution) {
   resize({resolution.width, resolution.height, 0});
 }
 
@@ -59,7 +59,7 @@ void Framebuffer::setRenderBufferStorageInternalFormat(GLenum format) {
   render_buffer_internal_format_ = format;
 }
 
-void Framebuffer::resize(const ponos::size3 &resolution) {
+void Framebuffer::resize(const hermes::size3 &resolution) {
   size_in_pixels_ = resolution;
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_object_);
   // create render buffer
@@ -134,8 +134,8 @@ void Framebuffer::blit(GLbitfield mask, GLenum filter) const {
                              0, 0, size_in_pixels_.width, size_in_pixels_.height, mask, filter));
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-ponos::size2 Framebuffer::size() const {
-  return ponos::size2(size_in_pixels_.width, size_in_pixels_.height);
+hermes::size2 Framebuffer::size() const {
+  return hermes::size2(size_in_pixels_.width, size_in_pixels_.height);
 }
 
 } // circe namespace

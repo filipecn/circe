@@ -30,7 +30,6 @@
 #include <circe/gl/texture/texture.h>
 #include <circe/gl/scene/quad.h>
 #include <memory>
-#include <ponos/ponos.h>
 
 #include <circe/gl/scene/scene_mesh.h>
 #include <stb_truetype.h>
@@ -51,8 +50,8 @@ public:
     GLuint texture = 0;
   } font;
   struct Glyph {
-    ponos::vec3 positions[4];
-    ponos::vec2 uvs[4];
+    hermes::vec3 positions[4];
+    hermes::vec2 uvs[4];
     float offsetX = 0;
     float offsetY = 0;
   };
@@ -69,8 +68,8 @@ public:
   void setText(std::string text);
   /// \param text **[in]**
   /// \param m **[in]**
-  void setText(const std::string& text, ponos::RawMesh &m) const;
-  ponos::RawMeshSPtr rawMesh;
+  void setText(const std::string& text, hermes::RawMesh &m) const;
+  hermes::RawMeshSPtr rawMesh;
   SceneMeshSPtr mesh;
   Texture texture;
 };

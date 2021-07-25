@@ -29,7 +29,7 @@
 
 namespace circe::gl {
 
-SceneModel SceneModel::fromFile(const ponos::Path &path, shape_options options) {
+SceneModel SceneModel::fromFile(const hermes::Path &path, shape_options options) {
   auto model = Model::fromFile(path, options);
   SceneModel scene_model;
   scene_model.vb_ = model.data();

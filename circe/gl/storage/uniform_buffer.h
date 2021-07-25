@@ -49,7 +49,7 @@ public:
     template<typename T>
     UniformBlockData &operator=(const T *data) {
       if (sizeof(T) != size_) {
-        spdlog::error("Failed to assign data with different size to UBO.\n"
+        hermes::Log::error("Failed to assign data with different size to UBO.\n"
                       "Buffer Size: {0} Data Size: {1}", size_, sizeof(T));
         return *this;
       }

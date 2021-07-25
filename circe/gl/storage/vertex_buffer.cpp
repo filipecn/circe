@@ -98,7 +98,7 @@ VertexBuffer::VertexBuffer(VertexBuffer &&other) noexcept {
 
 VertexBuffer::~VertexBuffer() = default;
 
-VertexBuffer &VertexBuffer::operator=(const ponos::AoS &aos) {
+VertexBuffer &VertexBuffer::operator=(const hermes::AoS &aos) {
   // clear existent data/attributes
   attributes.clear();
   // push new attributes

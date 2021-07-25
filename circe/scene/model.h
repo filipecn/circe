@@ -25,11 +25,11 @@
 ///
 ///\brief
 
-#ifndef PONOS_CIRCE_CIRCE_GL_SCENE_MODEL_H
-#define PONOS_CIRCE_CIRCE_GL_SCENE_MODEL_H
+#ifndef CIRCE_CIRCE_GL_SCENE_MODEL_H
+#define CIRCE_CIRCE_GL_SCENE_MODEL_H
 
-#include <ponos/storage/array_of_structures.h>
-#include <ponos/common/file_system.h>
+#include <hermes/storage/array_of_structures.h>
+#include <hermes/common/file_system.h>
 #include <circe/gl/storage/vertex_array_object.h>
 #include <circe/gl/storage/vertex_buffer.h>
 #include <circe/gl/storage/index_buffer.h>
@@ -44,7 +44,7 @@ public:
   // ***********************************************************************
   //                          STATIC METHODS
   // ***********************************************************************
-  static Model fromFile(const ponos::Path &path, shape_options options = shape_options::none);
+  static Model fromFile(const hermes::Path &path, shape_options options = shape_options::none);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
@@ -54,8 +54,8 @@ public:
   // ***********************************************************************
   //                            OPERATORS
   // ***********************************************************************
-  Model &operator=(ponos::AoS &&data);
-  Model &operator=(const ponos::AoS &data);
+  Model &operator=(hermes::AoS &&data);
+  Model &operator=(const hermes::AoS &data);
   Model &operator=(const std::vector<i32> &indices);
   Model &operator=(const std::vector<f32> &vertex_data);
   Model &operator=(Model &&other) noexcept;
@@ -65,19 +65,19 @@ public:
   //                             METHODS
   // ***********************************************************************
   template<typename T>
-  ponos::AoS::FieldAccessor<T> attributeAccessor(const std::string &attribute_name) {
+  hermes::AoSFieldView<T> attributeAccessor(const std::string &attribute_name) {
     return data_.field<T>(attribute_name);
   }
   template<typename T>
-  ponos::AoS::FieldAccessor<T> attributeAccessor(u64 attribute_index) {
+  hermes::AoSFieldView<T> attributeAccessor(u64 attribute_index) {
     return data_.field<T>(attribute_index);
   }
   template<typename T>
-  ponos::AoS::FieldConstAccessor<T> attributeAccessor(const std::string &attribute_name) const {
+  hermes::ConstAoSFieldView<T> attributeAccessor(const std::string &attribute_name) const {
     return data_.field<T>(attribute_name);
   }
   template<typename T>
-  ponos::AoS::FieldConstAccessor<T> attributeAccessor(u64 attribute_index) const {
+  hermes::ConstAoSFieldView<T> attributeAccessor(u64 attribute_index) const {
     return data_.field<T>(attribute_index);
   }
   template<typename T>
@@ -86,21 +86,21 @@ public:
   u64 pushAttribute(const std::string &attribute_name) {
     return data_.pushField<T>(attribute_name);
   }
-  const ponos::AoS &data() const { return data_; }
+  const hermes::AoS &data() const { return data_; }
   const std::vector<i32> &indices() const { return indices_; }
-  ponos::GeometricPrimitiveType primitiveType() const { return element_type_; }
+  hermes::GeometricPrimitiveType primitiveType() const { return element_type_; }
   void resize(u64 new_size);
   void setIndices(std::vector<i32> &&indices);
-  void setPrimitiveType(ponos::GeometricPrimitiveType primitive_type);
+  void setPrimitiveType(hermes::GeometricPrimitiveType primitive_type);
   u64 elementCount() const;
 
-  ponos::bbox3 boundingBox() const;
-  void fitToBox(const ponos::bbox3 &box = ponos::bbox3::unitBox());
+  hermes::bbox3 boundingBox() const;
+  void fitToBox(const hermes::bbox3 &box = hermes::bbox3::unitBox());
 
 protected:
-  ponos::AoS data_;
+  hermes::AoS data_;
   std::vector<i32> indices_;
-  ponos::GeometricPrimitiveType element_type_{ponos::GeometricPrimitiveType::TRIANGLES};
+  hermes::GeometricPrimitiveType element_type_{hermes::GeometricPrimitiveType::TRIANGLES};
 };
 
 }

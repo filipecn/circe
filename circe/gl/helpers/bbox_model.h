@@ -28,7 +28,7 @@
 #ifndef CIRCE_CIRCE_GL_HELPERS_BBOX_MODEL_H
 #define CIRCE_CIRCE_GL_HELPERS_BBOX_MODEL_H
 
-#include <ponos/geometry/bbox.h>
+#include <hermes/geometry/bbox.h>
 #include <circe/gl/scene/scene_object.h>
 #include <circe/gl/scene/scene_model.h>
 
@@ -41,7 +41,7 @@ public:
   // ***********************************************************************
   ///
   /// \param bbox
-  explicit BBoxModel(const ponos::bbox3 &bbox = ponos::bbox3::unitBox());
+  explicit BBoxModel(const hermes::bbox3 &bbox = hermes::bbox3::unitBox());
   ~BBoxModel() override;
   // ***********************************************************************
   //                           OPERATORS
@@ -49,22 +49,22 @@ public:
   ///
   /// \param bbox
   /// \return
-  BBoxModel &operator=(const ponos::bbox3 &bbox);
+  BBoxModel &operator=(const hermes::bbox3 &bbox);
   // ***********************************************************************
   //                             METHODS
   // ***********************************************************************
   ///
   /// \param camera
   /// \param t
-  void draw(const CameraInterface *camera, ponos::Transform t) override;
+  void draw(const CameraInterface *camera, hermes::Transform t) override;
   // ***********************************************************************
   //                          PUBLIC FIELDS
   // ***********************************************************************
-  ponos::Transform transform;
+  hermes::Transform transform;
   circe::Color color{1.f, 1.f, 1.f, .5f};
 
 private:
-  void updateTransform(const ponos::bbox3 &bbox);
+  void updateTransform(const hermes::bbox3 &bbox);
 
   SceneModel mesh_;
 };

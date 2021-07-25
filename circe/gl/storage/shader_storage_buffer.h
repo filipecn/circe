@@ -29,7 +29,7 @@
 #define CIRCE_CIRCE_GL_STORAGE_SHADER_STORAGE_BUFFER_H
 
 #include <circe/gl/storage/buffer_interface.h>
-#include <ponos/storage/array_of_structures.h>
+#include <hermes/storage/array_of_structures.h>
 
 namespace circe::gl {
 
@@ -44,7 +44,7 @@ public:
   // ***********************************************************************
   //                           OPERATORS
   // ***********************************************************************
-  ShaderStorageBuffer &operator=(const ponos::AoS &aos);
+  ShaderStorageBuffer &operator=(const hermes::AoS &aos);
   ShaderStorageBuffer &operator=(ShaderStorageBuffer &&other) noexcept;
   // ***********************************************************************
   //                             METHODS
@@ -57,7 +57,7 @@ public:
   // ***********************************************************************
   //                          PUBLIC FIELDS
   // ***********************************************************************
-  ponos::StructDescriptor descriptor;
+  hermes::StructDescriptor descriptor;
 
 private:
   u64 struct_count_{0};

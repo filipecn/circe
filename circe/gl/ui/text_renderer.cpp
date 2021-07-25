@@ -69,22 +69,22 @@ TextRenderer::TextRenderer(float scale, Color c, size_t id)
 
 void TextRenderer::render(std::string s, GLfloat x, GLfloat y, GLfloat scale,
                           Color c) {
-  PONOS_UNUSED_VARIABLE(x);
-  PONOS_UNUSED_VARIABLE(y);
-  PONOS_UNUSED_VARIABLE(scale);
+  HERMES_UNUSED_VARIABLE(x);
+  HERMES_UNUSED_VARIABLE(y);
+  HERMES_UNUSED_VARIABLE(scale);
   atlas.setText(std::move(s));
   atlas.mesh->bind();
   atlas.mesh->vertexBuffer()->locateAttributes(*quad_.shader().get());
   atlas.texture.bind(GL_TEXTURE0);
   quad_.shader()->begin();
-  quad_.shader()->setUniform("textColor", ponos::vec4(c.r, c.g, c.b, c.a));
+  quad_.shader()->setUniform("textColor", hermes::vec4(c.r, c.g, c.b, c.a));
   quad_.shader()->setUniform(
       "model_matrix",
-      ponos::transpose(ponos::translate(ponos::vec3(x, y, 0)).matrix()));
-  quad_.shader()->setUniform("view_matrix", ponos::Transform().matrix());
+      hermes::transpose(hermes::Transform::translate(hermes::vec3(x, y, 0)).matrix()));
+  quad_.shader()->setUniform("view_matrix", hermes::Transform().matrix());
   quad_.shader()->setUniform(
       "projection_matrix",
-      ponos::transpose(ponos::ortho(0, 800, 0, 800).matrix()));
+      hermes::transpose(hermes::Transform::ortho(0, 800, 0, 800).matrix()));
   quad_.shader()->setUniform("text", 0);
   CHECK_GL_ERRORS;
   auto ib = atlas.mesh->indexBuffer();
@@ -96,25 +96,25 @@ void TextRenderer::render(std::string s, GLfloat x, GLfloat y, GLfloat scale,
   quad_.shader()->end();
 }
 
-void TextRenderer::render(std::string s, const ponos::point3 &p,
+void TextRenderer::render(std::string s, const hermes::point3 &p,
                           const CameraInterface *camera, GLfloat scale,
                           Color c) {
-  PONOS_UNUSED_VARIABLE(camera);
+  HERMES_UNUSED_VARIABLE(camera);
   atlas.setText(std::move(s));
   atlas.mesh->bind();
   atlas.mesh->vertexBuffer()->locateAttributes(*quad_.shader().get());
   atlas.texture.bind(GL_TEXTURE0);
   quad_.shader()->begin();
-  quad_.shader()->setUniform("textColor", ponos::vec4(c.r, c.g, c.b, c.a));
+  quad_.shader()->setUniform("textColor", hermes::vec4(c.r, c.g, c.b, c.a));
   quad_.shader()->setUniform(
-      "model_matrix", ponos::transpose((ponos::translate(ponos::vec3(p)) *
-          ponos::scale(scale, scale, scale))
-                                           .matrix()));
+      "model_matrix", hermes::transpose((hermes::Transform::translate(hermes::vec3(p)) *
+          hermes::Transform::scale(scale, scale, scale))
+                                            .matrix()));
   quad_.shader()->setUniform(
-      "view_matrix", ponos::transpose(camera_->getViewTransform().matrix()));
+      "view_matrix", hermes::transpose(camera_->getViewTransform().matrix()));
   quad_.shader()->setUniform(
       "projection_matrix",
-      ponos::transpose(camera_->getProjectionTransform().matrix()));
+      hermes::transpose(camera_->getProjectionTransform().matrix()));
   quad_.shader()->setUniform("text", 0);
   CHECK_GL_ERRORS;
   auto ib = atlas.mesh->indexBuffer();
@@ -131,13 +131,13 @@ void TextRenderer::setCamera(const CameraInterface *c) {
   usingCamera_ = true;
 }
 
-TextRenderer &TextRenderer::at(const ponos::point3 &p) {
+TextRenderer &TextRenderer::at(const hermes::point3 &p) {
   position_ = p;
   return *this;
 }
 
-TextRenderer &TextRenderer::at(const ponos::point2 &p) {
-  position_ = ponos::point3(p.x, p.y, 0);
+TextRenderer &TextRenderer::at(const hermes::point2 &p) {
+  position_ = hermes::point3(p.x, p.y, 0);
   return *this;
 }
 

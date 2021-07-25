@@ -5,13 +5,13 @@ class HelloCirce : public circe::gl::BaseApp {
 public:
   HelloCirce() : BaseApp(800, 800) {
     // setup object model
-    ponos::Path assets_path(std::string(ASSETS_PATH));
+    hermes::Path assets_path(std::string(ASSETS_PATH));
     // setup reference grid
-    ponos::Path shaders_path(std::string(SHADERS_PATH));
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
 //    mesh = circe::gl::SceneModel::fromFile("/home/filipecn/Desktop/teapot.obj", circe::shape_options::normal);
     mesh = circe::Shapes::icosphere(8, circe::shape_options::normal);
     if (!mesh.program.link(shaders_path, "scene_object"))
-      spdlog::error("Failed to load model shader: " + mesh.program.err);
+      hermes::Log::error("Failed to load model shader: " + mesh.program.err);
 
     /// setup UBO /////////////////////////////////////////////////////////////
     scene_ubo.push(mesh.program);
@@ -23,7 +23,7 @@ public:
     pbr_ubo_data.roughness = 0.35;
     scene_ubo["PBR"] = &pbr_ubo_data;
     /// setup SSBO ////////////////////////////////////////////////////////////
-    ponos::AoS aos;
+    hermes::AoS aos;
     aos.pushField<vec3_16>("position");
     aos.pushField<vec3_16>("color");
     aos.resize(4);

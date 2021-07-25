@@ -41,7 +41,7 @@ public:
   /// \param path
   /// \param options
   /// \return
-  static SceneModel fromFile(const ponos::Path &path, shape_options options = shape_options::none);
+  static SceneModel fromFile(const hermes::Path &path, shape_options options = shape_options::none);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
@@ -69,7 +69,7 @@ public:
   //                          PUBLIC FIELDS
   // ***********************************************************************
   Program program;
-  ponos::Transform transform;
+  hermes::Transform transform;
 
 private:
   VertexArrayObject vao_;

@@ -28,8 +28,12 @@
 #include <circe/scene/camera_interface.h>
 #include <circe/ui/trackball.h>
 
+#include <hermes/geometry/sphere.h>
+#include <hermes/geometry/plane.h>
+#include <hermes/geometry/line.h>
+#include <hermes/geometry/queries.h>
+
 #include <iostream>
-#include <ponos/ponos.h>
 
 namespace circe {
 
@@ -40,15 +44,15 @@ public:
   virtual ~TrackMode() = default;
   /// Renders trackball mode helpers
   /// \param tb trackball reference
-  virtual void draw(const Trackball &tb) { PONOS_UNUSED_VARIABLE(tb); }
+  virtual void draw(const Trackball &tb) { HERMES_UNUSED_VARIABLE(tb); }
   /// Starts the manipulation (usually triggered by a button press)
   /// \param tb trackball reference
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
   virtual void start(Trackball &tb, const CameraInterface &camera,
-                     ponos::point2 p) {
-    PONOS_UNUSED_VARIABLE(camera);
-    PONOS_UNUSED_VARIABLE(tb);
+                     hermes::point2 p) {
+    HERMES_UNUSED_VARIABLE(camera);
+    HERMES_UNUSED_VARIABLE(tb);
     start_ = p;
     dragging_ = true;
   }
@@ -57,18 +61,18 @@ public:
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
   /// \param d scroll delta
-  virtual void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
-                      ponos::vec2 d) = 0;
+  virtual void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
+                      hermes::vec2 d) = 0;
   /// Stops the manipulation (usually after a button release)
   /// \param tb trackball reference
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
-  virtual void stop(Trackball &tb, CameraInterface &camera, ponos::point2 p) {
-    PONOS_UNUSED_VARIABLE(p);
-    PONOS_UNUSED_VARIABLE(camera);
+  virtual void stop(Trackball &tb, CameraInterface &camera, hermes::point2 p) {
+    HERMES_UNUSED_VARIABLE(p);
+    HERMES_UNUSED_VARIABLE(camera);
     dragging_ = false;
     ////    camera.applyTransform(tb.transform * partialTransform_);
-    ////    tb.transform = ponos::Transform();
+    ////    tb.transform = hermes::Transform();
     tb.applyPartialTransform();
   }
   /// \return true if active
@@ -80,17 +84,17 @@ protected:
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
   /// \return hit position
-  ponos::point3 hitViewPlane(Trackball &tb, CameraInterface &camera,
-                             ponos::point2 p) {
-    ponos::Line l = camera.viewLineFromWindow(p);
-    ponos::Plane vp = camera.viewPlane(tb.center());
-    ponos::point3 hp;
-    ponos::plane_line_intersection(vp, l, hp);
+  hermes::point3 hitViewPlane(Trackball &tb, CameraInterface &camera,
+                              hermes::point2 p) {
+    hermes::Line l = camera.viewLineFromWindow(p);
+    hermes::Plane vp = camera.viewPlane(tb.center());
+    hermes::point3 hp;
+    hermes::GeometricQueries::intersect(vp, l, hp);
     return hp;
   }
 
   bool dragging_;
-  ponos::point2 start_;
+  hermes::point2 start_;
 };
 
 /// Applies a scale
@@ -98,15 +102,15 @@ class ScaleMode : public TrackMode {
 public:
   ScaleMode() : TrackMode() {}
   ~ScaleMode() override = default;
-  void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
-              ponos::vec2 d) override {
-    if (d == ponos::vec2())
+  void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
+              hermes::vec2 d) override {
+    if (d == hermes::vec2())
       return;
-    PONOS_UNUSED_VARIABLE(p);
-    PONOS_UNUSED_VARIABLE(camera);
-    PONOS_UNUSED_VARIABLE(tb);
+    HERMES_UNUSED_VARIABLE(p);
+    HERMES_UNUSED_VARIABLE(camera);
+    HERMES_UNUSED_VARIABLE(tb);
     float scale = (d.y < 0.f) ? 1.1f : 0.9f;
-    tb.accumulatePartialTransform(ponos::scale(scale, scale, scale));
+    tb.accumulatePartialTransform(hermes::Transform::scale(scale, scale, scale));
   }
 };
 
@@ -116,18 +120,18 @@ public:
   PanMode() : TrackMode() {}
   ~PanMode() override = default;
 
-  void draw(const Trackball &tb) override { PONOS_UNUSED_VARIABLE(tb); }
+  void draw(const Trackball &tb) override { HERMES_UNUSED_VARIABLE(tb); }
 
-  void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
-              ponos::vec2 d) override {
-    PONOS_UNUSED_VARIABLE(d);
+  void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
+              hermes::vec2 d) override {
+    HERMES_UNUSED_VARIABLE(d);
     if (!dragging_)
       return;
-    ponos::point3 a = hitViewPlane(tb, camera, start_);
-    ponos::point3 b = hitViewPlane(tb, camera, p);
+    hermes::point3 a = hitViewPlane(tb, camera, start_);
+    hermes::point3 b = hitViewPlane(tb, camera, p);
     // it is -(b - a), because moving the mouse up should move the camera down
     // (so the image goes up)
-    tb.accumulatePartialTransform(ponos::translate(a - b));
+    tb.accumulatePartialTransform(hermes::Transform::translate(a - b));
     start_ = p;
   }
 };
@@ -138,19 +142,19 @@ public:
   ZMode() : TrackMode() {}
   ~ZMode() override = default;
 
-  void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
-              ponos::vec2 d) override {
-    PONOS_UNUSED_VARIABLE(d);
+  void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
+              hermes::vec2 d) override {
+    HERMES_UNUSED_VARIABLE(d);
     if (!dragging_)
       return;
-    ponos::point3 a = hitViewPlane(tb, camera, start_);
-    ponos::point3 b = hitViewPlane(tb, camera, p);
-    ponos::vec3 dir =
-        ponos::normalize(camera.getTarget() - camera.getPosition());
+    hermes::point3 a = hitViewPlane(tb, camera, start_);
+    hermes::point3 b = hitViewPlane(tb, camera, p);
+    hermes::vec3 dir =
+        hermes::normalize(camera.getTarget() - camera.getPosition());
     if (p.y - start_.y < 0.f)
       dir *= -1.f;
     tb.accumulatePartialTransform(
-        ponos::translate(dir * ponos::distance(a, b)));
+        hermes::Transform::translate(dir * hermes::distance(a, b)));
     start_ = p;
   }
 };
@@ -161,48 +165,48 @@ public:
   RotateMode() : TrackMode() {}
   ~RotateMode() override = default;
   void draw(const Trackball &tb) override {
-    PONOS_UNUSED_VARIABLE(tb);
-//    ponos::Sphere s(tb.center(), tb.radius() * 2.f);
+    HERMES_UNUSED_VARIABLE(tb);
+//    hermes::Sphere s(tb.center(), tb.radius() * 2.f);
 //    glColor4f(0, 0, 0, 0.5);
 //    draw_sphere(s);
   }
-  void update(Trackball &tb, CameraInterface &camera, ponos::point2 p,
-              ponos::vec2 d) override {
-    PONOS_UNUSED_VARIABLE(d);
+  void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
+              hermes::vec2 d) override {
+    HERMES_UNUSED_VARIABLE(d);
     if (!dragging_ || p == start_)
       return;
-    ponos::point3 a = hitSpherePlane(tb, camera, start_);
-    ponos::point3 b = hitSpherePlane(tb, camera, p);
-    ponos::vec3 axis =
-        ponos::normalize(ponos::cross((a - tb.center()), (b - tb.center())));
-    float phi = ponos::distance(a, b) / tb.radius();
+    hermes::point3 a = hitSpherePlane(tb, camera, start_);
+    hermes::point3 b = hitSpherePlane(tb, camera, p);
+    hermes::vec3 axis =
+        hermes::normalize(hermes::cross((a - tb.center()), (b - tb.center())));
+    float phi = hermes::distance(a, b) / tb.radius();
     tb.accumulatePartialTransform(
-        ponos::rotate(-ponos::DEGREES(phi) * 0.7f, axis));
+        hermes::Transform::rotate(-hermes::Trigonometry::radians2degrees(phi) * 0.7f, axis));
     start_ = p;
   }
 
 private:
-  ponos::point3 hitSpherePlane(Trackball &tb, CameraInterface &camera,
-                               ponos::point2 p) {
-    ponos::Line l = camera.viewLineFromWindow(p);
-    ponos::Plane vp = camera.viewPlane(tb.center());
+  hermes::point3 hitSpherePlane(Trackball &tb, CameraInterface &camera,
+                                hermes::point2 p) {
+    hermes::Line l = camera.viewLineFromWindow(p);
+    hermes::Plane vp = camera.viewPlane(tb.center());
 
-    ponos::Sphere s(tb.center(), tb.radius());
+    hermes::Sphere s(tb.center(), tb.radius());
 
-    ponos::point3 hp;
-    ponos::plane_line_intersection(vp, l, hp);
+    hermes::point3 hp;
+    hermes::GeometricQueries::intersect(vp, l, hp);
 
-    ponos::point3 hs, hs1, hs2;
-    bool resSp = sphere_line_intersection(s, l, hs1, hs2);
+    hermes::point3 hs, hs1, hs2;
+    bool resSp = hermes::GeometricQueries::intersect(s, l, hs1, hs2);
     if (resSp) {
-      if (ponos::distance(camera.getPosition(), hs1) <
-          ponos::distance(camera.getPosition(), hs2))
+      if (hermes::distance(camera.getPosition(), hs1) <
+          hermes::distance(camera.getPosition(), hs2))
         hs = hs1;
       else
         hs = hs2;
       return hs;
     }
-    ponos::point3 hh;
+    hermes::point3 hh;
     bool resHp = hitHyper(tb, camera.getPosition(), vp, hp, hh);
     if ((!resSp && !resHp))
       return l.closestPoint(tb.center());
@@ -210,18 +214,18 @@ private:
       return hs;
     if ((!resSp && resHp))
       return hh;
-    float angleDeg = ponos::DEGREES(
-        asin(ponos::dot(ponos::normalize(camera.getPosition() - tb.center()),
-                        ponos::normalize(hs - tb.center()))));
+    float angleDeg = hermes::Trigonometry::radians2degrees(
+        asin(hermes::dot(hermes::normalize(camera.getPosition() - tb.center()),
+                         hermes::normalize(hs - tb.center()))));
     if (angleDeg < 45)
       return hs;
     else
       return hh;
   }
-  bool hitHyper(Trackball tb, ponos::point3 viewpoint, ponos::Plane vp,
-                ponos::point3 hitplane, ponos::point3 &hit) {
-    float hitplaney = ponos::distance(tb.center(), hitplane);
-    float viewpointx = ponos::distance(tb.center(), viewpoint);
+  bool hitHyper(Trackball tb, hermes::point3 viewpoint, hermes::Plane vp,
+                hermes::point3 hitplane, hermes::point3 &hit) {
+    float hitplaney = hermes::distance(tb.center(), hitplane);
+    float viewpointx = hermes::distance(tb.center(), viewpoint);
 
     float a = hitplaney / viewpointx;
     float b = -hitplaney;
@@ -235,8 +239,8 @@ private:
       yval = c / xval;
     } else
       return false;
-    ponos::vec3 dirRadial = ponos::normalize(hitplane - tb.center());
-    ponos::vec3 dirView = ponos::normalize(ponos::vec3(vp.normal));
+    hermes::vec3 dirRadial = hermes::normalize(hitplane - tb.center());
+    hermes::vec3 dirView = hermes::normalize(hermes::vec3(vp.normal));
     hit = tb.center() + dirRadial * yval + dirView * xval;
     return true;
   }

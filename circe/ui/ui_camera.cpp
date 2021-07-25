@@ -32,7 +32,7 @@ namespace circe {
 
 UserCamera::UserCamera() = default;
 
-void UserCamera::mouseButton(int action, int button, ponos::point2 p) {
+void UserCamera::mouseButton(int action, int button, hermes::point2 p) {
   //  p.y = 1.f - p.y;
   if (action == PRESS)
     trackball.buttonPress(*this, button, p);
@@ -40,87 +40,87 @@ void UserCamera::mouseButton(int action, int button, ponos::point2 p) {
     trackball.buttonRelease(*this, button, p);
     trackball.tb.applyPartialTransform();
     applyTransform(trackball.tb.transform());
-    trackball.tb.setTransform(ponos::Transform());
+    trackball.tb.setTransform(hermes::Transform());
     trackball.tb.setCenter(target);
   }
 }
 
-void UserCamera::mouseMove(ponos::point2 p) {
+void UserCamera::mouseMove(hermes::point2 p) {
   //  p.y = 1.f - p.y;
   if (trackball.isActive()) {
     trackball.mouseMove(*this, p);
     trackball.tb.applyPartialTransform();
     applyTransform(trackball.tb.transform());
-    trackball.tb.setTransform(ponos::Transform());
+    trackball.tb.setTransform(hermes::Transform());
     trackball.tb.setCenter(target);
   }
 }
 
-void UserCamera::mouseScroll(ponos::point2 p, ponos::vec2 d) {
+void UserCamera::mouseScroll(hermes::point2 p, hermes::vec2 d) {
   //  p.y = 1.f - p.y;
   trackball.mouseScroll(*this, p, d);
   trackball.tb.applyPartialTransform();
   applyTransform(trackball.tb.transform());
-  trackball.tb.setTransform(ponos::Transform());
+  trackball.tb.setTransform(hermes::Transform());
   trackball.tb.setCenter(target);
 }
 
 UserCamera2D::UserCamera2D() {
   this->projection = std::make_unique<OrthographicProjection>();
-  this->pos = ponos::point3(0.f, 0.f, 1.f);
-  this->target = ponos::point3(0.f, 0.f, 0.f);
-  this->up = ponos::vec3(0.f, 1.f, 0.f);
+  this->pos = hermes::point3(0.f, 0.f, 1.f);
+  this->target = hermes::point3(0.f, 0.f, 0.f);
+  this->up = hermes::vec3(0.f, 1.f, 0.f);
   this->projection->near = -1000.f;
   this->projection->far = 1000.f;
 }
 
 void UserCamera2D::update() {
-  this->view = ponos::Transform::lookAt(this->pos, this->target, this->up);
-  view.computeInverse();
-  model.computeInverse();
+  this->view = hermes::Transform::lookAt(this->pos, this->target, this->up);
+  inv_view = hermes::inverse(view);
+  inv_model = hermes::inverse(model);
   normal = inverse((view * model).upperLeftMatrix());
-  projection->transform.computeInverse();
+  projection->inv_transform = inverse(projection->transform);
 }
 
-void UserCamera2D::fit(const ponos::bbox2 &b, float delta) {
-  // setPos(ponos::vec2(b.center()));
+void UserCamera2D::fit(const hermes::bbox2 &b, float delta) {
+  // setPos(hermes::vec2(b.center()));
   // setZoom((b.size(b.maxExtent()) / 2.f) * delta);
-  setPosition(ponos::point3(b.center().x, b.center().y, 1.f));
-  setTarget(ponos::point3(b.center().x, b.center().y, 0.f));
+  setPosition(hermes::point3(b.center().x, b.center().y, 1.f));
+  setTarget(hermes::point3(b.center().x, b.center().y, 0.f));
   dynamic_cast<OrthographicProjection *>(this->projection.get())
       ->zoom((b.size(b.maxExtent()) / 2.f) * delta);
-  trackball.tb.setTransform(ponos::Transform());
+  trackball.tb.setTransform(hermes::Transform());
   trackball.tb.setCenter(target);
   projection->update();
   update();
 }
-void UserCamera2D::mouseScroll(ponos::point2 p, ponos::vec2 d) {
+void UserCamera2D::mouseScroll(hermes::point2 p, hermes::vec2 d) {
   trackball.mouseScroll(*this, p, d);
   trackball.tb.applyPartialTransform();
-  auto z = trackball.tb.transform()(ponos::point3(zoom, zoom, zoom));
+  auto z = trackball.tb.transform()(hermes::point3(zoom, zoom, zoom));
   dynamic_cast<OrthographicProjection *>(this->projection.get())->zoom(z.x);
-  trackball.tb.setTransform(ponos::Transform());
+  trackball.tb.setTransform(hermes::Transform());
   trackball.tb.setCenter(target);
   projection->update();
 }
 
-UserCamera3D::UserCamera3D(ponos::transform_options options) {
-  this->pos = ponos::point3(20.f, 0.f, 0.f);
-  this->target = ponos::point3(0.f, 0.f, 0.f);
-  this->up = ponos::vec3(0.f, 1.f, 0.f);
+UserCamera3D::UserCamera3D(hermes::transform_options options) {
+  this->pos = hermes::point3(20.f, 0.f, 0.f);
+  this->target = hermes::point3(0.f, 0.f, 0.f);
+  this->up = hermes::vec3(0.f, 1.f, 0.f);
   this->zoom = 1.f;
   this->projection = std::make_unique<PerspectiveProjection>(45.f, options);
   this->projection->near = 0.1f;
   this->projection->far = 1000.f;
 }
 
-void UserCamera3D::setOptions(ponos::transform_options options) {
+void UserCamera3D::setOptions(hermes::transform_options options) {
   projection->options = options;
   projection->update();
   update();
 }
 
-void UserCamera3D::setUp(const ponos::vec3 &u) {
+void UserCamera3D::setUp(const hermes::vec3 &u) {
   up = u;
   update();
 }
@@ -132,12 +132,12 @@ void UserCamera3D::setFov(float f) {
 }
 
 void UserCamera3D::update() {
-  view = ponos::Transform::lookAt(pos, target, up, projection->options);
-  view.computeInverse();
-  model.computeInverse();
+  view = hermes::Transform::lookAt(pos, target, up, projection->options);
+  inv_view = hermes::inverse(view);
+  inv_model = hermes::inverse(model);
   normal = inverse((model * view).upperLeftMatrix());
   frustum.set(model * view * projection->transform);
-  trackball.tb.setRadius(ponos::distance(pos, target) / 3.f);
+  trackball.tb.setRadius(hermes::distance(pos, target) / 3.f);
 }
 
 } // namespace circe

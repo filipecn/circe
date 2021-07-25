@@ -27,6 +27,7 @@
 
 #include <circe/gl/utils/open_gl.h>
 #include <circe/texture/texture_options.h>
+#include <hermes/common/file_system.h>
 
 namespace circe::gl {
 
@@ -45,7 +46,7 @@ public:
  *  attributes.height, 0, attributes.format, attributes.type, attributes.data);
  */
   struct Attributes {
-    ponos::size3 size_in_texels;
+    hermes::size3 size_in_texels;
     GLint internal_format{GL_RGBA8}; //!< the color components in the texture (ex: GL_RGBA8)
     GLenum format{GL_RGBA}; //!< format of pixel data (ex: GL_RGBA, GL_RED_INTEGER, ...)
     GLenum type{GL_UNSIGNED_BYTE}; //!< data type of pixel data (ex: GL_UNSIGNED_BYTE, GL_FLOAT)
@@ -60,27 +61,27 @@ public:
   class Atlas {
   public:
     struct Region {
-      ponos::size2 offset;
-      ponos::size2 size;
+      hermes::size2 offset;
+      hermes::size2 size;
     };
     Atlas();
     ~Atlas();
     // ***********************************************************************
     //                              SIZE
     // ***********************************************************************
-    [[nodiscard]] const ponos::size2 &size_in_texels() const;
+    [[nodiscard]] const hermes::size2 &size_in_texels() const;
     // ***********************************************************************
     //                              REGIONS
     // ***********************************************************************
     size_t push(const Region &region);
     const Region &operator[](size_t i) const;
     Region &operator[](size_t i);
-    [[nodiscard]] const ponos::bbox2 &uv(size_t i) const;
+    [[nodiscard]] const hermes::bbox2 &uv(size_t i) const;
   private:
     void updateUVs();
     std::vector<Region> regions_;
-    std::vector<ponos::bbox2> uvs_;
-    ponos::size2 size_in_texels_;
+    std::vector<hermes::bbox2> uvs_;
+    hermes::size2 size_in_texels_;
   };
   // ***********************************************************************
   //                          TEXTURE VIEW
@@ -116,7 +117,7 @@ public:
   /// \param input_options
   /// \param output_options
   /// \return Texture object
-  static Texture fromFile(const ponos::Path &path,
+  static Texture fromFile(const hermes::Path &path,
                           circe::texture_options input_options = circe::texture_options::none,
                           circe::texture_options output_options = circe::texture_options::none);
   /// Load images into a cube map texture
@@ -124,7 +125,7 @@ public:
   ///   left, top, bottom, front, back
   /// \param face_paths
   /// \return
-  static Texture fromFiles(const std::vector<ponos::Path> &face_paths);
+  static Texture fromFiles(const std::vector<hermes::Path> &face_paths);
 
   static Texture fromTexture(const Texture &texture,
                              circe::texture_options output_options = circe::texture_options::none);
@@ -169,7 +170,7 @@ public:
   //                           METRICS
   // ***********************************************************************
   /// \return texture resolution in texels
-  [[nodiscard]] ponos::size3 size() const;
+  [[nodiscard]] hermes::size3 size() const;
   /// \return opengl object associated to this texture
   [[nodiscard]] GLuint textureObjectId() const;
   /// \return
@@ -197,9 +198,9 @@ public:
   /// \param target
   void setTexels(GLenum target, const void *texels) const;
   /// \param new_size
-  void resize(const ponos::size3 &new_size);
+  void resize(const hermes::size3 &new_size);
   /// \param new_size
-  void resize(const ponos::size2 &new_size);
+  void resize(const hermes::size2 &new_size);
   /// \param internal_format
   void setInternalFormat(GLint internal_format);
   /// \param format

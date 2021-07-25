@@ -3,12 +3,10 @@
 
 #include <circe/gl/scene/scene_object.h>
 
-#include <ponos/ponos.h>
-
 namespace circe::gl {
 
 /* hierarchical structure
- * Bounding Volume Hierarchie.
+ * Bounding Volume Hierarchies.
  */
 class BVH {
 public:
@@ -21,21 +19,21 @@ public:
 
   SceneMeshObjectSPtr sceneMesh;
 
-  int intersect(const ponos::Ray3 &ray, float *t = nullptr);
-  bool isInside(const ponos::point3 &p);
+  int intersect(const hermes::Ray3 &ray, float *t = nullptr);
+  bool isInside(const hermes::point3 &p);
 
 private:
   struct BVHElement {
-    BVHElement(size_t i, const ponos::bbox3 &b) : ind(i), bounds(b) {
+    BVHElement(size_t i, const hermes::bbox3 &b) : ind(i), bounds(b) {
       centroid = b.centroid();
     }
     size_t ind;
-    ponos::bbox3 bounds;
-    ponos::point3 centroid;
+    hermes::bbox3 bounds;
+    hermes::point3 centroid;
   };
   struct BVHNode {
     BVHNode() { children[0] = children[1] = nullptr; }
-    void initLeaf(uint32_t first, uint32_t n, const ponos::bbox3 &b) {
+    void initLeaf(uint32_t first, uint32_t n, const hermes::bbox3 &b) {
       firstElementOffset = first;
       nElements = n;
       bounds = b;
@@ -43,16 +41,16 @@ private:
     void initInterior(uint32_t axis, BVHNode *c0, BVHNode *c1) {
       children[0] = c0;
       children[1] = c1;
-      bounds = ponos::make_union(c0->bounds, c1->bounds);
+      bounds = hermes::make_union(c0->bounds, c1->bounds);
       splitAxis = axis;
       nElements = 0;
     }
-    ponos::bbox3 bounds;
+    hermes::bbox3 bounds;
     BVHNode *children[2];
     uint32_t splitAxis, firstElementOffset, nElements;
   };
   struct LinearBVHNode {
-    ponos::bbox3 bounds;
+    hermes::bbox3 bounds;
     union {
       uint32_t elementsOffset;
       uint32_t secondChildOffset;
@@ -75,8 +73,8 @@ private:
                           uint32_t end, uint32_t *totalNodes,
                           std::vector<uint32_t> &orderedElements);
   uint32_t flattenBVHTree(BVHNode *node, uint32_t *offset);
-  bool intersect(const ponos::bbox3 &bounds, const ponos::Ray3 &ray,
-                 const ponos::vec3 &invDir, const uint32_t dirIsNeg[3]) const;
+  bool intersect(const hermes::bbox3 &bounds, const hermes::Ray3 &ray,
+                 const hermes::vec3 &invDir, const uint32_t dirIsNeg[3]) const;
 };
 
 } // namespace circe

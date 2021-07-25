@@ -58,7 +58,7 @@ void ComputeShader::bindTexture(GLenum t) const { texture->bind(t); }
 
 void ComputeShader::setBuffer(const char *name, GLuint id,
                               GLuint bindingPoint) {
-  PONOS_UNUSED_VARIABLE(name);
+  HERMES_UNUSED_VARIABLE(name);
   // blockIndices.emplace_back(glGetProgramResourceIndex(programId,
   // GL_SHADER_STORAGE_BLOCK, name));
   blockIndices.emplace_back(bindingPoint);
@@ -70,6 +70,6 @@ void ComputeShader::setTexture(const Texture::Attributes &a,
   texture = std::make_unique<Texture>(a);
   groupSize = texture->size();
 }
-void ComputeShader::setGroupSize(const ponos::size3& gs) { groupSize = gs; }
+void ComputeShader::setGroupSize(const hermes::size3& gs) { groupSize = gs; }
 
 } // namespace circe

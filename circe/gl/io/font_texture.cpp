@@ -33,7 +33,7 @@
 namespace circe::gl {
 
 void FontAtlas::loadFont(const char *path) {
-  auto fontData = ponos::readFile(path);
+  auto fontData = hermes::FileSystem::readFile(std::string(path));
   std::unique_ptr<uchar[]> atlasData(
       new uchar[font.atlasWidth * font.atlasHeight]);
 
@@ -47,7 +47,7 @@ void FontAtlas::loadFont(const char *path) {
   }
 
   stbtt_PackSetOversampling(&context, font.oversampleX, font.oversampleY);
-  if (!stbtt_PackFontRange(&context, fontData.data(), 0, font.size,
+  if (!stbtt_PackFontRange(&context, reinterpret_cast<const unsigned char*>(fontData.data()), 0, font.size,
                            font.firstChar, font.charCount,
                            font.charInfo.get())) {
     std::cerr << "Failed to pack font\n";
@@ -83,21 +83,21 @@ FontAtlas::Glyph FontAtlas::getGlyph(uint character, float offsetX,
   Glyph info{};
   info.offsetX = offsetX;
   info.offsetY = offsetY;
-  info.positions[0] = ponos::vec3(xmin, ymin, 0);
-  info.positions[1] = ponos::vec3(xmin, ymax, 0);
-  info.positions[2] = ponos::vec3(xmax, ymax, 0);
-  info.positions[3] = ponos::vec3(xmax, ymin, 0);
-  info.uvs[0] = ponos::vec2(quad.s0, quad.t1);
-  info.uvs[1] = ponos::vec2(quad.s0, quad.t0);
-  info.uvs[2] = ponos::vec2(quad.s1, quad.t0);
-  info.uvs[3] = ponos::vec2(quad.s1, quad.t1);
+  info.positions[0] = hermes::vec3(xmin, ymin, 0);
+  info.positions[1] = hermes::vec3(xmin, ymax, 0);
+  info.positions[2] = hermes::vec3(xmax, ymax, 0);
+  info.positions[3] = hermes::vec3(xmax, ymin, 0);
+  info.uvs[0] = hermes::vec2(quad.s0, quad.t1);
+  info.uvs[1] = hermes::vec2(quad.s0, quad.t0);
+  info.uvs[2] = hermes::vec2(quad.s1, quad.t0);
+  info.uvs[3] = hermes::vec2(quad.s1, quad.t1);
 
   return info;
 }
 
 void FontAtlas::setText(std::string text) {
   if (!rawMesh)
-    rawMesh.reset(new ponos::RawMesh());
+    rawMesh.reset(new hermes::RawMesh());
   rawMesh->clear();
   rawMesh->meshDescriptor.elementSize = 3;
   rawMesh->meshDescriptor.count = text.size() * 2;
@@ -120,7 +120,7 @@ void FontAtlas::setText(std::string text) {
       for (int j = 0; j < 2; j++)
         rawMesh->texcoords.emplace_back(glyphInfo.uvs[k][j]);
     }
-    ponos::RawMesh::IndexData data{};
+    hermes::RawMesh::IndexData data{};
     data.texcoordIndex = data.normalIndex = data.positionIndex = lastIndex;
     rawMesh->indices.emplace_back(data);
     data.texcoordIndex = data.normalIndex = data.positionIndex = lastIndex + 1;
@@ -140,7 +140,7 @@ void FontAtlas::setText(std::string text) {
   mesh.reset(new SceneMesh(rawMesh.get()));
 }
 
-void FontAtlas::setText(const std::string &text, ponos::RawMesh &m) const {
+void FontAtlas::setText(const std::string &text, hermes::RawMesh &m) const {
   m.clear();
   m.meshDescriptor.elementSize = 3;
   m.meshDescriptor.count = text.size() * 2;
@@ -163,7 +163,7 @@ void FontAtlas::setText(const std::string &text, ponos::RawMesh &m) const {
       for (int j = 0; j < 2; j++)
         m.texcoords.emplace_back(glyphInfo.uvs[k][j]);
     }
-    ponos::RawMesh::IndexData data;
+    hermes::RawMesh::IndexData data;
     data.texcoordIndex = data.normalIndex = data.positionIndex = lastIndex;
     m.indices.emplace_back(data);
     data.texcoordIndex = data.normalIndex = data.positionIndex = lastIndex + 1;

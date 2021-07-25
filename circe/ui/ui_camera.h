@@ -39,30 +39,30 @@ public:
   /// \param action event type
   /// \param button button code
   /// \param p normalized mouse position
-  void mouseButton(int action, int button, ponos::point2 p);
+  void mouseButton(int action, int button, hermes::point2 p);
   /// process mouse move event
   /// \param p normalized mouse position
-  void mouseMove(ponos::point2 p);
+  void mouseMove(hermes::point2 p);
   /// process mouse wheel event
   /// \param p normalized mouse position
   /// \param d scroll vector
-  virtual void mouseScroll(ponos::point2 p, ponos::vec2 d);
+  virtual void mouseScroll(hermes::point2 p, hermes::vec2 d);
   TrackballInterface trackball;
 };
 
 class UserCamera2D : public UserCamera {
 public:
   UserCamera2D();
-  void mouseScroll(ponos::point2 p, ponos::vec2 d) override;
-  void fit(const ponos::bbox2 &b, float delta = 1.f);
+  void mouseScroll(hermes::point2 p, hermes::vec2 d) override;
+  void fit(const hermes::bbox2 &b, float delta = 1.f);
   void update() override;
 };
 
 class UserCamera3D : public UserCamera {
 public:
-  explicit UserCamera3D(ponos::transform_options options = ponos::transform_options::left_handed);
-  void setOptions(ponos::transform_options options);
-  void setUp(const ponos::vec3 &u);
+  explicit UserCamera3D(hermes::transform_options options = hermes::transform_options::left_handed);
+  void setOptions(hermes::transform_options options);
+  void setUp(const hermes::vec3 &u);
   void setFov(float f);
   void update() override;
 };

@@ -25,43 +25,42 @@
 //#endif
 //#endif
 
-#include <ponos/ponos.h>
-
 #include <circe/colors/color.h>
+#include <hermes/data_structures/raw_mesh.h>
 #include <csignal>
 
 namespace circe::gl {
 
 class OpenGL final {
 public:
-  static std::string PrimitiveToStr(ponos::GeometricPrimitiveType p) {
+  static std::string PrimitiveToStr(hermes::GeometricPrimitiveType p) {
 #define ES(P) \
     if(p == P) return #P
-    ES(ponos::GeometricPrimitiveType::POINTS);
-    ES(ponos::GeometricPrimitiveType::LINES);
-    ES(ponos::GeometricPrimitiveType::LINE_STRIP);
-    ES(ponos::GeometricPrimitiveType::LINE_LOOP);
-    ES(ponos::GeometricPrimitiveType::TRIANGLES);
-    ES(ponos::GeometricPrimitiveType::TRIANGLE_STRIP);
-    ES(ponos::GeometricPrimitiveType::TRIANGLE_FAN);
-    ES(ponos::GeometricPrimitiveType::QUADS);
-    ES(ponos::GeometricPrimitiveType::TETRAHEDRA);
-    ES(ponos::GeometricPrimitiveType::CUSTOM);
+    ES(hermes::GeometricPrimitiveType::POINTS);
+    ES(hermes::GeometricPrimitiveType::LINES);
+    ES(hermes::GeometricPrimitiveType::LINE_STRIP);
+    ES(hermes::GeometricPrimitiveType::LINE_LOOP);
+    ES(hermes::GeometricPrimitiveType::TRIANGLES);
+    ES(hermes::GeometricPrimitiveType::TRIANGLE_STRIP);
+    ES(hermes::GeometricPrimitiveType::TRIANGLE_FAN);
+    ES(hermes::GeometricPrimitiveType::QUADS);
+    ES(hermes::GeometricPrimitiveType::TETRAHEDRA);
+    ES(hermes::GeometricPrimitiveType::CUSTOM);
     return "ERR";
 #undef ES
   }
-  static GLuint PrimitiveToGL(ponos::GeometricPrimitiveType primitive) {
+  static GLuint PrimitiveToGL(hermes::GeometricPrimitiveType primitive) {
 #define RET_GL(P, G) \
   if(primitive == P) \
   return G;
-    RET_GL(ponos::GeometricPrimitiveType::POINTS, GL_POINTS)
-    RET_GL(ponos::GeometricPrimitiveType::LINES, GL_LINES)
-    RET_GL(ponos::GeometricPrimitiveType::LINE_STRIP, GL_LINE_STRIP)
-    RET_GL(ponos::GeometricPrimitiveType::LINE_LOOP, GL_LINE_LOOP)
-    RET_GL(ponos::GeometricPrimitiveType::TRIANGLES, GL_TRIANGLES)
-    RET_GL(ponos::GeometricPrimitiveType::TRIANGLE_STRIP, GL_TRIANGLE_STRIP)
-    RET_GL(ponos::GeometricPrimitiveType::TRIANGLE_FAN, GL_TRIANGLE_FAN)
-    RET_GL(ponos::GeometricPrimitiveType::QUADS, GL_QUADS)
+    RET_GL(hermes::GeometricPrimitiveType::POINTS, GL_POINTS)
+    RET_GL(hermes::GeometricPrimitiveType::LINES, GL_LINES)
+    RET_GL(hermes::GeometricPrimitiveType::LINE_STRIP, GL_LINE_STRIP)
+    RET_GL(hermes::GeometricPrimitiveType::LINE_LOOP, GL_LINE_LOOP)
+    RET_GL(hermes::GeometricPrimitiveType::TRIANGLES, GL_TRIANGLES)
+    RET_GL(hermes::GeometricPrimitiveType::TRIANGLE_STRIP, GL_TRIANGLE_STRIP)
+    RET_GL(hermes::GeometricPrimitiveType::TRIANGLE_FAN, GL_TRIANGLE_FAN)
+    RET_GL(hermes::GeometricPrimitiveType::QUADS, GL_QUADS)
     return GL_POINTS;
 #undef RET_GL
   }
@@ -274,9 +273,9 @@ public:
 #undef RET_STR
     return "";
   }
-  static GLenum dataTypeEnum(ponos::DataType T) {
+  static GLenum dataTypeEnum(hermes::DataType T) {
 #define MATCH_TYPE(TT, R) \
-   if(ponos::DataType::TT == T)  \
+   if(hermes::DataType::TT == T)  \
    return R;
     MATCH_TYPE(I8, GL_BYTE)
     MATCH_TYPE(U8, GL_UNSIGNED_BYTE)
@@ -312,7 +311,7 @@ public:
 #endif
 
 inline void glfwError(int id, const char *description) {
-  PONOS_UNUSED_VARIABLE(id);
+  HERMES_UNUSED_VARIABLE(id);
   std::cerr << description << std::endl;
 }
 
@@ -358,13 +357,13 @@ void glColor(Color c);
 
 /// multiplies **t** to current OpenGL matrix
 /// \param transform
-void glApplyTransform(const ponos::Transform &transform);
+void glApplyTransform(const hermes::Transform &transform);
 
-ponos::Transform glGetProjectionTransform();
+hermes::Transform glGetProjectionTransform();
 
-ponos::Transform glGetModelviewTransform();
+hermes::Transform glGetModelviewTransform();
 
-ponos::Transform glGetMVPTransform();
+hermes::Transform glGetMVPTransform();
 
 } // namespace circe
 

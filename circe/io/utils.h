@@ -25,7 +25,7 @@
 #ifndef CIRCE_SCENE_IO_UTILS_H
 #define CIRCE_SCENE_IO_UTILS_H
 
-#include <ponos/ponos.h>
+#include <hermes/data_structures/raw_mesh.h>
 
 #include <string>
 
@@ -36,13 +36,13 @@ namespace circe {
  * \param mesh **[out]** output
  * Loads an OBJ file and stores its contents in **mesh**
  */
-void loadOBJ(const std::string &filename, ponos::RawMesh *mesh);
+void loadOBJ(const std::string &filename, hermes::RawMesh *mesh);
 /** \brief load OBJ
  * \param filename **[in]** file path
  * \param mesh **[out]** output
  * Loads an PLY file and stores its contents in **mesh**
  */
-void loadPLY(const std::string &filename, ponos::RawMesh *mesh);
+void loadPLY(const std::string &filename, hermes::RawMesh *mesh);
 
 } // circe namespace
 

@@ -24,7 +24,8 @@
 #ifndef CIRCE_COLORS_COLOR_H
 #define CIRCE_COLORS_COLOR_H
 
-#include <ponos/ponos.h>
+#include <hermes/geometry/vector.h>
+#include <hermes/numeric/interpolation.h>
 
 namespace circe {
 
@@ -34,7 +35,7 @@ public:
     r = g = b = 0.f;
     a = 1.f;
   }
-  explicit Color(const ponos::vec3 &v) : r(v.x), g(v.y), b(v.z), a(1.f) {}
+  explicit Color(const hermes::vec3 &v) : r(v.x), g(v.y), b(v.z), a(1.f) {}
   Color(float _r, float _g, float _b, float _a = 1.f)
       : r(_r), g(_g), b(_b), a(_a) {}
   [[nodiscard]] Color withAlpha(float alpha) const { return {r, g, b, alpha}; }
@@ -47,13 +48,13 @@ public:
   static Color Blue(float alpha = 1.f) { return {0.f, 0.f, 1.f, alpha}; }
   static Color Purple(float alpha = 1.f) { return {1.f, 0.f, 1.f, alpha}; }
   static Color Yellow(float alpha = 1.f) { return {1.f, 1.f, 0.f, alpha}; }
-  [[nodiscard]] ponos::vec3 rgb() const { return {r, g, b}; }
+  [[nodiscard]] hermes::vec3 rgb() const { return {r, g, b}; }
   float r, g, b, a;
 };
 
 inline Color mix(float t, const Color &a, const Color &b) {
-  return {ponos::lerp(t, a.r, b.r), ponos::lerp(t, a.g, b.g),
-          ponos::lerp(t, a.b, b.b)};
+  return {hermes::interpolation::lerp(t, a.r, b.r), hermes::interpolation::lerp(t, a.g, b.g),
+          hermes::interpolation::lerp(t, a.b, b.b)};
 }
 
 //#define COLOR_TRANSPARENT Color(0.f, 0.f, 0.f, 0.f)

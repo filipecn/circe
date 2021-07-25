@@ -38,18 +38,18 @@ void renderToCube(Framebuffer &framebuffer,
                   const Texture &envmap,
                   Texture &cubemap,
                   GLint mip_level,
-                  const ponos::size2 &resolution) {
+                  const hermes::size2 &resolution) {
   SceneModel cube;
   cube = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}});
 
-  auto projection = ponos::Transform::perspective(90, 1, 0.1, 10);
-  ponos::Transform views[] = {
-      ponos::Transform::lookAt({}, {1, 0, 0}, {0, -1, 0}),
-      ponos::Transform::lookAt({}, {-1, 0, 0}, {0, -1, 0}),
-      ponos::Transform::lookAt({}, {0, 1, 0}, {0, 0, -1}),
-      ponos::Transform::lookAt({}, {0, -1, 0}, {0, 0, 1}),
-      ponos::Transform::lookAt({}, {0, 0, -1}, {0, -1, 0}),
-      ponos::Transform::lookAt({}, {0, 0, 1}, {0, -1, 0}),
+  auto projection = hermes::Transform::perspective(90, 1, 0.1, 10);
+  hermes::Transform views[] = {
+      hermes::Transform::lookAt({}, {1, 0, 0}, {0, -1, 0}),
+      hermes::Transform::lookAt({}, {-1, 0, 0}, {0, -1, 0}),
+      hermes::Transform::lookAt({}, {0, 1, 0}, {0, 0, -1}),
+      hermes::Transform::lookAt({}, {0, -1, 0}, {0, 0, 1}),
+      hermes::Transform::lookAt({}, {0, 0, -1}, {0, -1, 0}),
+      hermes::Transform::lookAt({}, {0, 0, 1}, {0, -1, 0}),
   };
 
   framebuffer.resize(resolution);
@@ -72,7 +72,7 @@ void renderToCube(Framebuffer &framebuffer,
   Framebuffer::disable();
 }
 
-Texture IBL::irradianceMap(const Texture &texture, const ponos::size2 &resolution) {
+Texture IBL::irradianceMap(const Texture &texture, const hermes::size2 &resolution) {
   Texture imap;
 
   std::string vs = "#version 330 core                                                                               \n"
@@ -134,7 +134,7 @@ Texture IBL::irradianceMap(const Texture &texture, const ponos::size2 &resolutio
   return imap;
 }
 
-Texture IBL::preFilteredEnvironmentMap(const Texture &input, const ponos::size2 &resolution) {
+Texture IBL::preFilteredEnvironmentMap(const Texture &input, const hermes::size2 &resolution) {
   ////////////////////////////////////// prepare texture //////////////////////////////////////////
   Texture prefilter_map;
   prefilter_map.setTarget(GL_TEXTURE_CUBE_MAP);
@@ -254,7 +254,7 @@ Texture IBL::preFilteredEnvironmentMap(const Texture &input, const ponos::size2 
   return prefilter_map;
 }
 
-Texture IBL::brdfIntegrationMap(const ponos::size2 &resolution) {
+Texture IBL::brdfIntegrationMap(const hermes::size2 &resolution) {
   ////////////////////////////////////// prepare shader //////////////////////////////////////////
   std::string vs = "#version 330 core                                                                               \n"
                    "layout (location = 0) in vec3 aPos;                                                             \n"

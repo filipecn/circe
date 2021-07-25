@@ -39,11 +39,11 @@ public:
    * \param pm minimun extreme
    * \param pM maximum extreme
    */
-  void set(const ponos::point2 &pm, const ponos::point2 &pM);
-  void draw(const CameraInterface *camera, ponos::Transform transform) override;
+  void set(const hermes::point2 &pm, const hermes::point2 &pM);
+  void draw(const CameraInterface *camera, hermes::Transform transform) override;
 
 private:
-  ponos::RawMesh rawMesh_;
+  hermes::RawMesh rawMesh_;
 };
 
 } // namespace circe

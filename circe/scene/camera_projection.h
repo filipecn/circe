@@ -25,7 +25,7 @@
 #ifndef CIRCE_SCENE_CAMERA_PROJECTION_H
 #define CIRCE_SCENE_CAMERA_PROJECTION_H
 
-#include <ponos/ponos.h>
+#include <hermes/geometry/transform.h>
 
 namespace circe {
 
@@ -39,9 +39,10 @@ public:
   float ratio{1.f}; //!< film size ratio
   float near{0.01f}; //!< near depth clip plane
   float far{1000.f};  //!< far depth clip plane
-  ponos::vec2 clip_size; //!< window size (in pixels)
-  ponos::Transform transform; //!< projection transform
-  ponos::transform_options options{ponos::transform_options::left_handed}; //!< flags to choose handedness, etc.
+  hermes::vec2 clip_size; //!< window size (in pixels)
+  hermes::Transform transform; //!< projection transform
+  hermes::Transform inv_transform;
+  hermes::transform_options options{hermes::transform_options::left_handed}; //!< flags to choose handedness, etc.
 };
 
 class PerspectiveProjection : public CameraProjection {
@@ -50,16 +51,16 @@ public:
   /// \param fov field of view angle (in degrees)
   /// \param options handedness, zero_to_one, flip_y, and other options
   explicit PerspectiveProjection(float fov,
-                                 ponos::transform_options options = ponos::transform_options::left_handed)
+                                 hermes::transform_options options = hermes::transform_options::left_handed)
       : fov(fov) {
     this->options = options;
   }
   void update() override {
-    this->transform = ponos::Transform::perspective(fov,
-                                                    this->ratio,
-                                                    this->near,
-                                                    this->far,
-                                                    options);
+    this->transform = hermes::Transform::perspective(fov,
+                                                     this->ratio,
+                                                     this->near,
+                                                     this->far,
+                                                     options);
   }
 
   float fov{45.f}; //!< field of view angle in degrees
@@ -72,11 +73,11 @@ public:
     region_.upper.x = region_.upper.y = this->far = 1.f;
   }
   OrthographicProjection(float left, float right, float bottom, float top,
-                         ponos::transform_options options = ponos::transform_options::left_handed) {
+                         hermes::transform_options options = hermes::transform_options::left_handed) {
     set(left, right, bottom, top);
   }
   /// \param z
-  void zoom(float z) { region_ = ponos::scale(z, z)(region_); }
+  void zoom(float z) { region_ = hermes::Transform2::scale({z, z})(region_); }
   /// \param left
   /// \param right
   /// \param bottom
@@ -90,12 +91,12 @@ public:
   }
   void update() override {
     this->transform =
-        ponos::Transform::ortho(region_.lower.x, region_.upper.x, region_.lower.y,
-                                region_.upper.y, this->near, this->far);
+        hermes::Transform::ortho(region_.lower.x, region_.upper.x, region_.lower.y,
+                                 region_.upper.y, this->near, this->far);
   }
 
 private:
-  ponos::bbox2 region_;
+  hermes::bbox2 region_;
 };
 
 } // namespace circe

@@ -125,7 +125,7 @@ Texture unfoldCubemap(const Texture &cubemap, texture_options output_options) {
   return output;
 }
 
-Texture convertToCubemap(const Texture &input, texture_options input_options, ponos::size2 resolution) {
+Texture convertToCubemap(const Texture &input, texture_options input_options, hermes::size2 resolution) {
   bool input_is_hdr = circe::testMaskBit(input_options, circe::texture_options::hdr);
   bool input_is_equirectangular = testMaskBit(input_options, texture_options::equirectangular);
   std::string vs;
@@ -186,14 +186,14 @@ Texture convertToCubemap(const Texture &input, texture_options input_options, po
   parameters.apply();
 
   // render cubemap faces
-  auto projection = ponos::Transform::perspective(90, 1, 0.1, 10);
-  ponos::Transform views[] = {
-      ponos::Transform::lookAt({}, {1, 0, 0}, {0, -1, 0}),
-      ponos::Transform::lookAt({}, {-1, 0, 0}, {0, -1, 0}),
-      ponos::Transform::lookAt({}, {0, 1, 0}, {0, 0, -1}),
-      ponos::Transform::lookAt({}, {0, -1, 0}, {0, 0, 1}),
-      ponos::Transform::lookAt({}, {0, 0, -1}, {0, -1, 0}),
-      ponos::Transform::lookAt({}, {0, 0, 1}, {0, -1, 0}),
+  auto projection = hermes::Transform::perspective(90, 1, 0.1, 10);
+  hermes::Transform views[] = {
+      hermes::Transform::lookAt({}, {1, 0, 0}, {0, -1, 0}),
+      hermes::Transform::lookAt({}, {-1, 0, 0}, {0, -1, 0}),
+      hermes::Transform::lookAt({}, {0, 1, 0}, {0, 0, -1}),
+      hermes::Transform::lookAt({}, {0, -1, 0}, {0, 0, 1}),
+      hermes::Transform::lookAt({}, {0, 0, -1}, {0, -1, 0}),
+      hermes::Transform::lookAt({}, {0, 0, 1}, {0, -1, 0}),
   };
 
   Framebuffer frambuffer;
@@ -223,7 +223,7 @@ Texture::Atlas::Atlas() = default;
 
 Texture::Atlas::~Atlas() = default;
 
-[[nodiscard]] const ponos::size2 &Texture::Atlas::size_in_texels() const {
+[[nodiscard]] const hermes::size2 &Texture::Atlas::size_in_texels() const {
   return size_in_texels_;
 }
 
@@ -273,7 +273,7 @@ Texture::Atlas::Region &Texture::Atlas::operator[](size_t i) {
   return regions_[i];
 }
 
-const ponos::bbox2 &Texture::Atlas::uv(size_t i) const {
+const hermes::bbox2 &Texture::Atlas::uv(size_t i) const {
   return uvs_[i];
 }
 
@@ -302,7 +302,7 @@ void Texture::View::apply() const {
     glTexParameterfv(target_, GL_TEXTURE_BORDER_COLOR, border_color_.asArray());
 }
 
-Texture Texture::fromFile(const ponos::Path &path,
+Texture Texture::fromFile(const hermes::Path &path,
                           circe::texture_options input_options,
                           circe::texture_options output_options) {
   // check input options
@@ -333,7 +333,7 @@ Texture Texture::fromFile(const ponos::Path &path,
     return Texture();
   }
   // init texture
-  texture.attributes_.size_in_texels = ponos::size3(width, height, 1);
+  texture.attributes_.size_in_texels = hermes::size3(width, height, 1);
   texture.setTexels(data);
   texture.bind();
 
@@ -348,7 +348,7 @@ Texture Texture::fromFile(const ponos::Path &path,
   return texture;
 }
 
-Texture Texture::fromFiles(const std::vector<ponos::Path> &face_paths) {
+Texture Texture::fromFiles(const std::vector<hermes::Path> &face_paths) {
   Texture texture;
   // resize cube map
   texture.setTarget(GL_TEXTURE_CUBE_MAP);
@@ -391,7 +391,7 @@ Texture Texture::fromTexture(const Texture &texture, circe::texture_options outp
 
 Texture::Texture() {
   glGenTextures(1, &texture_object_);
-  PONOS_ASSERT(texture_object_);
+  HERMES_ASSERT(texture_object_);
 }
 
 Texture::Texture(const Texture::Attributes &a, const void *data) : Texture() {
@@ -496,7 +496,7 @@ void Texture::bindImage(GLenum t) const {
   CHECK_GL_ERRORS;
 }
 
-ponos::size3 Texture::size() const {
+hermes::size3 Texture::size() const {
   return attributes_.size_in_texels;
 }
 
@@ -561,7 +561,7 @@ std::vector<unsigned char> Texture::texels() const {
   return data;
 }
 
-void Texture::resize(const ponos::size3 &new_size) {
+void Texture::resize(const hermes::size3 &new_size) {
   attributes_.size_in_texels = new_size;
   setTexels(nullptr);
 }
@@ -581,7 +581,7 @@ void Texture::setType(GLenum type) {
 void Texture::setTarget(GLenum _target) {
   attributes_.target = _target;
 }
-void Texture::resize(const ponos::size2 &new_size) {
+void Texture::resize(const hermes::size2 &new_size) {
   attributes_.size_in_texels.width = new_size.width;
   attributes_.size_in_texels.height = new_size.height;
   attributes_.size_in_texels.depth = 1;

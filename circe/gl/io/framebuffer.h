@@ -26,7 +26,7 @@
 #define CIRCE_IO_FRAMEBUFFER_H
 
 #include <circe/gl/texture/texture.h>
-#include <ponos/ponos.h>
+#include <hermes/common/size.h>
 
 namespace circe::gl {
 
@@ -42,18 +42,18 @@ public:
   // ***********************************************************************
   Framebuffer();
   /// \param resolution in pixels
-  explicit Framebuffer(const ponos::size2 &resolution);
+  explicit Framebuffer(const hermes::size2 &resolution);
   /// \param resolution in pixels
-  explicit Framebuffer(const ponos::size3 &resolution);
+  explicit Framebuffer(const hermes::size3 &resolution);
   virtual ~Framebuffer();
   // ***********************************************************************
   //                             SIZE
   // ***********************************************************************
-  [[nodiscard]] ponos::size2 size() const;
+  [[nodiscard]] hermes::size2 size() const;
   /// \param resolution in pixels
-  void resize(const ponos::size2 &resolution);
+  void resize(const hermes::size2 &resolution);
   /// \param resolution in pixels
-  void resize(const ponos::size3 &resolution);
+  void resize(const hermes::size3 &resolution);
   // ***********************************************************************
   //                             RENDER BUFFER
   // ***********************************************************************
@@ -90,7 +90,7 @@ public:
   circe::Color clear_color{circe::Color::Black()};
   GLbitfield clear_bitfield_mask{GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT};
 private:
-  ponos::size3 size_in_pixels_;
+  hermes::size3 size_in_pixels_;
   GLuint framebuffer_object_{0};
   GLuint render_buffer_object_{0};
 

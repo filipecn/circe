@@ -65,7 +65,7 @@ u64 IndexBuffer::dataSizeInBytes() const {
     break;
   case GL_QUADS: index_count = element_count * 4;
     break;
-  default:spdlog::warn("Assuming one index per element in index buffer size.");
+  default:hermes::Log::warn("Assuming one index per element in index buffer size.");
     index_count = element_count;
   }
   return index_count * OpenGL::dataSizeInBytes(data_type);
@@ -92,10 +92,10 @@ void IndexBuffer::draw() {
       break;
     case GL_LINE_LOOP: index_count = element_count;
       break;
-    case GL_QUADS:spdlog::error("Index Buffer: QUADS are not supported.");
+    case GL_QUADS:hermes::Log::error("Index Buffer: QUADS are not supported.");
       index_count = element_count * 4;
       break;
-    default:spdlog::warn("Assuming one index per element in index buffer size.");
+    default:hermes::Log::warn("Assuming one index per element in index buffer size.");
       index_count = element_count;
     };
   }

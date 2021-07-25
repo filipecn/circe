@@ -43,7 +43,7 @@ int FontManager::loadFromFile(const std::string &filename) {
   return instance_.fonts_.size() - 1;
 }
 
-void FontManager::setText(int id, const std::string &t, ponos::RawMesh &m) {
+void FontManager::setText(int id, const std::string &t, hermes::RawMesh &m) {
   if (id < 0 || static_cast<size_t>(id) >= instance_.fonts_.size())
     return;
   instance_.fonts_[id].setText(t, m);

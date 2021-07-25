@@ -71,12 +71,12 @@ void CartesianGrid::setDimension(size_t d, int a, int b) {
   updateBuffers();
 }
 
-void CartesianGrid::draw(const CameraInterface *camera, ponos::Transform t) {
-  PONOS_UNUSED_VARIABLE(t);
+void CartesianGrid::draw(const CameraInterface *camera, hermes::Transform t) {
+  HERMES_UNUSED_VARIABLE(t);
   glBindVertexArray(VAO_grid_);
   gridShader_->begin();
   gridShader_->setUniform(
-      "mvp", ponos::transpose((camera->getProjectionTransform() *
+      "mvp", hermes::transpose((camera->getProjectionTransform() *
           camera->getViewTransform() *
           camera->getModelTransform() * this->transform)
                                   .matrix()));

@@ -113,37 +113,37 @@ void GraphicsDisplay::getWindowSize(int &w, int &h) {
   h = this->height;
 }
 
-ponos::point2 GraphicsDisplay::getMousePos() {
+hermes::point2 GraphicsDisplay::getMousePos() {
   double x, y;
   glfwGetCursorPos(this->window, &x, &y);
-  return ponos::point2(x, this->height - y);
+  return hermes::point2(x, this->height - y);
 }
 
-ponos::point2 GraphicsDisplay::getMouseNPos() {
+hermes::point2 GraphicsDisplay::getMouseNPos() {
   int viewport[] = {0, 0, width, height};
-  ponos::point2 mp = getMousePos();
-  return ponos::point2((mp.x - viewport[0]) / viewport[2] * 2.0 - 1.0,
-                       (mp.y - viewport[1]) / viewport[3] * 2.0 - 1.0);
+  hermes::point2 mp = getMousePos();
+  return hermes::point2((mp.x - viewport[0]) / viewport[2] * 2.0 - 1.0,
+                        (mp.y - viewport[1]) / viewport[3] * 2.0 - 1.0);
 }
 
-ponos::point3 GraphicsDisplay::normDevCoordToViewCoord(ponos::point3 p) {
-  ponos::point3 sp;
-  sp.x = ponos::lerp(ponos::linearStep(p.x, -1.f, 1.f), 0.f,
-                     static_cast<float>(width));
-  sp.y = ponos::lerp(ponos::linearStep(p.y, -1.f, 1.f), 0.f,
-                     static_cast<float>(height));
+hermes::point3 GraphicsDisplay::normDevCoordToViewCoord(hermes::point3 p) {
+  hermes::point3 sp;
+  sp.x = hermes::interpolation::lerp(hermes::interpolation::linearStep(p.x, -1.f, 1.f), 0.f,
+                                     static_cast<float>(width));
+  sp.y = hermes::interpolation::lerp(hermes::interpolation::linearStep(p.y, -1.f, 1.f), 0.f,
+                                     static_cast<float>(height));
   return sp;
 }
 
-ponos::point3 GraphicsDisplay::viewCoordToNormDevCoord(ponos::point3 p) {
+hermes::point3 GraphicsDisplay::viewCoordToNormDevCoord(hermes::point3 p) {
   float v[] = {0, 0, static_cast<float>(width), static_cast<float>(height)};
-  return ponos::point3((p.x - v[0]) / (v[2] / 2.0) - 1.0,
-                       (p.y - v[1]) / (v[3] / 2.0) - 1.0, 2 * p.z - 1.0);
+  return hermes::point3((p.x - v[0]) / (v[2] / 2.0) - 1.0,
+                        (p.y - v[1]) / (v[3] / 2.0) - 1.0, 2 * p.z - 1.0);
 }
 
-ponos::point3 GraphicsDisplay::unProject(const CameraInterface &c,
-                                         ponos::point3 p) {
-  return ponos::inverse(c.getTransform()) * p;
+hermes::point3 GraphicsDisplay::unProject(const CameraInterface &c,
+                                          hermes::point3 p) {
+  return hermes::inverse(c.getTransform()) * p;
 }
 
 void GraphicsDisplay::stop() { glfwSetWindowShouldClose(window, GL_TRUE); }
@@ -165,7 +165,7 @@ void GraphicsDisplay::processInput() { glfwPollEvents(); }
 int GraphicsDisplay::keyState(int key) { return glfwGetKey(window, key); }
 
 void GraphicsDisplay::error_callback(int error, const char *description) {
-  PONOS_UNUSED_VARIABLE(error);
+  HERMES_UNUSED_VARIABLE(error);
   fputs(description, stderr);
 }
 
@@ -181,12 +181,12 @@ void GraphicsDisplay::registerCharFunc(
 }
 
 void GraphicsDisplay::charFunc(unsigned int codepoint) {
-  PONOS_UNUSED_VARIABLE(codepoint);
+  HERMES_UNUSED_VARIABLE(codepoint);
 }
 
 void GraphicsDisplay::char_callback(GLFWwindow *window,
                                     unsigned int codepoint) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   if (instance_.keyCallback)
     instance_.charCallback(codepoint);
   else
@@ -203,13 +203,13 @@ void GraphicsDisplay::registerDropFunc(
 }
 
 void GraphicsDisplay::dropFunc(int count, const char **filenames) {
-  PONOS_UNUSED_VARIABLE(count);
-  PONOS_UNUSED_VARIABLE(filenames);
+  HERMES_UNUSED_VARIABLE(count);
+  HERMES_UNUSED_VARIABLE(filenames);
 }
 
 void GraphicsDisplay::drop_callback(GLFWwindow *window, int count,
                                     const char **filenames) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   if (instance_.keyCallback)
     instance_.dropCallback(count, filenames);
   else
@@ -227,7 +227,7 @@ void GraphicsDisplay::registerKeyFunc(
 
 void GraphicsDisplay::key_callback(GLFWwindow *window, int key, int scancode,
                                    int action, int mods) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   if (instance_.keyCallback)
     instance_.keyCallback(key, scancode, action, mods);
   else
@@ -238,8 +238,8 @@ void GraphicsDisplay::key_callback(GLFWwindow *window, int key, int scancode,
 
 void GraphicsDisplay::keyFunc(int key, int scancode, int action,
                               int modifiers) {
-  PONOS_UNUSED_VARIABLE(scancode);
-  PONOS_UNUSED_VARIABLE(modifiers);
+  HERMES_UNUSED_VARIABLE(scancode);
+  HERMES_UNUSED_VARIABLE(modifiers);
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 }
@@ -254,7 +254,7 @@ void GraphicsDisplay::registerButtonFunc(
 
 void GraphicsDisplay::button_callback(GLFWwindow *window, int button,
                                       int action, int mods) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   if (instance_.buttonCallback)
     instance_.buttonCallback(button, action, mods);
   else
@@ -264,9 +264,9 @@ void GraphicsDisplay::button_callback(GLFWwindow *window, int button,
 }
 
 void GraphicsDisplay::buttonFunc(int button, int action, int modifiers) {
-  PONOS_UNUSED_VARIABLE(button);
-  PONOS_UNUSED_VARIABLE(action);
-  PONOS_UNUSED_VARIABLE(modifiers);
+  HERMES_UNUSED_VARIABLE(button);
+  HERMES_UNUSED_VARIABLE(action);
+  HERMES_UNUSED_VARIABLE(modifiers);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +278,7 @@ void GraphicsDisplay::registerMouseFunc(
 }
 
 void GraphicsDisplay::pos_callback(GLFWwindow *window, double x, double y) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   if (instance_.mouseCallback)
     instance_.mouseCallback(x, y);
   else
@@ -288,8 +288,8 @@ void GraphicsDisplay::pos_callback(GLFWwindow *window, double x, double y) {
 }
 
 void GraphicsDisplay::mouseFunc(double x, double y) {
-  PONOS_UNUSED_VARIABLE(x);
-  PONOS_UNUSED_VARIABLE(y);
+  HERMES_UNUSED_VARIABLE(x);
+  HERMES_UNUSED_VARIABLE(y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ void GraphicsDisplay::registerScrollFunc(
 }
 
 void GraphicsDisplay::scroll_callback(GLFWwindow *window, double x, double y) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   if (instance_.scrollCallback)
     instance_.scrollCallback(x, y);
   else
@@ -311,8 +311,8 @@ void GraphicsDisplay::scroll_callback(GLFWwindow *window, double x, double y) {
 }
 
 void GraphicsDisplay::scrollFunc(double x, double y) {
-  PONOS_UNUSED_VARIABLE(x);
-  PONOS_UNUSED_VARIABLE(y);
+  HERMES_UNUSED_VARIABLE(x);
+  HERMES_UNUSED_VARIABLE(y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +322,7 @@ void GraphicsDisplay::registerResizeFunc(
 }
 
 void GraphicsDisplay::resize_callback(GLFWwindow *window, int w, int h) {
-  PONOS_UNUSED_VARIABLE(window);
+  HERMES_UNUSED_VARIABLE(window);
   instance_.resizeFunc(w, h);
   if (instance_.resizeCallback) {
     instance_.getWindowSize(w, h);
@@ -333,8 +333,8 @@ void GraphicsDisplay::resize_callback(GLFWwindow *window, int w, int h) {
 }
 
 void GraphicsDisplay::resizeFunc(int w, int h) {
-  PONOS_UNUSED_VARIABLE(w);
-  PONOS_UNUSED_VARIABLE(h);
+  HERMES_UNUSED_VARIABLE(w);
+  HERMES_UNUSED_VARIABLE(h);
   glfwGetFramebufferSize(window, &this->width, &this->height);
 }
 

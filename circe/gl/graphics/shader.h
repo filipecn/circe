@@ -29,7 +29,8 @@
 #include <circe/gl/graphics/shader_manager.h>
 #include <circe/gl/io/buffer.h>
 
-#include <ponos/ponos.h>
+#include <hermes/common/file_system.h>
+#include <hermes/geometry/transform.h>
 
 #include <initializer_list>
 #include <set>
@@ -46,7 +47,7 @@ public:
   explicit Shader(GLuint type, const std::string &code);
   /// \param code
   /// \param type
-  Shader(const ponos::Path &code, GLuint type);
+  Shader(const hermes::Path &code, GLuint type);
   Shader(const Shader &other) = delete;
   Shader(const Shader &&other) = delete;
   /// Copy constructor
@@ -73,7 +74,7 @@ public:
   ///
   /// \param file
   /// \param type
-  bool compile(const ponos::Path &file, GLuint type);
+  bool compile(const hermes::Path &file, GLuint type);
   ///
   /// \return
   [[nodiscard]] GLuint id() const;
@@ -112,9 +113,9 @@ public:
 
   Program();
   /// \param files expect extensions: .frag, .vert
-  explicit Program(const std::vector<ponos::Path> &files);
+  explicit Program(const std::vector<hermes::Path> &files);
   /// \param files expect extensions: .frag, .vert
-  Program(std::initializer_list<ponos::Path> files);
+  Program(std::initializer_list<hermes::Path> files);
   /// Construct from list of shaders
   /// \param shader_list
   explicit Program(const std::vector<Shader> &shader_list);
@@ -143,7 +144,7 @@ public:
   /// \param folder path/to/folder containing shaders
   /// \param shader_name shader name without extension
   /// \return
-  bool link(const ponos::Path &folder, const std::string &shader_name);
+  bool link(const hermes::Path &folder, const std::string &shader_name);
   /// Attach and create program
   /// \param shader_list pre-compiled shader list
   /// \return
@@ -151,7 +152,7 @@ public:
   /// Attach and create program
   /// \param shader_file_list files expect extensions: .frag, .vert
   /// \return
-  bool link(const std::vector<ponos::Path> &shader_file_list);
+  bool link(const std::vector<hermes::Path> &shader_file_list);
   /// Activate program (tries to link if necessary)
   /// \return
   bool use();
@@ -177,13 +178,13 @@ public:
   /// \return
   [[nodiscard]] inline const std::vector<UniformBlock> &uniformBlocks() const { return uniform_blocks_; }
   // Uniforms
-  void setUniform(const std::string &name, const ponos::Transform &t) const;
-  void setUniform(const std::string &name, const ponos::mat4 &m);
-  void setUniform(const std::string &name, const ponos::mat3 &m);
-  void setUniform(const std::string &name, const ponos::vec4 &v);
-  void setUniform(const std::string &name, const ponos::vec3 &v);
-  void setUniform(const std::string &name, const ponos::vec2 &v);
-  void setUniform(const std::string &name, const ponos::point3 &v);
+  void setUniform(const std::string &name, const hermes::Transform &t) const;
+  void setUniform(const std::string &name, const hermes::mat4 &m);
+  void setUniform(const std::string &name, const hermes::mat3 &m);
+  void setUniform(const std::string &name, const hermes::vec4 &v);
+  void setUniform(const std::string &name, const hermes::vec3 &v);
+  void setUniform(const std::string &name, const hermes::vec2 &v);
+  void setUniform(const std::string &name, const hermes::point3 &v);
   void setUniform(const std::string &name, const Color &c);
   void setUniform(const std::string &name, int i);
   void setUniform(const std::string &name, float f);
@@ -253,13 +254,13 @@ public:
   /// \param b buffer pointer (must match attribute names)
   void registerVertexAttributes(const GLVertexBuffer *b);
   // Uniforms
-  void setUniform(const char *name, const ponos::Transform &t);
-  void setUniform(const char *name, const ponos::mat4 &m);
-  void setUniform(const char *name, const ponos::mat3 &m);
-  void setUniform(const char *name, const ponos::vec4 &v);
-  void setUniform(const char *name, const ponos::vec3 &v);
-  void setUniform(const char *name, const ponos::vec2 &v);
-  void setUniform(const char *name, const ponos::point3 &v);
+  void setUniform(const char *name, const hermes::Transform &t);
+  void setUniform(const char *name, const hermes::mat4 &m);
+  void setUniform(const char *name, const hermes::mat3 &m);
+  void setUniform(const char *name, const hermes::vec4 &v);
+  void setUniform(const char *name, const hermes::vec3 &v);
+  void setUniform(const char *name, const hermes::vec2 &v);
+  void setUniform(const char *name, const hermes::point3 &v);
   void setUniform(const char *name, const Color &c);
   void setUniform(const char *name, int i);
   void setUniform(const char *name, float f);

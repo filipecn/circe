@@ -68,8 +68,8 @@ void DisplayRenderer::render() {
 void DisplayRenderer::resize(size_t w, size_t h) {
   if (needsResize_) {
     for (size_t i = 0; i < 2; i++) {
-      framebuffer_textures_[i].resize(ponos::size2(w, h));
-      framebuffers_[i].resize(ponos::size2(w, h));
+      framebuffer_textures_[i].resize(hermes::size2(w, h));
+      framebuffers_[i].resize(hermes::size2(w, h));
       framebuffers_[i].attachTexture(framebuffer_textures_[i]);
     }
   }

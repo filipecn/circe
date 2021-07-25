@@ -30,7 +30,6 @@
 
 #include <functional>
 #include <memory>
-#include <ponos/ponos.h>
 
 namespace circe::gl {
 

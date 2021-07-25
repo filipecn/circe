@@ -27,7 +27,7 @@
 #define CIRCE_TEXT_OBJECT_H
 
 #include <circe/gl/scene/scene_object.h>
-#include <ponos/structures/raw_mesh.h>
+#include <hermes/data_structures/raw_mesh.h>
 
 namespace circe::gl {
 
@@ -38,15 +38,15 @@ public:
   TextObject(int id = -1);
   /// \param text **[in]**
   void setText(const std::string& text);
-  void draw(const CameraInterface *c, ponos::Transform t) override;
+  void draw(const CameraInterface *c, hermes::Transform t) override;
 
   float text_size = 1.f;   //!< text scale
   Color text_color;        //!< text color
-  ponos::point3f position; //!< text position
+  hermes::point3f position; //!< text position
 
 private:
   int font_id_ = -1;
-  ponos::RawMeshSPtr raw_mesh_;
+  hermes::RawMeshSPtr raw_mesh_;
   ShaderProgramPtr shader_;
   SceneMeshSPtr mesh_;
 };

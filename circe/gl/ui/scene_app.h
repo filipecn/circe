@@ -32,7 +32,7 @@ namespace circe::gl {
 
 /** \brief Simple scene with viewports support.
  */
-template <template <typename> class StructureType = ponos::Array>
+template <template <typename> class StructureType = Array>
 class SceneApp : public App {
 public:
   /** \brief Constructor.
@@ -59,9 +59,9 @@ public:
     }
     activeObjectViewport = -1;
     for (size_t i = 0; i < viewports.size(); i++) {
-      ponos::point2 p = viewports[i].getMouseNPos();
-      if (p >= ponos::point2(-1.f, -1.f) && p <= ponos::point2(1.f, 1.f)) {
-        ponos::Ray3 r = viewports[i].camera->pickRay(p);
+      hermes::point2 p = viewports[i].getMouseNPos();
+      if (p >= hermes::point2(-1.f, -1.f) && p <= hermes::point2(1.f, 1.f)) {
+        hermes::Ray3 r = viewports[i].camera->pickRay(p);
         if (selectedObject)
           selectedObject->selected = false;
         selectedObject = scene.intersect(r);

@@ -25,8 +25,6 @@
 #ifndef CIRCE_HELPERS_GRID_MODEL_H
 #define CIRCE_HELPERS_GRID_MODEL_H
 
-#include <ponos/ponos.h>
-
 #include <circe/colors/color.h>
 #include <circe/gl/scene/scene_object.h>
 #include <circe/gl/ui/text_renderer.h>
@@ -41,28 +39,28 @@ template <typename GridType> class GridModel : public SceneObject {
 public:
   GridModel() {}
   GridModel(const GridType *g) : grid(g) {}
-  void draw(const CameraInterface *camera, ponos::Transform t) {
+  void draw(const CameraInterface *camera, hermes::Transform t) {
     glColor4fv(gridColor.asArray());
     glBegin(GL_LINES); // XY
     for (size_t x = 0; x <= grid->width; x++) {
-      glVertex(transform(grid->toWorld(ponos::point2(x, 0))));
-      glVertex(transform(grid->toWorld(ponos::point2(x, grid->height))));
+      glVertex(transform(grid->toWorld(hermes::point2(x, 0))));
+      glVertex(transform(grid->toWorld(hermes::point2(x, grid->height))));
     }
     for (size_t y = 0; y <= grid->height; y++) {
-      glVertex(transform(grid->toWorld(ponos::point2(0, y))));
-      glVertex(transform(grid->toWorld(ponos::point2(grid->width, y))));
+      glVertex(transform(grid->toWorld(hermes::point2(0, y))));
+      glVertex(transform(grid->toWorld(hermes::point2(grid->width, y))));
     }
     glEnd();
     if (f) {
       glColor4fv(dataColor.asArray());
       grid->forEach(
           [&](const typename GridType::DataType &v, size_t i, size_t j) {
-            f((*grid)(i, j), ponos::point3(grid->dataWorldPosition(i, j)));
+            f((*grid)(i, j), hermes::point3(grid->dataWorldPosition(i, j)));
           });
     }
   }
 
-  std::function<void(const typename GridType::DataType v, ponos::point3 p)> f;
+  std::function<void(const typename GridType::DataType v, hermes::point3 p)> f;
 
   Color gridColor;
   Color dataColor;
@@ -72,17 +70,17 @@ protected:
 };
 
 template <typename T>
-class VectorGrid2DModel : public GridModel<ponos::VectorGrid2D<T>> {
+class VectorGrid2DModel : public GridModel<hermes::VectorGrid2D<T>> {
 public:
   enum class Mode { RAW, EQUAL };
   VectorGrid2DModel() {}
-  VectorGrid2DModel(const ponos::VectorGrid2D<T> *g, float sf = 1.f) {
+  VectorGrid2DModel(const hermes::VectorGrid2D<T> *g, float sf = 1.f) {
     this->gridColor = Color::Transparent();
     this->dataColor = Color::Red();
     this->grid = g;
     scaleFactor = sf;
     mode = Mode::RAW;
-    this->f = [&](const ponos::Vector2<T> v, ponos::point3 p) {
+    this->f = [&](const hermes::Vector2<T> v, hermes::point3 p) {
       // glColor4fv(this->dataColor.asArray());
       // glPointSize(3.f);
       // glBegin(GL_POINTS);
@@ -90,12 +88,12 @@ public:
       // glEnd();
       switch (mode) {
       case Mode::RAW:
-        draw_vector(ponos::point2(p.x, p.y),
-                    scaleFactor * ponos::vec2(v[0], v[1]));
+        draw_vector(hermes::point2(p.x, p.y),
+                    scaleFactor * hermes::vec2(v[0], v[1]));
         break;
       case Mode::EQUAL:
-        draw_vector(ponos::point2(p.x, p.y),
-                    scaleFactor * ponos::normalize(ponos::vec2(v[0], v[1])));
+        draw_vector(hermes::point2(p.x, p.y),
+                    scaleFactor * hermes::normalize(hermes::vec2(v[0], v[1])));
         break;
       }
     };
@@ -118,7 +116,7 @@ public:
     setupModel(u_model.get(), Color(0, 0, 0, 0), Color(1, 0, 0, 0.5));
     setupModel(v_model.get(), Color(0, 0, 0, 0), Color(0, 0, 1, 0.5));
   }
-  void draw(const CameraInterface *camera, ponos::Transform t) override {
+  void draw(const CameraInterface *camera, hermes::Transform t) override {
     u_model->draw();
     v_model->draw();
     p_model->draw();
@@ -127,7 +125,7 @@ public:
                   Color gridColor, Color dataColor) {
     model->gridColor = gridColor;
     model->dataColor = dataColor;
-    model->f = [this, gridColor, dataColor](float v, ponos::point3 p) {
+    model->f = [this, gridColor, dataColor](float v, hermes::point3 p) {
       // glPointSize(4);
       // glBegin(GL_POINTS);
       // glVertex(p);

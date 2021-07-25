@@ -40,21 +40,21 @@ public:
   }
   virtual ~ModifierCursor() {}
 
-  void mouse(CameraInterface &camera, ponos::point2 p) override {
-    PONOS_UNUSED_VARIABLE(camera);
-    ponos::point3 P = inverse(glGetMVPTransform())(p);
+  void mouse(CameraInterface &camera, hermes::point2 p) override {
+    HERMES_UNUSED_VARIABLE(camera);
+    hermes::point3 P = inverse(glGetMVPTransform())(p);
     last = position;
-    position = ponos::point2(P.x, P.y);
+    position = hermes::point2(P.x, P.y);
     static bool first = true;
     if (first)
       last = position, first = false;
     mouseMove();
   }
 
-  void button(CameraInterface &camera, ponos::point2 p, int button,
+  void button(CameraInterface &camera, hermes::point2 p, int button,
               int action) override {
-    PONOS_UNUSED_VARIABLE(p);
-    PONOS_UNUSED_VARIABLE(camera);
+    HERMES_UNUSED_VARIABLE(p);
+    HERMES_UNUSED_VARIABLE(camera);
     if (action == GLFW_RELEASE) {
       dragging = false;
     } else {
@@ -64,28 +64,28 @@ public:
     mouseButton(button, action);
   }
 
-  bool intersect(const ponos::Ray3 &r, float *t = nullptr) override {
-    PONOS_UNUSED_VARIABLE(r);
+  bool intersect(const hermes::Ray3 &r, float *t = nullptr) override {
+    HERMES_UNUSED_VARIABLE(r);
     *t = 0.0000001;
     return true;
   }
 
   virtual void mouseMove() {}
   virtual void mouseButton(int b, int a) {
-    PONOS_UNUSED_VARIABLE(a);
-    PONOS_UNUSED_VARIABLE(b);
+    HERMES_UNUSED_VARIABLE(a);
+    HERMES_UNUSED_VARIABLE(b);
   }
 
   bool dragging;
-  ponos::point2 position;
-  ponos::point2 start;
-  ponos::point2 last;
+  hermes::point2 position;
+  hermes::point2 start;
+  hermes::point2 last;
 };
 
 class CircleCursor : public ModifierCursor {
 public:
-  CircleCursor(const ponos::Circle &c,
-               std::function<void(const CircleCursor &, ponos::vec2)> f,
+  CircleCursor(const hermes::Circle &c,
+               std::function<void(const CircleCursor &, hermes::vec2)> f,
                Color fc = Color::Black(), Color ac = Color::Red())
       : mouseCallback(std::move(f)), fillColor(fc), activeColor(ac), circle(c) {
     fillColor.a = 0.1;
@@ -94,10 +94,10 @@ public:
   ~CircleCursor() override = default;
 
   void draw(const CameraInterface *camera,
-            ponos::Transform transform) override {
-    PONOS_UNUSED_VARIABLE(camera);
-    PONOS_UNUSED_VARIABLE(transform);
-    ponos::Circle c = circle;
+            hermes::Transform transform) override {
+    HERMES_UNUSED_VARIABLE(camera);
+    HERMES_UNUSED_VARIABLE(transform);
+    hermes::Circle c = circle;
     if (this->dragging)
       glColor(activeColor);
     else
@@ -116,11 +116,11 @@ public:
       buttonCallback(*this, b, a);
   }
 
-  std::function<void(const CircleCursor &, ponos::vec2)> mouseCallback;
+  std::function<void(const CircleCursor &, hermes::vec2)> mouseCallback;
   std::function<void(const CircleCursor &, int b, int a)> buttonCallback;
   Color fillColor;
   Color activeColor;
-  ponos::Circle circle;
+  hermes::Circle circle;
 };
 
 } // namespace circe

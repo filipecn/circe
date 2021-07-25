@@ -36,7 +36,7 @@ namespace circe::gl {
 //public:
 //  SceneModel();
 //  virtual ~SceneModel();
-//  bool resize(const ponos::RawMesh &raw_mesh);
+//  bool resize(const hermes::RawMesh &raw_mesh);
 //  void bind() const;
 //  const GLVertexBuffer &vertexBuffer() const { return vertex_buffer_; }
 //  const GLIndexBuffer &indexBuffer() const { return index_buffer_; }
@@ -55,9 +55,9 @@ class SceneMesh {
 public:
   SceneMesh() = default;
   /// \param rm raw mesh
-  explicit SceneMesh(const ponos::RawMesh *rm);
+  explicit SceneMesh(const hermes::RawMesh *rm);
   ~SceneMesh();
-  bool set(const ponos::RawMesh *rm);
+  bool set(const hermes::RawMesh *rm);
   /// Binds buffers
   void bind();
   void unbind();
@@ -65,13 +65,13 @@ public:
   const GLVertexBuffer *vertexBuffer() const;
   /// \return index buffer pointer
   const GLIndexBuffer *indexBuffer() const;
-  const ponos::RawMesh *rawMesh() const;
+  const hermes::RawMesh *rawMesh() const;
 
 protected:
   GLuint VAO;
   std::vector<float> vertexData_;
   std::vector<uint> indexData_;
-  const ponos::RawMesh *mesh_ = nullptr;
+  const hermes::RawMesh *mesh_ = nullptr;
   GLVertexBuffer vertexBuffer_;
   GLIndexBuffer indexBuffer_;
 };

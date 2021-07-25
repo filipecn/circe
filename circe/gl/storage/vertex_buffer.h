@@ -29,6 +29,7 @@
 #define PONOS_CIRCE_CIRCE_GL_STORAGE_VERTEX_BUFFER_H
 
 #include <circe/gl/storage/buffer_interface.h>
+#include <hermes/storage/array_of_structures.h>
 #include <string>
 
 namespace circe::gl {
@@ -54,7 +55,7 @@ public:
   public:
     /// Attribute description
     /// Example:
-    /// Consider a position attribute (ponos::point3, f32 p[3], ...). Its description
+    /// Consider a position attribute (hermes::point3, f32 p[3], ...). Its description
     /// would be
     ///  - name = "position" (optional)
     ///  - size = 3 (x y z)
@@ -84,17 +85,17 @@ public:
     /// \return attribute id
     u64 push(u64 component_count, const std::string &name = "", GLenum data_type = GL_FLOAT,
              GLboolean normalized = GL_FALSE);
-    /// Push attribute using a ponos type
-    /// \tparam T accepts only ponos::MathElement derived objects (point, vector, matrix,...)
+    /// Push attribute using a hermes type
+    /// \tparam T accepts only hermes::MathElement derived objects (point, vector, matrix,...)
     /// \param name attribute name (optional)
     /// \return attribute id
     template<typename T,
         typename std::enable_if_t<
-            std::is_base_of_v<ponos::MathElement<f32, 2u>, T> ||
-                std::is_base_of_v<ponos::MathElement<f32, 3u>, T> ||
-                std::is_base_of_v<ponos::MathElement<f32, 4u>, T> ||
-                std::is_base_of_v<ponos::MathElement<f32, 9u>, T> ||
-                std::is_base_of_v<ponos::MathElement<f32, 16u>, T>> * = nullptr>
+            std::is_base_of_v<hermes::MathElement<f32, 2u>, T> ||
+                std::is_base_of_v<hermes::MathElement<f32, 3u>, T> ||
+                std::is_base_of_v<hermes::MathElement<f32, 4u>, T> ||
+                std::is_base_of_v<hermes::MathElement<f32, 9u>, T> ||
+                std::is_base_of_v<hermes::MathElement<f32, 16u>, T>> * = nullptr>
     u64 push(const std::string &name = "") {
       return push(T::componentCount(), name, OpenGL::dataTypeEnum<decltype(T::numeric_data)>());
     }
@@ -121,7 +122,7 @@ public:
   // ***********************************************************************
   //                           OPERATORS
   // ***********************************************************************
-  VertexBuffer &operator=(const ponos::AoS &aos);
+  VertexBuffer &operator=(const hermes::AoS &aos);
   VertexBuffer &operator=(VertexBuffer &&other) noexcept ;
   // ***********************************************************************
   //                             METHODS

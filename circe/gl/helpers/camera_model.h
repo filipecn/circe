@@ -4,8 +4,6 @@
 #include <circe/scene/camera_interface.h>
 #include <circe/gl/utils/open_gl.h>
 
-#include <ponos/ponos.h>
-
 #include <iostream>
 
 namespace circe {
@@ -16,12 +14,12 @@ public:
   virtual ~CameraModel() = default;
 
   static void drawCamera(const CameraInterface &camera) {
-    ponos::vec3 dir = normalize(camera.getTarget() - camera.getPosition());
-    ponos::vec3 left = normalize(cross(normalize(camera.getUpVector()), dir));
-    ponos::vec3 up = normalize(cross(dir, left));
+    hermes::vec3 dir = normalize(camera.getTarget() - camera.getPosition());
+    hermes::vec3 left = normalize(cross(normalize(camera.getUpVector()), dir));
+    hermes::vec3 up = normalize(cross(dir, left));
 
-    ponos::point3 nbl, nbr, ntl, ntr;
-    ponos::point3 fbl, fbr, ftl, ftr;
+    hermes::point3 nbl, nbr, ntl, ntr;
+    hermes::point3 fbl, fbr, ftl, ftr;
     float talpha = tanf(dynamic_cast<const PerspectiveProjection *>(
                             camera.getCameraProjection())
                             ->fov /

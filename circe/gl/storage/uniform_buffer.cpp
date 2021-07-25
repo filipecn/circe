@@ -65,7 +65,7 @@ UniformBuffer::UniformBlockData &UniformBuffer::operator[](const std::string &bl
   for (auto &ubd : uniform_blocks_)
     if (ubd.name_ == block_name)
       return ubd;
-  spdlog::error("Invalid Uniform Block Name (returning block 0 instead)");
+  hermes::Log::error("Invalid Uniform Block Name (returning block 0 instead)");
   return uniform_blocks_[0];
 }
 

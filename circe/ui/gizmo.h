@@ -37,7 +37,7 @@ namespace circe {
 /// Helper tool to manipulate scene object transformations
 class Gizmo {
 public:
-  static void update(const CameraInterface *camera, ponos::Transform &transform,
+  static void update(const CameraInterface *camera, hermes::Transform &transform,
                      ImGuizmo::OPERATION operation,
                      ImGuizmo::MODE mode = ImGuizmo::MODE::WORLD) {
     float camera_view[16];
@@ -55,7 +55,7 @@ public:
                          nullptr,
                          nullptr,
                          nullptr);
-    transform = ponos::Transform(ponos::mat4(matrix, true));
+    transform = hermes::Transform(hermes::mat4(matrix, true));
   }
   ///
   /// \param camera
@@ -65,8 +65,8 @@ public:
   /// \param background_color
   static void draw(const CameraInterface *camera,
                    f32 length,
-                   ponos::index2 position,
-                   ponos::size2 size,
+                   hermes::index2 position,
+                   hermes::size2 size,
                    ImU32 background_color = 0x10101010) {
     float camera_view[16];
     camera->getViewTransform().matrix().column_major(camera_view);
@@ -83,7 +83,7 @@ public:
                  ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE) :
       mode(mode), operation(operation) {}
 
-  void update(const CameraInterface *camera, ponos::Transform &transform) const {
+  void update(const CameraInterface *camera, hermes::Transform &transform) const {
     float camera_view[16];
     camera->getViewTransform().matrix().column_major(camera_view);
     float camera_projection[16];
@@ -99,7 +99,7 @@ public:
                          nullptr,
                          nullptr,
                          nullptr);
-    transform = ponos::Transform(ponos::mat4(matrix, true));
+    transform = hermes::Transform(hermes::mat4(matrix, true));
   }
 
   ImGuizmo::MODE mode{ImGuizmo::MODE::LOCAL};

@@ -44,7 +44,7 @@ public:
   /// \param id **[in]**
   /// \param t **[in]**
   /// \param m **[in]**
-  static void setText(int id, const std::string &t, ponos::RawMesh &m);
+  static void setText(int id, const std::string &t, hermes::RawMesh &m);
   /// \param id **[in]**
   /// \param target **[in]**
   static void bindTexture(int id, GLenum target);

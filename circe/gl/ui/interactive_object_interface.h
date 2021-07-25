@@ -12,12 +12,12 @@ public:
   InteractiveObjectInterface() : selected(false), active(false) {}
   virtual ~InteractiveObjectInterface() {}
 
-  virtual void mouse(CameraInterface &camera, ponos::point2 p) {
+  virtual void mouse(CameraInterface &camera, hermes::point2 p) {
     trackball.mouseMove(camera, p);
     updateTransform();
   }
 
-  virtual void button(CameraInterface &camera, ponos::point2 p, int button,
+  virtual void button(CameraInterface &camera, hermes::point2 p, int button,
                       int action) {
     if (action == GLFW_RELEASE) {
       trackball.buttonRelease(camera, button, p);

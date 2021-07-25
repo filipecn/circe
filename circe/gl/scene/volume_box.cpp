@@ -97,20 +97,20 @@ VolumeBox2::VolumeBox2() {
   //  shader_->addUniform("g_lightPos", 6);
   //  shader_->addUniform("g_lightIntensity", 7);
   shader_->addUniform("g_absorption", 8);
-  mesh_ = createSceneMeshPtr(ponos::RawMeshes::quad(ponos::Transform(), true));
+  mesh_ = createSceneMeshPtr(hermes::RawMeshes::quad(hermes::Transform(), true));
 }
 
 VolumeBox2::~VolumeBox2() = default;
 
-void VolumeBox2::draw(const CameraInterface *camera, ponos::Transform t) {
-  PONOS_UNUSED_VARIABLE(t);
+void VolumeBox2::draw(const CameraInterface *camera, hermes::Transform t) {
+  HERMES_UNUSED_VARIABLE(t);
   density_texture_.bind(GL_TEXTURE0);
   shader_->begin();
   shader_->setUniform("model_view_matrix",
-                      ponos::transpose(camera->getViewTransform().matrix()));
+                      hermes::transpose(camera->getViewTransform().matrix()));
   shader_->setUniform(
       "projection_matrix",
-      ponos::transpose(camera->getProjectionTransform().matrix()));
+      hermes::transpose(camera->getProjectionTransform().matrix()));
   CHECK_GL_ERRORS;
   //  shader_->setUniform("cameraPosition", camera->getPosition());
   shader_->setUniform("g_densityTex", 0);
@@ -128,7 +128,7 @@ void VolumeBox2::draw(const CameraInterface *camera, ponos::Transform t) {
 }
 
 void VolumeBox2::render(GLenum cullFace) {
-  PONOS_UNUSED_VARIABLE(cullFace);
+  HERMES_UNUSED_VARIABLE(cullFace);
   //  glEnable(GL_DEPTH_TEST);
   //  glEnable(GL_CULL_FACE);
   //  glFrontFace(GL_CCW);
@@ -227,7 +227,7 @@ VolumeBox::VolumeBox() {
   shader_->addUniform("g_lightIntensity", 7);
   shader_->addUniform("g_absorption", 8);
   mesh_ = createSceneMeshPtr(
-      ponos::RawMeshes::cube(ponos::Transform(), false, true));
+      hermes::RawMeshes::cube(hermes::Transform(), false, true));
 }
 
 VolumeBox::VolumeBox(size_t w, size_t h, size_t d, float *data) : VolumeBox() {
@@ -252,15 +252,15 @@ VolumeBox::VolumeBox(size_t w, size_t h, size_t d, float *data) : VolumeBox() {
 
 VolumeBox::~VolumeBox() = default;
 
-void VolumeBox::draw(const CameraInterface *camera, ponos::Transform t) {
-  PONOS_UNUSED_VARIABLE(t);
+void VolumeBox::draw(const CameraInterface *camera, hermes::Transform t) {
+  HERMES_UNUSED_VARIABLE(t);
   densityTexture.bind(GL_TEXTURE0);
   shader_->begin();
   shader_->setUniform("model_view_matrix",
-                      ponos::transpose(camera->getViewTransform().matrix()));
+                      hermes::transpose(camera->getViewTransform().matrix()));
   shader_->setUniform(
       "projection_matrix",
-      ponos::transpose(camera->getProjectionTransform().matrix()));
+      hermes::transpose(camera->getProjectionTransform().matrix()));
   shader_->setUniform("cameraPosition", camera->getPosition());
   shader_->setUniform("g_densityTex", 0);
   shader_->setUniform("g_lightPos", lightPos);

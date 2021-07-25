@@ -20,10 +20,10 @@ function(buildExample EXAMPLE_NAME)
             "${SHADER_DIR}/*.rmiss"
             )
     add_executable(${EXAMPLE_NAME} ${MAIN_CPP} ${SHADERS})
-    add_dependencies(${EXAMPLE_NAME} glfw ponos circe)
+    add_dependencies(${EXAMPLE_NAME} glfw hermes circe)
     target_link_libraries(${EXAMPLE_NAME}
             circe
-            ${PONOS_LIBRARIES}
+            ${HERMES_LIBRARIES}
             ${CIRCE_LIBRARIES}
             ${GLFW_LIBRARIES}
             ${TINYOBJ_LIBRARIES}
@@ -32,7 +32,7 @@ function(buildExample EXAMPLE_NAME)
             ${STB_INCLUDES}
             ${GLFW_INCLUDES}
             ${VULKAN_INCLUDES}
-            ${PONOS_INCLUDE_DIR}
+            ${HERMES_INCLUDE_DIR}
             )
     target_compile_definitions(${EXAMPLE_NAME} PUBLIC
             -DSHADERS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders"

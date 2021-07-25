@@ -1,8 +1,6 @@
 #ifndef CIRCE_HELPERS_BVH_MODEL_H
 #define CIRCE_HELPERS_BVH_MODEL_H
 
-#include <ponos/ponos.h>
-
 #include <circe/gl/helpers/geometry_drawers.h>
 #include <circe/gl/scene/bvh.h>
 #include <circe/gl/scene/scene_object.h>
@@ -18,11 +16,11 @@ public:
   BVHModel(const BVH *_bvh) : bvh(_bvh) {}
   /* @inherit */
   void draw(const CameraInterface *camera,
-            ponos::Transform transform) override {
-    PONOS_UNUSED_VARIABLE(camera);
-    PONOS_UNUSED_VARIABLE(transform);
-    ponos::Transform inv = ponos::inverse(bvh->sceneMesh->transform);
-    ponos::Ray3 r(ponos::point3(0, 0, 0), ponos::vec3(1, 1, 1));
+            hermes::Transform transform) override {
+    HERMES_UNUSED_VARIABLE(camera);
+    HERMES_UNUSED_VARIABLE(transform);
+    hermes::Transform inv = hermes::inverse(bvh->sceneMesh->transform);
+    hermes::Ray3 r(hermes::point3(0, 0, 0), hermes::vec3(1, 1, 1));
     //    glBegin(GL_LINES);
     //    circe::glVertex(r.o);
     //    circe::glVertex(r.o + 1000.f * r.d);
@@ -46,11 +44,11 @@ public:
     }
   }
 
-  void recDraw(ponos::Ray3 r, BVH::BVHNode *n) const {
+  void recDraw(hermes::Ray3 r, BVH::BVHNode *n) const {
     if (!n)
       return;
     float a, b;
-    if (ponos::bbox_ray_intersection(n->bounds, r, a, b)) {
+    if (hermes::GeometricQueries::intersect(n->bounds, r, a, b)) {
       // if(!(n->children[0] || n->children[1])) {
       glColor4f(0, 0, 1, 1);
       draw_bbox(bvh->sceneMesh->transform(n->bounds));
@@ -63,15 +61,15 @@ public:
     }
   }
 
-  bool intersect(const ponos::Ray3 &r, float *t = nullptr) override {
-    PONOS_UNUSED_VARIABLE(t);
+  bool intersect(const hermes::Ray3 &r, float *t = nullptr) override {
+    HERMES_UNUSED_VARIABLE(t);
     ray = r;
     return false;
   }
 
 private:
   const BVH *bvh;
-  ponos::Ray3 ray;
+  hermes::Ray3 ray;
 };
 
 } // namespace circe

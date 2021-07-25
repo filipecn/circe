@@ -36,7 +36,7 @@ include(tinyobj)
 include(stb)
 include(glad)
 include(dirent)
-include(ponos)
+include(hermes)
 if (USE_VULKAN)
     include(vulkan)
 endif (USE_VULKAN)
@@ -71,13 +71,15 @@ set(CIRCE_HEADERS
         circe/colors/color.h
         circe/colors/color_palette.h
         circe/common/bitmask_operators.h
-        circe/io/utils.h
+#        circe/io/utils.h
+        circe/scene/array.h
         circe/scene/camera_interface.h
         circe/scene/camera_projection.h
         circe/scene/light.h
         circe/scene/material.h
         circe/scene/model.h
         circe/scene/shapes.h
+        circe/scene/spatial_structure_interface.h
         circe/ui/gizmo.h
         circe/ui/trackball.h
         circe/ui/trackball_interface.h
@@ -88,7 +90,7 @@ set(CIRCE_HEADERS
         )
 
 set(CIRCE_SOURCES
-        circe/io/utils.cpp
+#        circe/io/utils.cpp
         circe/scene/model.cpp
         circe/scene/shapes.cpp
         circe/ui/trackball_interface.cpp
@@ -107,7 +109,7 @@ set(CIRCE_GL_HEADERS
         circe/gl/scene/scene_mesh.h
         circe/gl/scene/scene_object.h
         circe/gl/scene/triangle_mesh.h
-        circe/gl/scene/volume_box.h
+#        circe/gl/scene/volume_box.h
         circe/gl/scene/wireframe_mesh.h
         circe/gl/storage/buffer_interface.h
         circe/gl/storage/device_memory.h
@@ -120,9 +122,9 @@ set(CIRCE_GL_HEADERS
         circe/gl/ui/interactive_object_interface.h
         circe/gl/ui/modifier_cursor.h
         circe/gl/ui/scene_app.h
-        circe/gl/ui/text_renderer.h
-        circe/gl/ui/text_object.h
-        circe/gl/ui/font_manager.h
+#        circe/gl/ui/text_renderer.h
+#        circe/gl/ui/text_object.h
+#        circe/gl/ui/font_manager.h
         circe/gl/scene/mesh_utils.h
         circe/gl/graphics/compute_shader.h
         circe/gl/graphics/ibl.h
@@ -130,16 +132,16 @@ set(CIRCE_GL_HEADERS
         circe/gl/graphics/shader.h
         circe/gl/graphics/shader_manager.h
         circe/gl/graphics/shadow_map.h
-        circe/gl/helpers/bbox_model.h
-        circe/gl/helpers/segment_model.h
-        circe/gl/helpers/bvh_model.h
-        circe/gl/helpers/camera_model.h
+#        circe/gl/helpers/bbox_model.h
+#        circe/gl/helpers/segment_model.h
+#        circe/gl/helpers/bvh_model.h
+#        circe/gl/helpers/camera_model.h
         circe/gl/helpers/cartesian_grid.h
-        circe/gl/helpers/geometry_drawers.h
-        circe/gl/helpers/grid_model.h
-        circe/gl/helpers/quad_tree_model.h
-        circe/gl/helpers/scene_handle.h
-        circe/gl/helpers/vector_grid.h
+#        circe/gl/helpers/geometry_drawers.h
+#        circe/gl/helpers/grid_model.h
+#        circe/gl/helpers/quad_tree_model.h
+#        circe/gl/helpers/scene_handle.h
+#        circe/gl/helpers/vector_grid.h
         # imgui
         circe/gl/imgui/imgui_impl_glfw.h
         circe/gl/imgui/imgui_impl_opengl3.h
@@ -148,7 +150,7 @@ set(CIRCE_GL_HEADERS
         circe/gl/io/framebuffer.h
         circe/gl/io/graphics_display.h
         circe/gl/texture/image_texture.h
-        circe/gl/io/font_texture.h
+#        circe/gl/io/font_texture.h
         circe/gl/texture/framebuffer_texture.h
         circe/gl/io/screen_quad.h
         circe/gl/texture/texture.h
@@ -165,10 +167,10 @@ set(CIRCE_GL_SOURCES
         circe/gl/graphics/shader.cpp
         circe/gl/graphics/shader_manager.cpp
         circe/gl/graphics/shadow_map.cpp
-        circe/gl/helpers/bbox_model.cpp
-        circe/gl/helpers/segment_model.cpp
+#        circe/gl/helpers/bbox_model.cpp
+#        circe/gl/helpers/segment_model.cpp
         circe/gl/helpers/cartesian_grid.cpp
-        circe/gl/helpers/geometry_drawers.cpp
+#        circe/gl/helpers/geometry_drawers.cpp
         circe/gl/imgui/imgui_impl_glfw.cpp
         circe/gl/imgui/imgui_impl_opengl3.cpp
         circe/gl/io/buffer.cpp
@@ -178,14 +180,14 @@ set(CIRCE_GL_SOURCES
         circe/gl/io/font_texture.cpp
         circe/gl/io/screen_quad.cpp
         circe/gl/io/viewport_display.cpp
-        circe/gl/scene/bvh.cpp
+#        circe/gl/scene/bvh.cpp
         circe/gl/scene/instance_set.cpp
         circe/gl/scene/mesh_utils.cpp
         circe/gl/scene/quad.cpp
         circe/gl/scene/scene_mesh.cpp
         circe/gl/scene/scene_model.cpp
         circe/gl/scene/triangle_mesh.cpp
-        circe/gl/scene/volume_box.cpp
+#        circe/gl/scene/volume_box.cpp
         circe/gl/scene/wireframe_mesh.cpp
         circe/gl/storage/buffer_interface.cpp
         circe/gl/storage/device_memory.cpp
@@ -198,9 +200,9 @@ set(CIRCE_GL_SOURCES
         circe/gl/texture/image_texture.cpp
         circe/gl/texture/texture.cpp
         circe/gl/ui/app.cpp
-        circe/gl/ui/text_renderer.cpp
-        circe/gl/ui/text_object.cpp
-        circe/gl/ui/font_manager.cpp
+#        circe/gl/ui/text_renderer.cpp
+#        circe/gl/ui/text_object.cpp
+#        circe/gl/ui/font_manager.cpp
         circe/gl/utils/base_app.cpp
         circe/gl/utils/open_gl.cpp
         )
@@ -279,10 +281,10 @@ target_include_directories(circe PUBLIC
         ${GLAD_INCLUDES}
         ${GLFW_INCLUDE_DIR}
         ${DIRENT_INCLUDE_DIR}
-        ${PONOS_INCLUDES}
+        ${HERMES_INCLUDES}
         )
 target_link_libraries(circe PUBLIC
-        ${PONOS_LIBRARIES}
+        ${HERMES_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${VULKAN_LIBRARIES}
         ${PLY_LIBS}
@@ -291,7 +293,7 @@ target_link_libraries(circe PUBLIC
         )
 
 # if(glfw AND glad)
-add_dependencies(circe ponos glfw glad tinyobj)
+add_dependencies(circe hermes glfw glad tinyobj)
 # endif(glfw AND glad)
 
 ##########################################
@@ -309,9 +311,9 @@ install(TARGETS circe #aergia_shared
 ##########################################
 ##                tests                 ##
 ##########################################
-if(BUILD_TESTS OR BUILD_ALL)
+if (BUILD_TESTS OR BUILD_ALL)
     add_subdirectory(tests)
-endif(BUILD_TESTS OR BUILD_ALL)
+endif (BUILD_TESTS OR BUILD_ALL)
 ##########################################
 ##              examples                ##
 ##########################################
@@ -329,7 +331,7 @@ endif (BUILD_DOCS)
 ##########################################
 get_directory_property(CIRCE_HAS_PARENT PARENT_DIRECTORY)
 if (CIRCE_HAS_PARENT)
-    set(CIRCE_INCLUDES ${PONOS_SOURCE_DIR} ${CIRCE_SOURCE_DIR} ${GLAD_INCLUDES} PARENT_SCOPE)
+    set(CIRCE_INCLUDES ${HERMES_SOURCE_DIR} ${CIRCE_SOURCE_DIR} ${GLAD_INCLUDES} PARENT_SCOPE)
     set(CIRCE_EXTRA_LIBS ${GLAD_LIBS} PARENT_SCOPE)
 endif (CIRCE_HAS_PARENT)
 #

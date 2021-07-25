@@ -27,7 +27,7 @@
 
 #include <circe/gl/utils/open_gl.h>
 
-#include <ponos/ponos.h>
+#include <hermes/data_structures/raw_mesh.h>
 
 #include <map>
 #include <string>
@@ -173,20 +173,20 @@ struct BufferDescriptor {
   /// \param elementType
   /// \return BufferDescriptor for an index buffer
   static BufferDescriptor forIndexBuffer(size_t elementSize, size_t elementCount,
-                                         ponos::GeometricPrimitiveType elementType) {
+                                         hermes::GeometricPrimitiveType elementType) {
     GLuint type = GL_TRIANGLES;
     switch (elementType) {
-    case ponos::GeometricPrimitiveType::TRIANGLES:type = GL_TRIANGLES;
+    case hermes::GeometricPrimitiveType::TRIANGLES:type = GL_TRIANGLES;
       break;
-    case ponos::GeometricPrimitiveType::LINES:type = GL_LINES;
+    case hermes::GeometricPrimitiveType::LINES:type = GL_LINES;
       break;
-    case ponos::GeometricPrimitiveType::QUADS:type = GL_QUADS;
+    case hermes::GeometricPrimitiveType::QUADS:type = GL_QUADS;
       break;
-    case ponos::GeometricPrimitiveType::LINE_LOOP:type = GL_LINE_LOOP;
+    case hermes::GeometricPrimitiveType::LINE_LOOP:type = GL_LINE_LOOP;
       break;
-    case ponos::GeometricPrimitiveType::TRIANGLE_FAN:type = GL_TRIANGLE_FAN;
+    case hermes::GeometricPrimitiveType::TRIANGLE_FAN:type = GL_TRIANGLE_FAN;
       break;
-    case ponos::GeometricPrimitiveType::TRIANGLE_STRIP:type = GL_TRIANGLE_STRIP;
+    case hermes::GeometricPrimitiveType::TRIANGLE_STRIP:type = GL_TRIANGLE_STRIP;
       break;
     default:break;
     }
@@ -201,7 +201,7 @@ struct BufferDescriptor {
 /// \param rm
 /// \param vertexData
 /// \param indexData
-inline void setup_buffer_data_from_mesh(const ponos::RawMesh &rm,
+inline void setup_buffer_data_from_mesh(const hermes::RawMesh &rm,
                                         std::vector<float> &vertexData,
                                         std::vector<uint> &indexData) {
   // convert mesh to buffers
@@ -241,23 +241,23 @@ inline void setup_buffer_data_from_mesh(const ponos::RawMesh &rm,
 /// \param m **[in]** raw mesh (interleaved data must be built previously)
 /// \param v **[out]** vertex buffer description
 /// \param i **[out]** index buffer description
-inline void create_buffer_description_from_mesh(const ponos::RawMesh &m,
+inline void create_buffer_description_from_mesh(const hermes::RawMesh &m,
                                                 BufferDescriptor &v,
                                                 BufferDescriptor &i,
                                                 GLuint use = GL_STATIC_DRAW) {
   GLuint type = GL_TRIANGLES;
   switch (m.primitiveType) {
-  case ponos::GeometricPrimitiveType::TRIANGLES:type = GL_TRIANGLES;
+  case hermes::GeometricPrimitiveType::TRIANGLES:type = GL_TRIANGLES;
     break;
-  case ponos::GeometricPrimitiveType::LINES:type = GL_LINES;
+  case hermes::GeometricPrimitiveType::LINES:type = GL_LINES;
     break;
-  case ponos::GeometricPrimitiveType::QUADS:type = GL_QUADS;
+  case hermes::GeometricPrimitiveType::QUADS:type = GL_QUADS;
     break;
-  case ponos::GeometricPrimitiveType::LINE_LOOP:type = GL_LINE_LOOP;
+  case hermes::GeometricPrimitiveType::LINE_LOOP:type = GL_LINE_LOOP;
     break;
-  case ponos::GeometricPrimitiveType::TRIANGLE_FAN:type = GL_TRIANGLE_FAN;
+  case hermes::GeometricPrimitiveType::TRIANGLE_FAN:type = GL_TRIANGLE_FAN;
     break;
-  case ponos::GeometricPrimitiveType::TRIANGLE_STRIP:type = GL_TRIANGLE_STRIP;
+  case hermes::GeometricPrimitiveType::TRIANGLE_STRIP:type = GL_TRIANGLE_STRIP;
     break;
   default:break;
   }

@@ -41,20 +41,20 @@ public:
   /// \param texture
   /// \param resolution
   /// \return
-  static Texture irradianceMap(const Texture &texture, const ponos::size2 &resolution);
+  static Texture irradianceMap(const Texture &texture, const hermes::size2 &resolution);
   ///
   /// \param texture
   /// \param resolution
   /// \return
-  static Texture preFilteredEnvironmentMap(const Texture &texture, const ponos::size2 &resolution);
+  static Texture preFilteredEnvironmentMap(const Texture &texture, const hermes::size2 &resolution);
   ///
   /// \param resolution
   /// \return
-  static Texture brdfIntegrationMap(const ponos::size2 &resolution);
+  static Texture brdfIntegrationMap(const hermes::size2 &resolution);
   ///
   /// \param path
   /// \return
-  static IBL fromFile(const ponos::Path &path);
+  static IBL fromFile(const hermes::Path &path);
 };
 
 }

@@ -27,8 +27,6 @@
 
 #include <circe/gl/scene/scene_object.h>
 
-#include <ponos/ponos.h>
-
 #include <memory>
 
 namespace circe::gl {
@@ -36,10 +34,10 @@ namespace circe::gl {
 class TriangleMesh : public SceneMeshObject {
 public:
   TriangleMesh(const std::string &filename);
-  TriangleMesh(const ponos::RawMesh *m);
+  TriangleMesh(const hermes::RawMesh *m);
   virtual ~TriangleMesh() {}
   /* @inherit */
-  void draw(const CameraInterface *camera, ponos::Transform transform) override;
+  void draw(const CameraInterface *camera, hermes::Transform transform) override;
 };
 
 } // namespace circe

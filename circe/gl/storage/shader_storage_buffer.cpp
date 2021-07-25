@@ -46,7 +46,7 @@ ShaderStorageBuffer::ShaderStorageBuffer(ShaderStorageBuffer &&other) noexcept {
 
 ShaderStorageBuffer::~ShaderStorageBuffer() = default;
 
-ShaderStorageBuffer &ShaderStorageBuffer::operator=(const ponos::AoS &aos) {
+ShaderStorageBuffer &ShaderStorageBuffer::operator=(const hermes::AoS &aos) {
   descriptor = aos.structDescriptor();
   struct_count_ = aos.size();
   setData(reinterpret_cast<const void *>(aos.data()));

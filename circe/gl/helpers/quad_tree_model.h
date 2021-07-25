@@ -25,8 +25,6 @@
 #ifndef CIRCE_HELPERS_QUAD_TREE_MODEL_H
 #define CIRCE_HELPERS_QUAD_TREE_MODEL_H
 
-#include <ponos/ponos.h>
-
 #include <circe/colors/color_palette.h>
 #include <circe/gl/helpers/geometry_drawers.h>
 #include <circe/gl/scene/scene_object.h>

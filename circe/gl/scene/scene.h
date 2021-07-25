@@ -27,8 +27,7 @@
 
 #include <circe/gl/scene/scene_object.h>
 #include <circe/gl/utils/open_gl.h>
-
-#include <ponos/ponos.h>
+#include <circe/scene/array.h>
 
 #include <memory>
 
@@ -39,7 +38,7 @@ namespace circe::gl {
 /// It is possible to define how these objects are arranged by setting
 /// a **StructureType**. The default organization is a flat array with no
 /// acceleration schemes.
-template<template<typename> class StructureType = ponos::Array> class Scene {
+template<template<typename> class StructureType = circe::Array> class Scene {
 public:
   Scene() {}
   virtual ~Scene() {}
@@ -62,11 +61,11 @@ public:
    *intersection point
    * \returns the closest object intersected
    */
-  SceneObject *intersect(const ponos::Ray3 &ray, float *t = nullptr) {
-    ponos::Transform tr = ponos::inverse(transform);
-    ponos::point3 ta = tr(ray.o);
-    ponos::point3 tb = tr(ray(1.f));
-    return s.intersect(ponos::Ray3(ta, tb - ta), t);
+  SceneObject *intersect(const hermes::Ray3 &ray, float *t = nullptr) {
+    hermes::Transform tr = hermes::inverse(transform);
+    hermes::point3 ta = tr(ray.o);
+    hermes::point3 tb = tr(ray(1.f));
+    return s.intersect(hermes::Ray3(ta, tb - ta), t);
   }
 
   /** \brief  iterate all objects
@@ -76,7 +75,7 @@ public:
     s.iterate(f);
   }
 
-  ponos::Transform
+  hermes::Transform
       transform; //!< scene transform (applied to all objects on draw)
 
 private:

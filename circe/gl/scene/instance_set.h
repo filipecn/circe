@@ -66,7 +66,7 @@ public:
   uint *instanceU(uint b, uint i);
   /// \param b buffer index
   void bind(uint b);
-  void draw(const CameraInterface *camera, ponos::Transform transform) override;
+  void draw(const CameraInterface *camera, hermes::Transform transform) override;
 
 private:
   ShaderProgram shader_;                   ///< instance shader program

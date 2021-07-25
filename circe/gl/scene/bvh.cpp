@@ -25,7 +25,7 @@
 #include <circe/gl/scene/bvh.h>
 
 #include <algorithm>
-#include <ponos/structures/bvh.h>
+#include <hermes/structures/bvh.h>
 #include <vector>
 
 namespace circe::gl {
@@ -55,9 +55,9 @@ BVH::BVHNode *BVH::recursiveBuild(std::vector<BVHElement> &buildData,
                                   std::vector<uint32_t> &orderedElements) {
   (*totalNodes)++;
   BVHNode *node = new BVHNode();
-  ponos::bbox3 bbox;
+  hermes::bbox3 bbox;
   for (uint32_t i = start; i < end; ++i)
-    bbox = ponos::make_union(bbox, buildData[i].bounds);
+    bbox = hermes::make_union(bbox, buildData[i].bounds);
   // compute all bounds
   uint32_t nElements = end - start;
   if (nElements == 1) {
@@ -70,9 +70,9 @@ BVH::BVHNode *BVH::recursiveBuild(std::vector<BVHElement> &buildData,
     node->initLeaf(firstElementOffset, nElements, bbox);
   } else {
     // compute bound of primitives
-    ponos::bbox3 centroidBounds;
+    hermes::bbox3 centroidBounds;
     for (uint32_t i = start; i < end; i++)
-      centroidBounds = ponos::make_union(centroidBounds, buildData[i].centroid);
+      centroidBounds = hermes::make_union(centroidBounds, buildData[i].centroid);
     int dim = centroidBounds.maxExtent();
     // partition primitives
     uint32_t mid = (start + end) / 2;
@@ -109,14 +109,14 @@ uint32_t BVH::flattenBVHTree(BVHNode *node, uint32_t *offset) {
   return myOffset;
 }
 
-int BVH::intersect(const ponos::Ray3 &ray, float *t) {
+int BVH::intersect(const hermes::Ray3 &ray, float *t) {
   PONOS_UNUSED_VARIABLE(t);
   if (nodes.empty())
     return false;
-  ponos::Transform inv = ponos::inverse(sceneMesh->transform);
-  ponos::Ray3 r = inv(ray);
+  hermes::Transform inv = hermes::inverse(sceneMesh->transform);
+  hermes::Ray3 r = inv(ray);
   int hit = 0;
-  ponos::vec3 invDir(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);
+  hermes::vec3 invDir(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);
   uint32_t dirIsNeg[3] = {invDir.x < 0, invDir.y < 0, invDir.z < 0};
   uint32_t todoOffset = 0, nodeNum = 0;
   uint32_t todo[64];
@@ -126,13 +126,13 @@ int BVH::intersect(const ponos::Ray3 &ray, float *t) {
       if (node->nElements > 0) {
         // intersect ray with primitives
         for (uint32_t i = 0; i < node->nElements; i++) {
-          ponos::point3 v0 = sceneMesh->mesh()->rawMesh()->positionElement(
+          hermes::point3 v0 = sceneMesh->mesh()->rawMesh()->positionElement(
               orderedElements[node->elementsOffset + i], 0);
-          ponos::point3 v1 = sceneMesh->mesh()->rawMesh()->positionElement(
+          hermes::point3 v1 = sceneMesh->mesh()->rawMesh()->positionElement(
               orderedElements[node->elementsOffset + i], 1);
-          ponos::point3 v2 = sceneMesh->mesh()->rawMesh()->positionElement(
+          hermes::point3 v2 = sceneMesh->mesh()->rawMesh()->positionElement(
               orderedElements[node->elementsOffset + i], 2);
-          if (ponos::triangle_ray_intersection(v0, v1, v2, r))
+          if (hermes::triangle_ray_intersection(v0, v1, v2, r))
             hit++;
         }
         if (todoOffset == 0)
@@ -156,11 +156,11 @@ int BVH::intersect(const ponos::Ray3 &ray, float *t) {
   return hit;
 }
 
-bool BVH::intersect(const ponos::bbox3 &bounds, const ponos::Ray3 &ray,
-                    const ponos::vec3 &invDir,
+bool BVH::intersect(const hermes::bbox3 &bounds, const hermes::Ray3 &ray,
+                    const hermes::vec3 &invDir,
                     const uint32_t dirIsNeg[3]) const {
   float hit1, hit2;
-  return ponos::bbox_ray_intersection(bounds, ray, hit1, hit2);
+  return hermes::bbox_ray_intersection(bounds, ray, hit1, hit2);
   float tmin = (bounds[dirIsNeg[0]].x - ray.o.x) * invDir.x;
   float tmax = (bounds[1 - dirIsNeg[0]].x - ray.o.x) * invDir.x;
   float tymin = (bounds[dirIsNeg[1]].y - ray.o.y) * invDir.y;
@@ -182,21 +182,21 @@ bool BVH::intersect(const ponos::bbox3 &bounds, const ponos::Ray3 &ray,
   return tmax > 0;
 }
 
-bool BVH::isInside(const ponos::point3 &p) {
-  ponos::Ray3 r(p, ponos::vec3(1.2, 1.1, 0.1));
-  ponos::Ray3 r2(p, ponos::vec3(0.2, -1.1, 0.1));
+bool BVH::isInside(const hermes::point3 &p) {
+  hermes::Ray3 r(p, hermes::vec3(1.2, 1.1, 0.1));
+  hermes::Ray3 r2(p, hermes::vec3(0.2, -1.1, 0.1));
 
   return intersect(r, nullptr) % 2 && intersect(r2, nullptr) % 2;
 
   int hit = 0, hit2 = 0;
   for (size_t i = 0; i < sceneMesh->mesh()->rawMesh()->meshDescriptor.count;
        i++) {
-    ponos::point3 v0 = sceneMesh->mesh()->rawMesh()->positionElement(i, 0);
-    ponos::point3 v1 = sceneMesh->mesh()->rawMesh()->positionElement(i, 1);
-    ponos::point3 v2 = sceneMesh->mesh()->rawMesh()->positionElement(i, 2);
-    if (ponos::triangle_ray_intersection(v0, v1, v2, r))
+    hermes::point3 v0 = sceneMesh->mesh()->rawMesh()->positionElement(i, 0);
+    hermes::point3 v1 = sceneMesh->mesh()->rawMesh()->positionElement(i, 1);
+    hermes::point3 v2 = sceneMesh->mesh()->rawMesh()->positionElement(i, 2);
+    if (hermes::triangle_ray_intersection(v0, v1, v2, r))
       hit++;
-    if (ponos::triangle_ray_intersection(v0, v1, v2, r2))
+    if (hermes::triangle_ray_intersection(v0, v1, v2, r2))
       hit2++;
   }
   return hit % 2 && hit2 % 2;

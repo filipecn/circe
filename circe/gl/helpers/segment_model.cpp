@@ -30,7 +30,7 @@
 
 namespace circe::gl {
 
-SegmentModel::SegmentModel(const ponos::Segment3 &s) {
+SegmentModel::SegmentModel(const hermes::Segment3 &s) {
   // initiate model with unit box
   auto model = Shapes::segment(s);
   mesh_ = std::move(model);
@@ -44,22 +44,22 @@ SegmentModel::SegmentModel(const ponos::Segment3 &s) {
   shaders.emplace_back(GL_VERTEX_SHADER, vs_code);
   shaders.emplace_back(GL_FRAGMENT_SHADER, fs_code);
   if (!mesh_.program.link(shaders))
-    spdlog::error("Failed to compile SegmentModel Shader Program:\n {}", mesh_.program.err);
+    hermes::Log::error("Failed to compile SegmentModel Shader Program:\n {}", mesh_.program.err);
 }
 
 SegmentModel::~SegmentModel() = default;
 
-SegmentModel &SegmentModel::operator=(const ponos::Segment3 &s) {
+SegmentModel &SegmentModel::operator=(const hermes::Segment3 &s) {
   // TODO
   return *this;
 }
 
-void SegmentModel::draw(const CameraInterface *camera, ponos::Transform t) {
+void SegmentModel::draw(const CameraInterface *camera, hermes::Transform t) {
   mesh_.program.use();
   mesh_.program.setUniform("color", color);
-  mesh_.program.setUniform("view", ponos::transpose(camera->getViewTransform().matrix()));
-  mesh_.program.setUniform("projection", ponos::transpose(camera->getProjectionTransform().matrix()));
-  mesh_.program.setUniform("model", ponos::transpose(mesh_.transform.matrix()));
+  mesh_.program.setUniform("view", hermes::transpose(camera->getViewTransform().matrix()));
+  mesh_.program.setUniform("projection", hermes::transpose(camera->getProjectionTransform().matrix()));
+  mesh_.program.setUniform("model", hermes::transpose(mesh_.transform.matrix()));
   mesh_.draw();
 }
 

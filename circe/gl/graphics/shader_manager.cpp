@@ -23,6 +23,7 @@
 */
 
 #include <circe/gl/graphics/shader_manager.h>
+#include <hermes/common/file_system.h>
 
 namespace circe::gl {
 
@@ -38,30 +39,23 @@ int ShaderManager::loadFromFiles(std::initializer_list<const char *> l) {
     std::string filename(v);
     if (filename.size() < 4)
       continue;
-    char *source = nullptr;
     std::cout << "loading shader file " << filename << std::endl;
-    if (!ponos::readFile(filename.c_str(), &source))
+    auto source = hermes::FileSystem::readFile(filename);
+    if (source.empty())
       continue;
     GLuint shaderType = 0;
     switch (filename[filename.size() - 4]) {
-    case 'v':
-      shaderType = 0;
+    case 'v':shaderType = 0;
       break;
-    case 'g':
-      shaderType = 1;
+    case 'g':shaderType = 1;
       break;
-    case 'f':
-      shaderType = 2;
+    case 'f':shaderType = 2;
       break;
-    case 'c':
-      shaderType = 3;
+    case 'c':shaderType = 3;
       break;
-    default:
-      continue;
+    default:continue;
     }
-    objects.emplace_back(compile(source, types[shaderType]));
-    if (source)
-      free(source);
+    objects.emplace_back(compile(source.c_str(), types[shaderType]));
   }
   if (objects.empty())
     return -1;

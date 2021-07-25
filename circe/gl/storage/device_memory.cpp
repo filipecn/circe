@@ -34,11 +34,11 @@ DeviceMemory::View::View(DeviceMemory &buffer, u64 length, u64 offset)
   if (!length_)
     length_ = buffer.size();
   if (offset_ >= buffer.size()) {
-    spdlog::warn("Offset of Device Memory View out of bounds. View offset resize to 0.");
+    hermes::Log::warn("Offset of Device Memory View out of bounds. View offset resize to 0.");
     offset_ = 0;
   }
   if (offset_ + length_ > buffer.size())
-    spdlog::warn("Device Memory View bigger than buffer size. View size reduced.");
+    hermes::Log::warn("Device Memory View bigger than buffer size. View size reduced.");
   length_ = std::min(offset_ + buffer.size(), buffer.size()) - offset_;
 }
 

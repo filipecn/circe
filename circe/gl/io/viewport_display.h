@@ -28,8 +28,6 @@
 #include <circe/gl/io/display_renderer.h>
 #include <circe/ui/ui_camera.h>
 
-#include <ponos/ponos.h>
-
 #include <functional>
 #include <memory>
 
@@ -53,22 +51,22 @@ public:
    * height)** to **(1, 1)**
    * \return normalized mouse coordinates relative to the viewport
    */
-  ponos::point2 getMouseNPos();
+  hermes::point2 getMouseNPos();
   /// \return true if mouse is inside viewport region
   [[nodiscard]] bool hasMouseFocus() const;
   /* convert
    * \param p **[in]** point (in view space)
    * \return **p** mapped to NDC (**[-1,1]**)
    */
-  ponos::point3 viewCoordToNormDevCoord(ponos::point3 p) const;
+  hermes::point3 viewCoordToNormDevCoord(hermes::point3 p) const;
   /* convert
    * \param c **[in]** camera
    * \param p **[in]** point (in screen space)
    * \return the unprojected point by the inverse of the camera transform to
    * world space
    */
-  ponos::point3 unProject(const CameraInterface &c, ponos::point3 p);
-  ponos::point3 unProject();
+  hermes::point3 unProject(const CameraInterface &c, hermes::point3 p);
+  hermes::point3 unProject();
 
   void render(const std::function<void(CameraInterface *)> &f = nullptr);
   void mouse(double x, double y);

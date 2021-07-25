@@ -1,7 +1,7 @@
 #ifndef CIRCE_UI_TRACKBALL_H
 #define CIRCE_UI_TRACKBALL_H
 
-#include <ponos/ponos.h>
+#include <hermes/geometry/transform.h>
 
 namespace circe {
 
@@ -9,16 +9,16 @@ class Trackball {
 public:
   Trackball() : radius_(5.f) {}
 
-  ponos::point3 center() const { return center_; }
-  void setCenter(const ponos::point3 &center) { center_ = center; }
+  hermes::point3 center() const { return center_; }
+  void setCenter(const hermes::point3 &center) { center_ = center; }
   float radius() const { return radius_; }
   void setRadius(float r) { radius_ = r; }
-  ponos::Transform transform() const { return transform_ * partialTransform_; }
-  ponos::Transform getPartialTransform() { return partialTransform_; }
-  ponos::Transform getTransform() { return partialTransform_; }
-  void setTransform(ponos::Transform t) { transform_ = t; }
-  void setPartialTransform(ponos::Transform t) { partialTransform_ = t; }
-  void accumulatePartialTransform(ponos::Transform t) {
+  hermes::Transform transform() const { return transform_ * partialTransform_; }
+  hermes::Transform getPartialTransform() { return partialTransform_; }
+  hermes::Transform getTransform() { return partialTransform_; }
+  void setTransform(hermes::Transform t) { transform_ = t; }
+  void setPartialTransform(hermes::Transform t) { partialTransform_ = t; }
+  void accumulatePartialTransform(hermes::Transform t) {
     partialTransform_ = partialTransform_ * t;
   }
   void applyPartialTransform() {
@@ -27,9 +27,9 @@ public:
   }
 
 private:
-  ponos::point3 center_;
-  ponos::Transform transform_;
-  ponos::Transform partialTransform_;
+  hermes::point3 center_;
+  hermes::Transform transform_;
+  hermes::Transform partialTransform_;
   float radius_;
 };
 

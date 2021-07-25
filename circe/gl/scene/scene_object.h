@@ -25,8 +25,6 @@
 #ifndef CIRCE_SCENE_SCENE_OBJECT_H
 #define CIRCE_SCENE_SCENE_OBJECT_H
 
-#include <ponos/ponos.h>
-
 #include <circe/gl/graphics/shader.h>
 #include <circe/gl/io/buffer.h>
 #include <circe/io/utils.h>
@@ -47,14 +45,14 @@ public:
   /// render method
   /// \param c cur active camera
   /// \param t object transform
-  virtual void draw(const CameraInterface *c, ponos::Transform t) = 0;
+  virtual void draw(const CameraInterface *c, hermes::Transform t) = 0;
   /// query
   /// \param r **[in]** ray
   /// \param t **[out]** receives the parametric value of the intersection
   /// \return **true** if intersection is found
-  virtual bool intersect(const ponos::Ray3 &r, float *t = nullptr) {
-    PONOS_UNUSED_VARIABLE(t);
-    PONOS_UNUSED_VARIABLE(r);
+  virtual bool intersect(const hermes::Ray3 &r, float *t = nullptr) {
+    HERMES_UNUSED_VARIABLE(t);
+    HERMES_UNUSED_VARIABLE(r);
     return false;
   }
 
@@ -62,7 +60,7 @@ public:
     transform = this->trackball.tb.getTransform() * transform;
   }
 
-  ponos::Transform transform;
+  hermes::Transform transform;
   bool visible;
 };
 
@@ -70,7 +68,7 @@ class SceneMeshObject : public SceneObject {
 public:
   SceneMeshObject() = default;
   explicit SceneMeshObject(const std::string &filename) {
-    ponos::RawMeshSPtr rawMesh(new ponos::RawMesh());
+    hermes::RawMeshSPtr rawMesh(new hermes::RawMesh());
     loadOBJ(filename, rawMesh.get());
     rawMesh->computeBBox();
     rawMesh->splitIndexData();
@@ -81,20 +79,20 @@ public:
       : SceneMeshObject(filename) {
     shader_ = s;
   }
-  SceneMeshObject(const ponos::RawMesh *m, ShaderProgramPtr s) {
+  SceneMeshObject(const hermes::RawMesh *m, ShaderProgramPtr s) {
     mesh_ = createSceneMeshPtr(m);
     shader_ = s;
   }
   explicit SceneMeshObject(
-      const ponos::RawMesh *m,
+      const hermes::RawMesh *m,
       std::function<void(ShaderProgram *, const CameraInterface *,
-                         ponos::Transform)>
+                         hermes::Transform)>
       f =
       [](ShaderProgram *s, const CameraInterface *camera,
-         ponos::Transform t) {
-        PONOS_UNUSED_VARIABLE(s);
-        PONOS_UNUSED_VARIABLE(camera);
-        PONOS_UNUSED_VARIABLE(t);
+         hermes::Transform t) {
+        HERMES_UNUSED_VARIABLE(s);
+        HERMES_UNUSED_VARIABLE(camera);
+        HERMES_UNUSED_VARIABLE(t);
       },
       ShaderProgramPtr s = nullptr) {
     this->visible = true;
@@ -103,7 +101,7 @@ public:
     mesh_ = createSceneMeshPtr(m);
   }
   virtual ~SceneMeshObject() {}
-  void draw(const CameraInterface *camera, ponos::Transform t) override {
+  void draw(const CameraInterface *camera, hermes::Transform t) override {
     if (!visible)
       return;
     mesh_->bind();
@@ -128,7 +126,7 @@ public:
   SceneMeshSPtr mesh() { return mesh_; }
 
   std::function<void(ShaderProgram *, const CameraInterface *,
-                     ponos::Transform)>
+                     hermes::Transform)>
       drawCallback;
 
 protected:
@@ -141,7 +139,7 @@ class SceneDynamicMeshObject : public SceneObject {
 public:
   SceneDynamicMeshObject() {}
   SceneDynamicMesh &mesh() { return mesh_; }
-  void draw(const CameraInterface *camera, ponos::Transform t) override {
+  void draw(const CameraInterface *camera, hermes::Transform t) override {
     if (!visible)
       return;
     mesh_.bind();
@@ -164,7 +162,7 @@ public:
   void setShader(ShaderProgramPtr shader) { shader_ = shader; }
 
   std::function<void(ShaderProgram *, const CameraInterface *,
-                     ponos::Transform)>
+                     hermes::Transform)>
       draw_callback;
 
 protected:

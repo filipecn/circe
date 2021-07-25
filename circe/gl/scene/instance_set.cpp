@@ -147,8 +147,8 @@ void InstanceSet::bind(uint b) {
 }
 
 void InstanceSet::draw(const CameraInterface *camera,
-                       ponos::Transform transform) {
-  PONOS_UNUSED_VARIABLE(transform);
+                       hermes::Transform transform) {
+  HERMES_UNUSED_VARIABLE(transform);
   if (!base_mesh_ || !count_)
     return;
   // bind buffers and locate attributes
@@ -160,13 +160,13 @@ void InstanceSet::draw(const CameraInterface *camera,
     buffers_[i]->locateAttributes(shader_, 1);
   }
   shader_.setUniform("model_view_matrix",
-                     ponos::transpose(camera->getViewTransform().matrix()));
+                     hermes::transpose(camera->getViewTransform().matrix()));
   shader_.setUniform(
       "projection_matrix",
-      ponos::transpose(camera->getProjectionTransform().matrix()));
+      hermes::transpose(camera->getProjectionTransform().matrix()));
   CHECK_GL_ERRORS;
   //  shader_.setUniform("mvp",
-  //  ponos::transpose((camera->getProjectionTransform() *
+  //  hermes::transpose((camera->getProjectionTransform() *
   //      camera->getViewTransform() * camera->getModelTransform()).matrix()));
   glDrawElementsInstanced(
       base_mesh_->indexBuffer()->bufferDescriptor.element_type,
