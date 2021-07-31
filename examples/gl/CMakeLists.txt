@@ -21,6 +21,7 @@ function(buildExample EXAMPLE_NAME)
             )
     add_executable(${EXAMPLE_NAME} ${MAIN_CPP} ${SHADERS})
     add_dependencies(${EXAMPLE_NAME} glfw hermes circe)
+
     target_link_libraries(${EXAMPLE_NAME}
             circe
             ${HERMES_LIBRARIES}
