@@ -39,12 +39,12 @@ static void framebufferResizeCallback(GLFWwindow *window, int width,
 }
 
 GraphicsDisplay::GraphicsDisplay() {
-  PONOS_ASSERT(glfwInit())
+  HERMES_ASSERT(glfwInit())
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  PONOS_ASSERT(glfwVulkanSupported())
+  HERMES_ASSERT(glfwVulkanSupported())
 }
 
-GraphicsDisplay::GraphicsDisplay(const ponos::size2 &resolution,
+GraphicsDisplay::GraphicsDisplay(const hermes::size2 &resolution,
                                  const std::string &title)
     : GraphicsDisplay() {
   init(resolution, title);
@@ -55,7 +55,7 @@ GraphicsDisplay::~GraphicsDisplay() {
   glfwTerminate();
 }
 
-bool GraphicsDisplay::init(const ponos::size2 &resolution,
+bool GraphicsDisplay::init(const hermes::size2 &resolution,
                            const std::string &title) {
   resolution_ = resolution;
   window_ = glfwCreateWindow(resolution.width, resolution.height, title.c_str(), nullptr, nullptr);
@@ -64,7 +64,7 @@ bool GraphicsDisplay::init(const ponos::size2 &resolution,
   return true;
 }
 
-const ponos::size2 &GraphicsDisplay::size() const {
+const hermes::size2 &GraphicsDisplay::size() const {
   return resolution_;
 }
 

@@ -6,7 +6,7 @@ int main() {
   std::vector<float> volumeData(res * res);
   for (size_t y = 0; y < res; y++)
     for (size_t x = 0; x < res; x++)
-      if ((ponos::vec2(x, y) - ponos::vec2(res / 2.f)).length() <= 20)
+      if ((hermes::vec2(x, y) - hermes::vec2(res / 2.f)).length() <= 20)
         volumeData[y * res + x] = 1.f;
 
   // app

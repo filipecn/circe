@@ -36,7 +36,7 @@ DescriptorSetLayout::DescriptorSetLayout() = default;
 
 DescriptorSetLayout::DescriptorSetLayout(const LogicalDevice::Ref &logical_device)
     : logical_device_(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
 }
 
 DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout &&other) noexcept
@@ -61,7 +61,7 @@ DescriptorSetLayout &DescriptorSetLayout::operator=(DescriptorSetLayout &&other)
 
 bool DescriptorSetLayout::init() {
   destroy();
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkDescriptorSetLayoutCreateInfo info = {
       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO, nullptr, 0,
       static_cast<u32>(bindings_.size()),
@@ -96,7 +96,7 @@ void DescriptorSetLayout::addLayoutBinding(u32 binding,
 }
 
 VkDescriptorSetLayout DescriptorSetLayout::handle() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad DescriptorSetLayout handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad DescriptorSetLayout handle.")
   return vk_descriptor_set_layout_;
 }
 
@@ -111,7 +111,7 @@ bool PipelineLayout::Ref::good() const {
 }
 
 VkPipelineLayout PipelineLayout::Ref::handle() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad PipelineLayout handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad PipelineLayout handle.")
   return (pipeline_layout_) ? pipeline_layout_->handle() : VK_NULL_HANDLE;
 }
 
@@ -119,7 +119,7 @@ PipelineLayout::PipelineLayout() = default;
 
 PipelineLayout::PipelineLayout(const LogicalDevice::Ref &logical_device)
     : logical_device_(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device.good(), "using bad device.")
 }
 
 PipelineLayout::PipelineLayout(PipelineLayout &&other) noexcept {
@@ -150,7 +150,7 @@ void PipelineLayout::destroy() {
 }
 
 bool PipelineLayout::init() {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   std::vector<VkDescriptorSetLayout> layout_handles;
   for (auto &ds : descriptor_sets_)
     layout_handles.emplace_back(ds.handle());
@@ -174,7 +174,7 @@ bool PipelineLayout::init(const LogicalDevice::Ref &logical_device) {
 }
 
 VkPipelineLayout PipelineLayout::handle() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad PipelineLayout handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad PipelineLayout handle.")
   return vk_pipeline_layout_;
 }
 
@@ -204,7 +204,7 @@ DescriptorPool::DescriptorPool() = default;
 DescriptorPool::DescriptorPool(const LogicalDevice::Ref &logical_device,
                                u32 max_sets)
     : max_sets_(max_sets), logical_device_(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
 }
 
 DescriptorPool::DescriptorPool(DescriptorPool &&other) noexcept {
@@ -232,7 +232,7 @@ DescriptorPool &DescriptorPool::operator=(DescriptorPool &&other) noexcept {
 
 bool DescriptorPool::init() {
   destroy();
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkDescriptorPoolCreateInfo info = {
       VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr,
       VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, sets_count_,
@@ -263,16 +263,16 @@ void DescriptorPool::setPoolSize(VkDescriptorType type,
 }
 
 VkDescriptorPool DescriptorPool::handle() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad DescriptorPool handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad DescriptorPool handle.")
   return vk_descriptor_pool_;
 }
 
 bool DescriptorPool::allocate(
     std::vector<DescriptorSetLayout> &descriptor_set_layouts,
     std::vector<VkDescriptorSet> &descriptor_sets) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   if (vk_descriptor_pool_ == VK_NULL_HANDLE)
-    PONOS_RETURN_IF_NOT_WITH_LOG(init(), false, "unable to init descriptor pool")
+    HERMES_LOG_AND_RETURN_IF_NOT(init(), false, "unable to init descriptor pool")
   std::vector<VkDescriptorSetLayout> dsls;
   dsls.reserve(descriptor_set_layouts.size());
   for (auto &dsl : descriptor_set_layouts)
@@ -289,8 +289,8 @@ bool DescriptorPool::allocate(
 }
 
 bool DescriptorPool::free(const std::vector<VkDescriptorSet> &descriptor_sets) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_descriptor_pool_, "using bad descriptor pool handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_descriptor_pool_, "using bad descriptor pool handle.")
   R_CHECK_VULKAN(
       vkFreeDescriptorSets(logical_device_.handle(), vk_descriptor_pool_,
                            descriptor_sets.size(), descriptor_sets.data()), false)
@@ -298,8 +298,8 @@ bool DescriptorPool::free(const std::vector<VkDescriptorSet> &descriptor_sets) {
 }
 
 bool DescriptorPool::reset() {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_descriptor_pool_, "using bad descriptor pool handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_descriptor_pool_, "using bad descriptor pool handle.")
   R_CHECK_VULKAN(
       vkResetDescriptorPool(logical_device_.handle(), vk_descriptor_pool_, 0), false)
   return true;
@@ -362,7 +362,7 @@ void PipelineShaderStage::set(VkShaderStageFlagBits stage,
                               std::string name,
                               const void *specialization_info_data,
                               size_t specialization_info_data_size) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(module.good(), "using bad shader module.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(module.good(), "using bad shader module.")
   stage_ = stage;
   module_ = module.handle();
   name_ = std::move(name);
@@ -395,7 +395,7 @@ Pipeline::Pipeline() = default;
 
 Pipeline::Pipeline(const LogicalDevice::Ref &logical_device)
     : logical_device_(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
 }
 
 Pipeline::Pipeline(Pipeline &&other) noexcept {
@@ -418,7 +418,7 @@ void Pipeline::destroy() {
 }
 
 bool Pipeline::saveCache(const std::string &path) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   size_t cache_data_size;
   // Determine the size of the cache data
   R_CHECK_VULKAN(vkGetPipelineCacheData(logical_device_.handle(),
@@ -446,12 +446,12 @@ bool Pipeline::saveCache(const std::string &path) {
 }
 
 VkPipelineCache Pipeline::cache() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good() && vk_pipeline_cache_, "Accessing bad Pipeline Cache handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good() && vk_pipeline_cache_, "Accessing bad Pipeline Cache handle.")
   return vk_pipeline_cache_;
 }
 
 VkPipeline Pipeline::handle() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad Pipeline handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad Pipeline handle.")
   return vk_pipeline_;
 }
 
@@ -483,9 +483,9 @@ ComputePipeline::ComputePipeline(const LogicalDevice::Ref &logical_device,
                                  ComputePipeline *base_pipeline,
                                  u32 base_pipeline_index)
     : Pipeline(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(layout.good(), "using bad pipeline layout.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(base_pipeline ? base_pipeline->good() : true, "using bad base pipeline.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(layout.good(), "using bad pipeline layout.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(base_pipeline ? base_pipeline->good() : true, "using bad base pipeline.")
 
   info_.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
   info_.pNext = nullptr;
@@ -514,7 +514,7 @@ ComputePipeline &ComputePipeline::operator=(ComputePipeline &&other) noexcept {
 }
 
 bool ComputePipeline::init(Pipeline *cache) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   // TODO check shader_stage_infos_ array
   info_.stage = this->shader_stage_infos_[0];
   R_CHECK_VULKAN(vkCreateComputePipelines(this->logical_device_.handle(),
@@ -582,11 +582,11 @@ void GraphicsPipeline::ViewportState::addScissor(int32_t x, int32_t y,
 }
 
 VkViewport &GraphicsPipeline::ViewportState::viewport(u32 i) {
-  PONOS_ASSERT(i < viewports_.size())
+  HERMES_ASSERT(i < viewports_.size())
   return viewports_[i];
 }
 VkRect2D &GraphicsPipeline::ViewportState::scissor(u32 i) {
-  PONOS_ASSERT(i < scissors_.size())
+  HERMES_ASSERT(i < scissors_.size())
   return scissors_[i];
 }
 
@@ -646,7 +646,7 @@ GraphicsPipeline::GraphicsPipeline(const LogicalDevice::Ref &logical_device,
                                    u32 base_pipeline_index)
     : Pipeline(logical_device), layout_(layout), renderpass_(renderpass),
       flags_(flags) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(base_pipeline ? base_pipeline->good() : true, "using bad base pipeline.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(base_pipeline ? base_pipeline->good() : true, "using bad base pipeline.")
   info_.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
   info_.flags = flags;
   info_.subpass = subpass;
@@ -687,9 +687,9 @@ GraphicsPipeline &GraphicsPipeline::operator=(GraphicsPipeline &&other) noexcept
 }
 
 bool GraphicsPipeline::init() {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(layout_.good(), "using bad pipeline layout.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(renderpass_.good(), "using bad renderpass.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(layout_.good(), "using bad pipeline layout.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(renderpass_.good(), "using bad renderpass.")
   destroy();
   info_.layout = layout_.handle();
   info_.renderPass = renderpass_.handle();

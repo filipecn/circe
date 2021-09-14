@@ -35,14 +35,14 @@
 #include <circe/vk/scene/scene_model.h>
 #include <circe/vk/texture/texture.h>
 #include <circe/vk/texture/sampler.h>
-#include <ponos/geometry/transform.h>
+#include <hermes/geometry/transform.h>
 
 using namespace circe::vk;
 
 struct UniformBufferObject {
-  alignas(16) ponos::mat4 model;
-  alignas(16) ponos::mat4 view;
-  alignas(16) ponos::mat4 projection;
+  alignas(16) hermes::mat4 model;
+  alignas(16) hermes::mat4 view;
+  alignas(16) hermes::mat4 projection;
 };
 
 class HelloVulkanExample : public BaseApp {
@@ -52,7 +52,7 @@ public:
   void recordCommandBuffer(CommandBuffer &cb, u32 i) override {
     Framebuffer &f = framebuffers_[i];
     VkDescriptorSet ds = descriptor_sets[i];
-    PONOS_ASSERT(cb.begin())
+    HERMES_ASSERT(cb.begin())
     RenderPassBeginInfo renderpass_begin_info(renderpass_.ref(), f);
     renderpass_begin_info.setRenderArea(0, 0, f.size().width, f.size().height);
     renderpass_begin_info.addClearColorValuef(0.f, 0.f, 0.f, 1.f);
@@ -67,7 +67,7 @@ public:
             &pipeline_layout, 0, {ds});
     cb.drawIndexed(model.indices().size() / sizeof(uint32_t));
     cb.endRenderPass();
-    PONOS_ASSERT(cb.end())
+    HERMES_ASSERT(cb.end())
   }
 
   void prepareFrameImage(uint32_t index) override {
@@ -79,27 +79,27 @@ public:
         .count();
     UniformBufferObject ubo;
     ubo.model =
-        ponos::transpose(
-            ponos::rotateZ(ponos::DEGREES(time * ponos::RADIANS(90.0f)))
+        hermes::transpose(
+            hermes::Transform::rotateZ(time * 90.0f)
                 .matrix());
-    ubo.view = ponos::transpose(ponos::Transform::lookAt(ponos::point3(5.0f, 0.0f, 0.0f),
-                                                         ponos::point3(0.0f, 0.0f, 0.0f),
-                                                         ponos::vec3(0.0f, 1.0f, 0.0f),
-                                                         ponos::transform_options::left_handed)
-                                    .matrix());
+    ubo.view = hermes::transpose(hermes::Transform::lookAt(hermes::point3(5.0f, 0.0f, 0.0f),
+                                                           hermes::point3(0.0f, 0.0f, 0.0f),
+                                                           hermes::vec3(0.0f, 1.0f, 0.0f),
+                                                           hermes::transform_options::left_handed)
+                                     .matrix());
     ubo.projection =
-        ponos::transpose(
-            ponos::transpose(
-                ponos::mat4({1.0f, 0.0f, 0.0f, 0.0f,  //
-                             0.0f, -1.0f, 0.0f, 0.0f, //
-                             0.0f, 0.0f, 0.5f, 0.0f,  //
-                             0.0f, 0.0f, 0.5f, 1.0f})) *
-                ponos::Transform::perspective(45.0f, 1.f, 0.1f, 10.0f,
-                                              ponos::transform_options::left_handed).matrix());
+        hermes::transpose(
+            hermes::transpose(
+                hermes::mat4({1.0f, 0.0f, 0.0f, 0.0f,  //
+                              0.0f, -1.0f, 0.0f, 0.0f, //
+                              0.0f, 0.0f, 0.5f, 0.0f,  //
+                              0.0f, 0.0f, 0.5f, 1.0f})) *
+                hermes::Transform::perspective(45.0f, 1.f, 0.1f, 10.0f,
+                                               hermes::transform_options::left_handed).matrix());
     ubm.copy(&ubo, sizeof(UniformBufferObject));
   }
 
-  void resize(const ponos::size2 &new_window_size) override {
+  void resize(const hermes::size2 &new_window_size) override {
     auto &vp = pipeline.viewport_state.viewport(0);
     vp.width = new_window_size.width;
     vp.height = new_window_size.height;

@@ -143,7 +143,12 @@ public:
   static Model plane(const hermes::Plane &plane,
                      const hermes::point3 &center,
                      const hermes::vec3 &extension,
-                     u32 divisions = 1, shape_options options = shape_options::none);
+                     u32 divisions, shape_options options = shape_options::none);
+  static Model plane(const hermes::Plane &plane,
+                     const hermes::point3 &center,
+                     const hermes::vec3 &direction,
+                     const hermes::vec2 &size,
+                     hermes::size2 divisions, shape_options options = shape_options::none);
   ///
   /// \param box
   /// \param options

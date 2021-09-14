@@ -35,7 +35,7 @@
 
 namespace circe::vk {
 
-BaseApp::BaseApp(const ponos::size2 &window_size, const std::string &title) :
+BaseApp::BaseApp(const hermes::size2 &window_size, const std::string &title) :
     window_{GraphicsDisplay(window_size, title)} {
   window_.resize_callback = [&](int new_w, int new_h) {
     render_engine_.resize({static_cast<unsigned int>(new_w), static_cast<unsigned int>(new_h)});
@@ -45,17 +45,17 @@ BaseApp::BaseApp(const ponos::size2 &window_size, const std::string &title) :
 BaseApp::~BaseApp() = default;
 
 void BaseApp::initInstance() {
-  PONOS_ASSERT(instance_.init("hello_vulkan_app",
+  HERMES_ASSERT(instance_.init("hello_vulkan_app",
                               circe::vk::GraphicsDisplay::requiredVkExtensions(),
                               {"VK_LAYER_KHRONOS_validation"}))
 }
 
 void BaseApp::initPresentationSurface() {
-  PONOS_ASSERT((presentation_surface_ = window_.createWindowSurface(instance_)).good())
+  HERMES_ASSERT((presentation_surface_ = window_.createWindowSurface(instance_)).good())
 }
 
 void BaseApp::initPhysicalDeviceAndFamilyQueues() {
-  PONOS_ASSERT((physical_device_ =
+  HERMES_ASSERT((physical_device_ =
                     instance_.pickPhysicalDevice(queue_families_, presentation_surface_.handle())).good())
 
   // compute depth format
@@ -72,14 +72,14 @@ void BaseApp::initPhysicalDeviceAndFamilyQueues() {
 void BaseApp::initLogicalDevice() {
   VkPhysicalDeviceFeatures features = {};
   features.samplerAnisotropy = VK_TRUE;
-  PONOS_ASSERT(device_.init(&physical_device_, {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
+  HERMES_ASSERT(device_.init(&physical_device_, {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
                             features, queue_families_, {"VK_LAYER_KHRONOS_validation"}))
 }
 
 void BaseApp::initRenderEngine() {
-  PONOS_ASSERT(render_engine_.setupDevice(device_,
+  HERMES_ASSERT(render_engine_.setupDevice(device_,
                                           queue_families_.family("graphics").family_index.value()))
-  PONOS_ASSERT(render_engine_.setPresentationSurface(presentation_surface_))
+  HERMES_ASSERT(render_engine_.setPresentationSurface(presentation_surface_))
   // register callbacks
   render_engine_.create_swap_chain_callback = [&]() { createSwapChain(); };
   render_engine_.destroy_swap_chain_callback = [&]() { destroySwapChain(); };
@@ -89,7 +89,7 @@ void BaseApp::initRenderEngine() {
   render_engine_.record_command_buffer_callback = [&](CommandBuffer &cb, u32 i) {
     recordCommandBuffer(cb, i);
   };
-  render_engine_.resize_callback = [&](const ponos::size2 &new_window_size) {
+  render_engine_.resize_callback = [&](const hermes::size2 &new_window_size) {
     resize(new_window_size);
   };
   // init render engine
@@ -138,7 +138,7 @@ void BaseApp::initRenderpass() {
         2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
   }
-  PONOS_ASSERT(renderpass_.init(device_.ref()))
+  HERMES_ASSERT(renderpass_.init(device_.ref()))
 }
 
 void BaseApp::init() {

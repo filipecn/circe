@@ -46,22 +46,22 @@ set(EXAMPLES
         hello_circe
         shadows
         skybox
-        texture_atlas
+#        texture_atlas
         deferred_rendering
 
-        volume_box
-        volume_box_2d
-        compute_shader
-        save_viewport
-        viewports
-        instances
-        scene_mesh_example
-        post_effects
-        text
-        scene_object_interaction
-        compiling_shaders
-        ssbo
-        mesh_editor
+#        volume_box
+#        volume_box_2d
+#        compute_shader
+#        save_viewport
+#        viewports
+#        instances
+#        scene_mesh_example
+#        post_effects
+#        text
+#        scene_object_interaction
+#        compiling_shaders
+#        ssbo
+#        mesh_editor
         )
 
 foreach (EXAMPLE ${EXAMPLES})

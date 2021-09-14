@@ -29,7 +29,7 @@
 #define CIRCE_VULKAN_SHADER_MODULE_H
 
 #include <circe/vk/core/logical_device.h>
-#include <ponos/common/file_system.h>
+#include <hermes/common/file_system.h>
 
 namespace circe::vk {
 
@@ -55,7 +55,7 @@ public:
   // ***********************************************************************
   ShaderModule();
   ShaderModule(const LogicalDevice::Ref &logical_device,
-               const ponos::Path &filename);
+               const hermes::Path &filename);
   ShaderModule(const LogicalDevice::Ref &logical_device,
                std::vector<char> const &source_code);
   ~ShaderModule();

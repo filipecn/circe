@@ -88,14 +88,14 @@ bool SwapChain::init(const LogicalDevice::Ref &logical_device,
 
 bool SwapChain::init() {
   destroy();
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   R_CHECK_VULKAN(vkCreateSwapchainKHR(logical_device_.handle(), &info_,
                                       nullptr, &vk_swap_chain_), false)
   std::vector<VkImage> images;
   u32 images_count = 0;
   R_CHECK_VULKAN(vkGetSwapchainImagesKHR(logical_device_.handle(), vk_swap_chain_,
                                          &images_count, nullptr), false)
-  PONOS_RETURN_IF_NOT_WITH_LOG(0 != images_count, false,
+  HERMES_LOG_AND_RETURN_IF_NOT(0 != images_count, false,
                                "Could not enumerate swapchain images.")
   images.resize(images_count);
   R_CHECK_VULKAN(vkGetSwapchainImagesKHR(logical_device_.handle(), vk_swap_chain_,
@@ -108,14 +108,14 @@ bool SwapChain::init() {
 
 void SwapChain::destroy() {
   if (vk_swap_chain_ != VK_NULL_HANDLE) {
-    PONOS_CHECK_EXP_WITH_LOG(logical_device_.waitIdle(), "Failed to wait logical device idle")
+    HERMES_CHECK_EXP_WITH_LOG(logical_device_.waitIdle(), "Failed to wait logical device idle")
     vkDestroySwapchainKHR(logical_device_.handle(), vk_swap_chain_, nullptr);
     vk_swap_chain_ = VK_NULL_HANDLE;
   }
 }
 
 VkSwapchainKHR SwapChain::handle() const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad swap chain handle.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(good(), "Accessing bad swap chain handle.")
   return vk_swap_chain_;
 }
 
@@ -142,8 +142,8 @@ bool SwapChain::good() const {
 
 VkResult SwapChain::nextImage(VkSemaphore semaphore, VkFence fence,
                               u32 &image_index) const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(semaphore, "using bad semaphore.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(semaphore, "using bad semaphore.")
   return vkAcquireNextImageKHR(logical_device_.handle(), vk_swap_chain_,
                                2000000000, semaphore, fence, &image_index);
 }

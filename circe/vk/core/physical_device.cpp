@@ -108,12 +108,12 @@ bool PhysicalDevice::checkAvailableQueueFamilies() {
   u32 queue_families_count = 0;
   vkGetPhysicalDeviceQueueFamilyProperties(vk_device_, &queue_families_count,
                                            nullptr);
-  PONOS_RETURN_IF_NOT_WITH_LOG(queue_families_count != 0, false,
+  HERMES_LOG_AND_RETURN_IF_NOT(queue_families_count != 0, false,
                                "Could not get the number of queue families.\n")
   vk_queue_families_.resize(queue_families_count);
   vkGetPhysicalDeviceQueueFamilyProperties(vk_device_, &queue_families_count,
                                            vk_queue_families_.data());
-  PONOS_RETURN_IF_NOT_WITH_LOG(queue_families_count != 0, false,
+  HERMES_LOG_AND_RETURN_IF_NOT(queue_families_count != 0, false,
                                "Could not acquire properties of queue families.\n")
   return true;
 }
@@ -212,13 +212,13 @@ bool PhysicalDevice::selectPresentationMode(
   u32 present_modes_count = 0;
   R_CHECK_VULKAN(vkGetPhysicalDeviceSurfacePresentModesKHR(
       vk_device_, presentation_surface, &present_modes_count, nullptr), false);
-  PONOS_RETURN_IF_NOT_WITH_LOG(0 != present_modes_count, false,
+  HERMES_LOG_AND_RETURN_IF_NOT(0 != present_modes_count, false,
                                "Could not get the number of supported present modes.")
   std::vector<VkPresentModeKHR> present_modes(present_modes_count);
   R_CHECK_VULKAN(vkGetPhysicalDeviceSurfacePresentModesKHR(
       vk_device_, presentation_surface, &present_modes_count,
       present_modes.data()), false);
-  PONOS_RETURN_IF_NOT_WITH_LOG(0 != present_modes_count, false,
+  HERMES_LOG_AND_RETURN_IF_NOT(0 != present_modes_count, false,
                                "Could not enumerate present modes.")
   // Select present mode
   for (auto &current_present_mode : present_modes) {
@@ -227,14 +227,14 @@ bool PhysicalDevice::selectPresentationMode(
       return true;
     }
   }
-  PONOS_LOG("Desired present mode is not supported. Selecting default FIFO mode.")
+  HERMES_LOG("Desired present mode is not supported. Selecting default FIFO mode.")
   for (auto &current_present_mode : present_modes) {
     if (current_present_mode == VK_PRESENT_MODE_FIFO_KHR) {
       present_mode = VK_PRESENT_MODE_FIFO_KHR;
       return true;
     }
   }
-  PONOS_LOG("VK_PRESENT_MODE_FIFO_KHR is not supported though it's mandatory "
+  HERMES_LOG("VK_PRESENT_MODE_FIFO_KHR is not supported though it's mandatory "
             "for all drivers!");
   return false;
 }
@@ -247,7 +247,7 @@ bool PhysicalDevice::selectFormatOfSwapchainImages(
 
   R_CHECK_VULKAN(vkGetPhysicalDeviceSurfaceFormatsKHR(
       vk_device_, presentation_surface, &formats_count, nullptr), false)
-  PONOS_RETURN_IF_NOT_WITH_LOG(
+  HERMES_LOG_AND_RETURN_IF_NOT(
       0 != formats_count, false,
       "Could not get the number of supported surface formats.")
 
@@ -255,7 +255,7 @@ bool PhysicalDevice::selectFormatOfSwapchainImages(
   R_CHECK_VULKAN(vkGetPhysicalDeviceSurfaceFormatsKHR(
       vk_device_, presentation_surface, &formats_count,
       surface_formats.data()), false)
-  PONOS_RETURN_IF_NOT_WITH_LOG(0 != formats_count, false,
+  HERMES_LOG_AND_RETURN_IF_NOT(0 != formats_count, false,
                                "Could not enumerate supported surface formats.")
 
   // Select surface format
@@ -279,7 +279,7 @@ bool PhysicalDevice::selectFormatOfSwapchainImages(
     if (desired_surface_format.format == surface_format.format) {
       image_format = desired_surface_format.format;
       image_color_space = surface_format.colorSpace;
-      PONOS_LOG("Desired combination of format and colorspace is not "
+      HERMES_LOG("Desired combination of format and colorspace is not "
                 "supported. Selecting other colorspace.")
       return true;
     }
@@ -287,7 +287,7 @@ bool PhysicalDevice::selectFormatOfSwapchainImages(
 
   image_format = surface_formats[0].format;
   image_color_space = surface_formats[0].colorSpace;
-  PONOS_LOG("Desired format is not supported. Selecting available format - "
+  HERMES_LOG("Desired format is not supported. Selecting available format - "
             "colorspace combination.")
   return true;
 }
@@ -307,7 +307,7 @@ bool PhysicalDevice::findSupportedFormat(
       return true;
     }
   }
-  PONOS_LOG("Failed to find supported format.")
+  HERMES_LOG("Failed to find supported format.")
   return false;
 }
 [[maybe_unused]] bool PhysicalDevice::surfaceCapabilities(

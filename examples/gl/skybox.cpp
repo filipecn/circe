@@ -31,8 +31,8 @@ class SkyboxExample : public circe::gl::BaseApp {
 public:
   SkyboxExample() : BaseApp(800, 800) {
     // resources
-    ponos::Path assets_path(std::string(ASSETS_PATH));
-    ponos::Path shaders_path(std::string(SHADERS_PATH));
+    hermes::Path assets_path(std::string(ASSETS_PATH));
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
     // setup skybox
     skybox = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}});
     model = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}}, circe::shape_options::normal);
@@ -54,9 +54,9 @@ public:
     unfolded = circe::gl::Texture::fromTexture(cubemap);
 
     if (!skybox.program.link(shaders_path, "skybox"))
-      spdlog::error("Failed to load model shader: " + skybox.program.err);
+      hermes::Log::error("Failed to load model shader: " + skybox.program.err);
     if (!model.program.link(shaders_path, "env_map"))
-      spdlog::error("Failed to load model shader: " + model.program.err);
+      hermes::Log::error("Failed to load model shader: " + model.program.err);
   }
 
   void prepareFrame(const circe::gl::ViewportDisplay &display) override {
@@ -79,7 +79,7 @@ public:
     auto m = camera->getViewTransform().matrix();
     m[0][3] = m[1][3] = m[2][3] = 0;
     skybox.program.setUniform("projection", camera->getProjectionTransform());
-    skybox.program.setUniform("view", ponos::transpose(m));
+    skybox.program.setUniform("view", hermes::transpose(m));
     skybox.program.setUniform("skybox", 0);
     skybox.draw();
     glDepthFunc(GL_LESS);
@@ -93,7 +93,7 @@ public:
     ImGui::End();
     // gizmo
     ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
-    ponos::Transform t;
+    hermes::Transform t;
     circe::Gizmo::update(camera, t, ImGuizmo::OPERATION::TRANSLATE);
   }
 

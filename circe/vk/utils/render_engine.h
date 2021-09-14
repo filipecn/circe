@@ -28,7 +28,7 @@
 #ifndef CIRCE_VK_RENDER_ENGINE_H
 #define CIRCE_VK_RENDER_ENGINE_H
 
-#include <ponos/common/size.h>
+#include <hermes/common/size.h>
 #include <circe/vk/io/swapchain.h>
 #include <circe/vk/io/surface_khr.h>
 #include <circe/vk/pipeline/renderpass.h>
@@ -83,7 +83,7 @@ public:
   //                            FIELDS
   // ***********************************************************************
   /// \param resolution
-  void resize(const ponos::size2 &resolution);
+  void resize(const hermes::size2 &resolution);
   /// \param logical_device
   /// \param queue_family_index
   bool setupDevice(const LogicalDevice &logical_device,
@@ -97,7 +97,7 @@ public:
   // ***********************************************************************
   //                           CALLBACKS
   // ***********************************************************************
-  std::function<void(const ponos::size2 &)> resize_callback;
+  std::function<void(const hermes::size2 &)> resize_callback;
   std::function<void(CommandBuffer &, u32)> record_command_buffer_callback;
   std::function<void()> destroy_swap_chain_callback;
   std::function<void()> create_swap_chain_callback;
@@ -142,7 +142,7 @@ private:
   std::vector<VkFence> images_in_flight_;
   // resize info
   bool framebuffer_resized_ = false;
-  ponos::size2 resolution_;
+  hermes::size2 resolution_;
 };
 
 } // namespace circe::vk

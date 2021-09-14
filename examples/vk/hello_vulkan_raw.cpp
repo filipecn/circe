@@ -67,7 +67,7 @@ int main() {
 
   // Now that we know all the parts we will use, lets initialize them in
   // the right order. Let's start with the window object:
-  PONOS_ASSERT(window.init({800, 800}, "Hello Vulkan"))
+  HERMES_ASSERT(window.init({800, 800}, "Hello Vulkan"))
   // 1. INTERFACE
   // --------------------------------------------------------------------------
   // We must start with the instance. Here we can pass a list of vulkan instance
@@ -75,7 +75,7 @@ int main() {
   // checking our code. The minimal set of extensions we need is the set of
   // extensions required for displaying our graphics in the window, which are
   // provided by the graphics display object
-  PONOS_ASSERT(instance.init("hello_vulkan_app",
+  HERMES_ASSERT(instance.init("hello_vulkan_app",
                              circe::vk::GraphicsDisplay::requiredVkExtensions(),
                              {"VK_LAYER_KHRONOS_validation"}))
   // 2. PHYSICAL DEVICE
@@ -84,33 +84,33 @@ int main() {
   // The queue used for rendering must contain the VK_QUEUE_GRAPHICS_BIT. The
   // queue used for presentation must be able to work with the type of data the
   // presentation surface, which we get from the graphics display object:
-  PONOS_ASSERT((presentation_surface = window.createWindowSurface(instance)).good())
+  HERMES_ASSERT((presentation_surface = window.createWindowSurface(instance)).good())
   // By default, the method for picking a physical device will prefer integrated
   // cards:
-  PONOS_ASSERT((physical_device = instance.pickPhysicalDevice(queue_families, presentation_surface.handle())).good())
+  HERMES_ASSERT((physical_device = instance.pickPhysicalDevice(queue_families, presentation_surface.handle())).good())
   // Here is the physical device we just chose and the indices of the queues we will use
-  PONOS_LOG_VARIABLE(queue_families.family("graphics").family_index.value())
-  PONOS_LOG_VARIABLE(queue_families.family("presentation").family_index.value())
+  HERMES_LOG_VARIABLE(queue_families.family("graphics").family_index.value())
+  HERMES_LOG_VARIABLE(queue_families.family("presentation").family_index.value())
   // 3. DIGITAL DEVICE
   // --------------------------------------------------------------------------
   // As with the instance, the logical device also has extensions that we can
   // use and validation layers. Here we require the VK_KHR_SWAPCHAIN_EXTENSION,
   // which will allow our application to swap presentation images in order to
   // perform buffering.
-  PONOS_ASSERT(logical_device.init(&physical_device, {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
+  HERMES_ASSERT(logical_device.init(&physical_device, {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
                                    {}, queue_families, {"VK_LAYER_KHRONOS_validation"}))
   // 5. RENDER ENGINE
   // --------------------------------------------------------------------------
   // The render engine will work directly with a logical device and submit all
   // rendering commands to a particular family queue. So the first thing is to
   // let it know which device and queue we will use
-  PONOS_ASSERT(render_engine.setupDevice(logical_device,
+  HERMES_ASSERT(render_engine.setupDevice(logical_device,
                                          queue_families.family("graphics").family_index.value()))
   // The other initial configuration is the presentation surface. The internal
   // settings of the rendering engine must match the desired presentation
   // image format and, of course, the presentation surface object we got
   // from the graphics display
-  PONOS_ASSERT(render_engine.setPresentationSurface(presentation_surface))
+  HERMES_ASSERT(render_engine.setPresentationSurface(presentation_surface))
   // Whenever our window is resized, all rendering structures inside the
   // render engine must be updated, so we must let the render engine
   // know when it happens

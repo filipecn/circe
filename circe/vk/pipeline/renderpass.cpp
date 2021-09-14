@@ -156,7 +156,7 @@ bool RenderPass::init(const LogicalDevice::Ref& logical_device) {
       subpass_descriptions.data(),
       static_cast<uint32_t>(vk_subpass_dependencies_.size()),
       vk_subpass_dependencies_.data()};
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   R_CHECK_VULKAN(vkCreateRenderPass(logical_device_.handle(), &info,
                                     nullptr, &vk_renderpass_), false)
   return true;
@@ -256,7 +256,7 @@ bool Framebuffer::init() {
       resolution_.width,
       resolution_.height,
       layers_};
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   R_CHECK_VULKAN(vkCreateFramebuffer(logical_device_.handle(), &info,
                                      nullptr, &vk_framebuffer_), false)
   return true;

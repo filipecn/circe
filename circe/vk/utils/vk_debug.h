@@ -32,7 +32,7 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
-#include <ponos/log/debug.h>
+#include <hermes/common/debug.h>
 
 /// Retrieves the description of VkResult values
 /// \param err **[in]** error code
@@ -145,10 +145,10 @@ inline std::string vulkanResultString(VkResult err) {
   return "UNDEFINED";
 }
 
-#define PONOS_VALIDATE_EXP_WITH_WARNING(A, M)   \
+#define HERMES_VALIDATE_EXP_WITH_WARNING(A, M)   \
   {                                             \
     if(!(A))                                    \
-      PONOS_LOG_WARNING(M)                      \
+      HERMES_LOG_WARNING(M)                      \
   }
 
 ///
@@ -156,8 +156,8 @@ inline std::string vulkanResultString(VkResult err) {
   {                                                                            \
     VkResult err = (A);                                                        \
     if (err != VK_SUCCESS) {                                                   \
-      PONOS_LOG_ERROR(#A)                                                      \
-      PONOS_LOG_ERROR(vulkanResultString(err))  \
+      HERMES_LOG_ERROR(#A)                                                      \
+      HERMES_LOG_ERROR(vulkanResultString(err))  \
     }                                                                          \
   }
 ///
@@ -165,8 +165,8 @@ inline std::string vulkanResultString(VkResult err) {
   {                                                                            \
     VkResult err = (A);                                                        \
     if (err != VK_SUCCESS) {                                                   \
-      PONOS_LOG_ERROR(#A)                                                      \
-      PONOS_LOG_ERROR(vulkanResultString(err))  \
+      HERMES_LOG_ERROR(#A)                                                      \
+      HERMES_LOG_ERROR(vulkanResultString(err))  \
       return R;                                                                \
     }                                                                          \
   }
@@ -175,8 +175,8 @@ inline std::string vulkanResultString(VkResult err) {
   {                                                                            \
     VkResult err = (A);                                                        \
     if (err != VK_SUCCESS) {                                                   \
-      PONOS_LOG_ERROR(#A)                                                      \
-      PONOS_LOG_ERROR(vulkanResultString(err))  \
+      HERMES_LOG_ERROR(#A)                                                      \
+      HERMES_LOG_ERROR(vulkanResultString(err))  \
       exit(-1);                                                                \
     }                                                                          \
   }

@@ -29,7 +29,7 @@
 #define CIRCE_VULKAN_PHYSICAL_DEVICE_H
 
 #include <circe/vk/vk_library.h>
-#include <ponos/common/defs.h>
+#include <hermes/common/defs.h>
 #include <iostream>
 
 namespace circe::vk {

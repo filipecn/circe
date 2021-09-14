@@ -46,7 +46,7 @@ Buffer::Buffer(const LogicalDevice::Ref &logical_device, VkDeviceSize size,
                VkBufferUsageFlags usage, VkSharingMode sharing_mode)
     : logical_device_(logical_device) {
   if (!init(logical_device_, size, usage, sharing_mode))
-    PONOS_LOG_ERROR("Could not create buffer.")
+    HERMES_LOG_ERROR("Could not create buffer.")
 }
 
 Buffer::Buffer(Buffer &&other) noexcept
@@ -124,7 +124,7 @@ Buffer::View::View(VkBuffer vk_buffer, VkDevice vk_logical_device, VkFormat form
                                   &buffer_view_create_info, nullptr,
                                   &vk_buffer_view_))
   if (vk_buffer_view_ == VK_NULL_HANDLE)
-    PONOS_LOG_ERROR("Could not create buffer view.")
+    HERMES_LOG_ERROR("Could not create buffer view.")
 }
 
 Buffer::View::View(View &&other) noexcept: vk_logical_device_{other.vk_logical_device_},

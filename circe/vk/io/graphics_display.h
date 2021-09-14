@@ -28,7 +28,7 @@
 #ifndef CIRCE_VK_GRAPHICS_DISPLAY_H
 #define CIRCE_VK_GRAPHICS_DISPLAY_H
 
-#include <ponos/common/size.h>
+#include <hermes/common/size.h>
 #include <circe/vk/io/surface_khr.h>
 #include <functional>
 
@@ -47,20 +47,20 @@ public:
   /// \param resolution **[in]** window resolution (in pixels)
   /// \param title **[in]** window title text
   explicit GraphicsDisplay(
-      const ponos::size2 &resolution,
+      const hermes::size2 &resolution,
       const std::string &title = std::string("Vulkan Display Window"));
   /// \brief Destroy the Graphics Display object
   ~GraphicsDisplay();
   // ***********************************************************************
   //                           CREATION
   // ***********************************************************************
-  bool init(const ponos::size2 &resolution,
+  bool init(const hermes::size2 &resolution,
             const std::string &title = std::string("Vulkan Display Window"));
   // ***********************************************************************
   //                           METHODS
   // ***********************************************************************
   /// \return window resolution
-  [[nodiscard]] const ponos::size2 &size() const;
+  [[nodiscard]] const hermes::size2 &size() const;
   ///
   /// \return
   [[nodiscard]] VkExtent2D framebufferSize() const;
@@ -90,7 +90,7 @@ public:
   std::function<void(int, int)> resize_callback;
 
 private:
-  ponos::size2 resolution_;
+  hermes::size2 resolution_;
   GLFWwindow *window_ = nullptr;
 };
 

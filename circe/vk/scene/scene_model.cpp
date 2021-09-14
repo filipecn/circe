@@ -28,19 +28,19 @@
 #include <circe/vk/scene/scene_model.h>
 #include <circe/vk/storage/buffer.h>
 #include <circe/vk/pipeline/command_buffer.h>
-#include <ponos/geometry/vector.h>
+#include <hermes/geometry/vector.h>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include <unordered_map>
 
 struct Vertex {
-  ponos::vec3 pos;
-  ponos::vec3 color;
-  ponos::vec2 tex_coord;
-  ponos::vec3 normal;
-  ponos::vec3 tangent;
-  ponos::vec3 bi_tangent;
+  hermes::vec3 pos;
+  hermes::vec3 color;
+  hermes::vec2 tex_coord;
+  hermes::vec3 normal;
+  hermes::vec3 tangent;
+  hermes::vec3 bi_tangent;
 
   bool operator==(const Vertex &other) const {
     return pos == other.pos && color == other.color &&
@@ -51,10 +51,10 @@ struct Vertex {
 namespace std {
 template<> struct hash<Vertex> {
   size_t operator()(Vertex const &vertex) const {
-    return ((hash<ponos::vec3>()(vertex.pos) ^
-        (hash<ponos::vec3>()(vertex.color) << 1)) >>
+    return ((hash<hermes::vec3>()(vertex.pos) ^
+        (hash<hermes::vec3>()(vertex.color) << 1)) >>
                                                   1) ^
-        (hash<ponos::vec2>()(vertex.tex_coord) << 1);
+        (hash<hermes::vec2>()(vertex.tex_coord) << 1);
   }
 };
 } // namespace std
@@ -80,8 +80,8 @@ void Model::setDeviceQueue(VkQueue queue, uint32_t family_index) {
 }
 
 void addVertex(std::vector<float> &vertices, const VertexLayout &layout,
-               const Vertex &v, const ponos::vec2 &uv_scale,
-               const ponos::vec3 &scale, const ponos::vec3 &center) {
+               const Vertex &v, const hermes::vec2 &uv_scale,
+               const hermes::vec3 &scale, const hermes::vec3 &center) {
   for (auto &component : layout.components) {
     switch (component) {
     case VERTEX_COMPONENT_POSITION:vertices.push_back(v.pos.x * scale.x + center.x);
@@ -120,9 +120,9 @@ void addVertex(std::vector<float> &vertices, const VertexLayout &layout,
 }
 
 bool Model::loadFromOBJ(const std::string &obj_filename, VertexLayout layout) {
-  ponos::vec2 uv_scale(1.f);
-  ponos::vec3 scale(1.f);
-  ponos::vec3 center(0.f);
+  hermes::vec2 uv_scale(1.f);
+  hermes::vec3 scale(1.f);
+  hermes::vec3 center(0.f);
   // host data
   std::vector<float> h_vertices;
   std::vector<uint32_t> h_indices;

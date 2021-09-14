@@ -47,7 +47,7 @@ public:
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************
-  explicit BaseApp(const ponos::size2 &window_size, const std::string &title = "base_app");
+  explicit BaseApp(const hermes::size2 &window_size, const std::string &title = "base_app");
   virtual ~BaseApp();
   // ***********************************************************************
   //                           INITIALIZATION
@@ -74,7 +74,7 @@ public:
   // ***********************************************************************
   //                           METHODS
   // ***********************************************************************
-  virtual void resize(const ponos::size2 &new_window_size) = 0;
+  virtual void resize(const hermes::size2 &new_window_size) = 0;
   virtual void prepare() = 0;
   int run();
 protected:

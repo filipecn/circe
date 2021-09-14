@@ -84,11 +84,11 @@ bool SupportInfo::checkAvailableExtensions(
   u32 extensions_count = 0;
   R_CHECK_VULKAN(vkEnumerateInstanceExtensionProperties(
       nullptr, &extensions_count, nullptr), false)
-  PONOS_ASSERT(extensions_count != 0)
+  HERMES_ASSERT(extensions_count != 0)
   extensions.resize(extensions_count);
   R_CHECK_VULKAN(vkEnumerateInstanceExtensionProperties(
       nullptr, &extensions_count, &extensions[0]), false)
-  PONOS_ASSERT(extensions_count != 0)
+  HERMES_ASSERT(extensions_count != 0)
   return true;
 }
 
@@ -96,11 +96,11 @@ bool SupportInfo::checkAvailableValidationLayers(
     std::vector<VkLayerProperties> &validation_layers) {
   u32 layer_count = 0;
   R_CHECK_VULKAN(vkEnumerateInstanceLayerProperties(&layer_count, nullptr), false)
-  PONOS_ASSERT(layer_count != 0)
+  HERMES_ASSERT(layer_count != 0)
   validation_layers.resize(layer_count);
   R_CHECK_VULKAN(vkEnumerateInstanceLayerProperties(&layer_count,
                                                     validation_layers.data()), false)
-  PONOS_ASSERT(layer_count != 0)
+  HERMES_ASSERT(layer_count != 0)
   return true;
 }
 
@@ -108,7 +108,7 @@ bool SupportInfo::isInstanceExtensionSupported(
     const char *desired_instance_extension) {
   static bool available_loaded = false;
   if (!available_loaded) {
-    PONOS_ASSERT(checkAvailableExtensions(vk_extensions_))
+    HERMES_ASSERT(checkAvailableExtensions(vk_extensions_))
     available_loaded = true;
   }
 
@@ -123,7 +123,7 @@ bool SupportInfo::isValidationLayerSupported(
     const char *validation_layer) {
   static bool available_loaded = false;
   if (!available_loaded) {
-    PONOS_ASSERT(checkAvailableValidationLayers(vk_validation_layers_))
+    HERMES_ASSERT(checkAvailableValidationLayers(vk_validation_layers_))
     available_loaded = true;
   }
 
@@ -171,12 +171,12 @@ bool Instance::init(const std::string &application_name,
   instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   for (auto &extension : instance_extensions)
     if (!support_info.isInstanceExtensionSupported(extension)) {
-      PONOS_LOG_WARNING(concat("Extension named '", extension, "' is not supported."))
+      HERMES_LOG_WARNING(concat("Extension named '", extension, "' is not supported."))
       return false;
     }
   for (auto &layer : validation_layers)
     if (!support_info.isValidationLayerSupported(layer)) {
-      PONOS_LOG_WARNING(concat("Validation layer named '", layer, "' is not supported."))
+      HERMES_LOG_WARNING(concat("Validation layer named '", layer, "' is not supported."))
       return false;
     }
   VkApplicationInfo info;
@@ -232,13 +232,13 @@ std::vector<PhysicalDevice> Instance::enumerateAvailablePhysicalDevices() const 
   u32 devices_count = 0;
   R_CHECK_VULKAN(
       vkEnumeratePhysicalDevices(vk_instance_, &devices_count, nullptr), physical_devices)
-  PONOS_RETURN_IF_NOT_WITH_LOG(
+  HERMES_LOG_AND_RETURN_IF_NOT(
       devices_count != 0, physical_devices,
       "Could not get the number of available physical devices.")
   std::vector<VkPhysicalDevice> devices(devices_count);
   R_CHECK_VULKAN(
       vkEnumeratePhysicalDevices(vk_instance_, &devices_count, devices.data()), physical_devices)
-  PONOS_RETURN_IF_NOT_WITH_LOG(devices_count != 0, physical_devices,
+  HERMES_LOG_AND_RETURN_IF_NOT(devices_count != 0, physical_devices,
                                "Could not enumerate physical devices.")
   for (auto &device : devices)
     physical_devices.emplace_back(device);
@@ -273,7 +273,7 @@ PhysicalDevice Instance::pickPhysicalDevice(QueueFamilies &queue_families,
     queue_families = queue_families_list[candidates.rbegin()->second];
     return physical_devices[candidates.rbegin()->second];
   }
-  PONOS_LOG_WARNING("failed to find a suitable physical device!")
+  HERMES_LOG_WARNING("failed to find a suitable physical device!")
   return PhysicalDevice();
 }
 

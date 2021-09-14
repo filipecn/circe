@@ -130,7 +130,7 @@ bool RenderEngine::setupDevice(const LogicalDevice &logical_device,
   logical_device_ = logical_device.ref();
 
   swap_chain_.setLogicalDevice(logical_device_);
-  PONOS_RETURN_IF_NOT(draw_command_pool_.init(logical_device_,
+  HERMES_RETURN_IF_NOT(draw_command_pool_.init(logical_device_,
                                               VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
                                               queue_family_index), false)
   // setup synchronization objects
@@ -150,14 +150,14 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   // PRESENTATION MODE
   {
     VkPresentModeKHR present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
-    PONOS_RETURN_IF_NOT(physical_device_->selectPresentationMode(swap_chain_.surface(),
+    HERMES_RETURN_IF_NOT(physical_device_->selectPresentationMode(swap_chain_.surface(),
                                                                  VK_PRESENT_MODE_MAILBOX_KHR,
                                                                  present_mode), false)
     swap_chain_.setPresentMode(present_mode);
   }
   // CHECK SURFACE CAPABILITIES
   VkSurfaceCapabilitiesKHR surface_capabilities;
-  PONOS_RETURN_IF_NOT(physical_device_->surfaceCapabilities(swap_chain_.surface(), surface_capabilities), false)
+  HERMES_RETURN_IF_NOT(physical_device_->surfaceCapabilities(swap_chain_.surface(), surface_capabilities), false)
   // GET NUMBER OF SWAPCHAIN IMAGES
   {
     uint32_t number_of_images = 0;
@@ -167,7 +167,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   // QUERY IMAGE SIZE
   {
     VkExtent2D swap_chain_image_size;
-    PONOS_RETURN_IF_NOT(chooseSizeOfSwapchainImages(surface_capabilities, swap_chain_image_size), false)
+    HERMES_RETURN_IF_NOT(chooseSizeOfSwapchainImages(surface_capabilities, swap_chain_image_size), false)
     if ((0 == swap_chain_image_size.width) || (0 == swap_chain_image_size.height))
       return false;
     swap_chain_.setImageSize(swap_chain_image_size);
@@ -192,7 +192,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   {
     VkFormat image_format;
     VkColorSpaceKHR image_color_space;
-    PONOS_RETURN_IF_NOT(physical_device_->selectFormatOfSwapchainImages(swap_chain_.surface(),
+    HERMES_RETURN_IF_NOT(physical_device_->selectFormatOfSwapchainImages(swap_chain_.surface(),
                                                                         {desired_format, desired_color_space},
                                                                         image_format,
                                                                         image_color_space), false)
@@ -201,7 +201,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   return true;
 }
 
-void RenderEngine::resize(const ponos::size2 &resolution) {
+void RenderEngine::resize(const hermes::size2 &resolution) {
   framebuffer_resized_ = true;
   resolution_ = resolution;
 }
@@ -247,7 +247,7 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
     return;
   } else if (next_image_result != VK_SUCCESS &&
       next_image_result != VK_SUBOPTIMAL_KHR) {
-    PONOS_LOG_ERROR("error on getting next swapchain image!")
+    HERMES_LOG_ERROR("error on getting next swapchain image!")
     return;
   }
   if (images_in_flight_[image_index] != VK_NULL_HANDLE)
@@ -303,7 +303,7 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
     recreateSwapChain();
     framebuffer_resized_ = false;
   } else if (next_image_result != VK_SUCCESS) {
-    PONOS_LOG_ERROR("error on presenting swapchain image!")
+    HERMES_LOG_ERROR("error on presenting swapchain image!")
     return;
   }
 

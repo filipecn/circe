@@ -30,8 +30,8 @@
 class AtlasExample : public circe::gl::BaseApp {
 public:
   AtlasExample() : BaseApp(800, 800) {
-    ponos::Path assets_path(std::string(ASSETS_PATH));
-    ponos::Path shaders_path(std::string(SHADERS_PATH));
+    hermes::Path assets_path(std::string(ASSETS_PATH));
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
 
     atlas_texture = circe::gl::Texture::fromFile(assets_path + "atlas.jpg");
   }

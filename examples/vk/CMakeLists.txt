@@ -20,7 +20,7 @@ function(buildExample EXAMPLE_NAME)
             "${SHADER_DIR}/*.rmiss"
             )
     add_executable(${EXAMPLE_NAME} ${MAIN_CPP} ${SHADERS})
-    add_dependencies(${EXAMPLE_NAME} glfw ponos circe)
+    add_dependencies(${EXAMPLE_NAME} glfw hermes circe)
     target_link_libraries(${EXAMPLE_NAME}
             circe
             ${PONOS_LIBRARIES}

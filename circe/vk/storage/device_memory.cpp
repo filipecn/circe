@@ -39,12 +39,12 @@ DeviceMemoryPool::DeviceMemoryPool(const LogicalDevice::Ref &device,
       size, // VkDeviceSize       allocationSize
       type  // uint32_t           memoryTypeIndex
   };
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
   CHECK_VULKAN(vkAllocateMemory(device_.handle(), &buffer_memory_allocate_info,
                                 nullptr, &vk_device_memory_))
 
   if (vk_device_memory_ == VK_NULL_HANDLE)
-    PONOS_LOG_WARNING("Could not create device memory pool.");
+    HERMES_LOG_WARNING("Could not create device memory pool.");
 }
 
 DeviceMemoryPool::~DeviceMemoryPool() {
@@ -110,7 +110,7 @@ bool DeviceMemory::allocate(VkMemoryRequirements memory_requirements,
       memory_requirements.size, // VkDeviceSize       allocationSize
       heap_index                // uint32_t           memoryTypeIndex
   };
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
   R_CHECK_VULKAN(vkAllocateMemory(device_.handle(),
                                   &buffer_memory_allocate_info, nullptr,
                                   &vk_device_memory_), false)
@@ -118,18 +118,18 @@ bool DeviceMemory::allocate(VkMemoryRequirements memory_requirements,
 }
 
 bool DeviceMemory::bind(const Buffer &buffer, VkDeviceSize offset) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(buffer.good(), "using bad buffer.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(buffer.good(), "using bad buffer.")
   R_CHECK_VULKAN(vkBindBufferMemory(device_.handle(), buffer.handle(),
                                     vk_device_memory_, offset), false)
   return true;
 }
 
 bool DeviceMemory::bind(const Image &image, VkDeviceSize offset) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(image.good(), "using bad image.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(image.good(), "using bad image.")
   R_CHECK_VULKAN(vkBindImageMemory(device_.handle(), image.handle(),
                                    vk_device_memory_, offset), false)
   return true;
@@ -137,8 +137,8 @@ bool DeviceMemory::bind(const Image &image, VkDeviceSize offset) {
 
 bool DeviceMemory::copy(const void *data, VkDeviceSize size,
                         VkDeviceSize offset) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
   void *d_data;
   R_CHECK_VULKAN(vkMapMemory(device_.handle(), vk_device_memory_, offset, size,
                              0, &d_data), false)
@@ -148,8 +148,8 @@ bool DeviceMemory::copy(const void *data, VkDeviceSize size,
 }
 
 bool DeviceMemory::map(VkDeviceSize size, VkDeviceSize offset) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
   R_CHECK_VULKAN(vkMapMemory(device_.handle(), vk_device_memory_, offset, size,
                              0, &mapped_), false)
   return true;
@@ -159,15 +159,15 @@ void *DeviceMemory::mapped() { return mapped_; }
 
 void DeviceMemory::unmap() {
   if (mapped_) {
-    PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
-    PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
+    HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+    HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_memory_, "using bad device memory.")
     vkUnmapMemory(device_.handle(), vk_device_memory_);
     mapped_ = nullptr;
   }
 }
 
 bool DeviceMemory::flush(VkDeviceSize size, VkDeviceSize offset) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
   VkMappedMemoryRange mappedRange = {};
   mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
   mappedRange.memory = vk_device_memory_;
@@ -178,7 +178,7 @@ bool DeviceMemory::flush(VkDeviceSize size, VkDeviceSize offset) {
 }
 
 bool DeviceMemory::invalidate(VkDeviceSize size, VkDeviceSize offset) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(device_.good(), "using bad device.")
   VkMappedMemoryRange mappedRange = {};
   mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
   mappedRange.memory = vk_device_memory_;

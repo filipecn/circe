@@ -49,7 +49,7 @@ Sampler::Sampler(const LogicalDevice::Ref &logical_device,
                  VkBorderColor border_color,
                  VkBool32 unnormalized_coordinates) : logical_device_(
     logical_device) {
-  PONOS_CHECK_EXP_WITH_LOG(init(logical_device,
+  HERMES_CHECK_EXP_WITH_LOG(init(logical_device,
                                 mag_filter,
                                 min_filter,
                                 mipmap_mode,

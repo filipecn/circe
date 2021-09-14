@@ -31,7 +31,7 @@
 #define CIRCE_VK_SCENE_MODEL_H
 
 #include <circe/vk/storage/device_memory.h>
-#include <ponos/common/defs.h>
+#include <hermes/common/defs.h>
 
 namespace circe::vk {
 

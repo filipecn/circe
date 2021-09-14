@@ -57,8 +57,8 @@ Image::View Image::Ref::view(VkImageViewType view_type, VkFormat format, VkImage
 Image::View::View(VkDevice vk_device, VkImage vk_image, VkImageViewType view_type,
                   VkFormat format, VkImageAspectFlags aspect)
     : vk_image_(vk_image), vk_device_{vk_device} {
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_image_, "using bad image.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_, "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_image_, "using bad image.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_, "using bad device.")
   VkImageViewCreateInfo image_view_create_info = {
       VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // VkStructureType sType
       nullptr,         // const void               * pNext
@@ -90,8 +90,8 @@ Image::View::View(VkDevice vk_device, VkImage vk_image, VkImageViewType view_typ
 Image::View::View(const Image *image, VkImageViewType view_type,
                   VkFormat format, VkImageAspectFlags aspect)
     : vk_image_(image->handle()), vk_device_{image->device().handle()} {
-  PONOS_VALIDATE_EXP_WITH_WARNING(image->good(), "using bad image.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_device_, "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(image->good(), "using bad image.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_device_, "using bad device.")
   VkImageViewCreateInfo image_view_create_info = {
       VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // VkStructureType sType
       nullptr,         // const void               * pNext
@@ -194,7 +194,7 @@ bool Image::init(const LogicalDevice::Ref &logical_device,
   size_ = size;
   mip_levels_ = num_mipmaps;
 
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
 
   VkImageCreateInfo image_create_info = {
       VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO, // VkStructureType          sType
@@ -216,7 +216,7 @@ bool Image::init(const LogicalDevice::Ref &logical_device,
   };
   CHECK_VULKAN(vkCreateImage(logical_device.handle(), &image_create_info,
                              nullptr, &vk_image_))
-  PONOS_RETURN_IF_NOT_WITH_LOG(vk_image_, false, "Could not create image.")
+  HERMES_LOG_AND_RETURN_IF_NOT(vk_image_, false, "Could not create image.")
   return true;
 }
 
@@ -235,8 +235,8 @@ bool Image::good() const { return vk_image_ != VK_NULL_HANDLE; }
 bool Image::subresourceLayout(VkImageAspectFlags aspect_mask,
                               u32 mip_level, u32 array_layer,
                               VkSubresourceLayout &subresource_layout) const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_image_, "using bad image.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_image_, "using bad image.")
   VkImageSubresource subresource{};
   subresource.aspectMask = aspect_mask;
   subresource.mipLevel = mip_level;
@@ -248,8 +248,8 @@ bool Image::subresourceLayout(VkImageAspectFlags aspect_mask,
 
 bool Image::memoryRequirements(
     VkMemoryRequirements &memory_requirements) const {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  PONOS_VALIDATE_EXP_WITH_WARNING(vk_image_, "using bad image.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(vk_image_, "using bad image.")
   vkGetImageMemoryRequirements(logical_device_.handle(), vk_image_,
                                &memory_requirements);
   return true;

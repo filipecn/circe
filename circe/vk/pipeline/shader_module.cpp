@@ -34,12 +34,12 @@ namespace circe::vk {
 ShaderModule::ShaderModule() = default;
 
 ShaderModule::ShaderModule(const LogicalDevice::Ref &logical_device,
-                           const ponos::Path &filename)
+                           const hermes::Path &filename)
     : logical_device_(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
-  std::vector<u8> source_code = ponos::FileSystem::readBinaryFile(filename.fullName().c_str());
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  std::vector<u8> source_code = hermes::FileSystem::readBinaryFile(filename.fullName().c_str());
   if (source_code.empty()) {
-    PONOS_LOG_WARNING(ponos::Str::concat("Could not read shader file:", filename))
+    HERMES_LOG_WARNING(hermes::Str::concat("Could not read shader file:", filename))
     return;
   }
   VkShaderModuleCreateInfo shader_module_create_info = {
@@ -58,7 +58,7 @@ ShaderModule::ShaderModule(const LogicalDevice::Ref &logical_device,
 ShaderModule::ShaderModule(const LogicalDevice::Ref &logical_device,
                            std::vector<char> const &source_code)
     : logical_device_(logical_device) {
-  PONOS_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   VkShaderModuleCreateInfo shader_module_create_info = {
       VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO, // VkStructureType sType
       nullptr,            // const void                 * pNext
@@ -97,9 +97,9 @@ void ShaderModule::destroy() {
 bool ShaderModule::load(const std::string &filename) {
   if (!logical_device_.good())
     return false;
-  std::vector<u8> source_code = ponos::FileSystem::readBinaryFile(filename.c_str());
-  PONOS_RETURN_IF_NOT_WITH_LOG(!source_code.empty(), false,
-                               ponos::Str::concat("Could not read shader file:", filename))
+  std::vector<u8> source_code = hermes::FileSystem::readBinaryFile(filename.c_str());
+  HERMES_LOG_AND_RETURN_IF_NOT(!source_code.empty(), false,
+                               hermes::Str::concat("Could not read shader file:", filename))
   VkShaderModuleCreateInfo shader_module_create_info = {
       VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO, // VkStructureType sType
       nullptr,            // const void                 * pNext

@@ -34,8 +34,8 @@ class DeferredRenderingExample : public circe::gl::BaseApp {
 public:
   DeferredRenderingExample() : BaseApp(WIDTH, HEIGHT) {
     // resources
-    ponos::Path assets_path(std::string(ASSETS_PATH));
-    ponos::Path shaders_path(std::string(SHADERS_PATH));
+    hermes::Path assets_path(std::string(ASSETS_PATH));
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
     // scene
     model = circe::Shapes::icosphere({}, 0.2, 5, circe::shape_options::uv | circe::shape_options::normal);
     light_model = circe::Shapes::icosphere({}, 0.02, 2);
@@ -87,10 +87,10 @@ public:
     const unsigned int NR_LIGHTS = 32;
     std::srand(13);
     for (unsigned int i = 0; i < NR_LIGHTS; i++) {
-      ponos::point3 position(((rand() % 100) / 100.0) * 5.0 - 2.5,
+      hermes::point3 position(((rand() % 100) / 100.0) * 5.0 - 2.5,
                              ((rand() % 100) / 100.0) * 5.0 - 2.5,
                              ((rand() % 100) / 100.0) * 5.0 - 2.5);
-      ponos::vec3 color(((rand() % 100) / 200.0f) + 0.5,
+      hermes::vec3 color(((rand() % 100) / 200.0f) + 0.5,
                         ((rand() % 100) / 200.0f) + 0.5,
                         ((rand() % 100) / 200.0f) + 0.5);
       l_pass_program.setUniform("lights", "Color", i, color);
@@ -119,9 +119,9 @@ public:
       g_pass_program.use();
       g_pass_program.setUniform("projection", camera->getProjectionTransform());
       g_pass_program.setUniform("view", camera->getViewTransform());
-      for (auto i : ponos::Index3Range<i32>(5, 5, 5)) {
-        ponos::vec3 v(i.i, i.j, i.k);
-        g_pass_program.setUniform("model", ponos::translate(v - ponos::vec3(2.5, 2.5, 2.5)));
+      for (auto i : hermes::Index3Range<i32>(5, 5, 5)) {
+        hermes::vec3 v(i.i, i.j, i.k);
+        g_pass_program.setUniform("model", hermes::Transform::translate(v - hermes::vec3(2.5, 2.5, 2.5)));
         model.draw();
       }
     });
@@ -138,7 +138,7 @@ public:
     light_model.program.setUniform("projection", camera->getProjectionTransform());
     light_model.program.setUniform("view", camera->getViewTransform());
     for (size_t i = 0; i < light_colors_.size(); ++i) {
-      light_model.program.setUniform("model", ponos::translate(ponos::vec3(light_positions_[i])));
+      light_model.program.setUniform("model", hermes::Transform::translate(hermes::vec3(light_positions_[i])));
       light_model.program.setUniform("color", circe::Color(light_colors_[i]));
       light_model.draw();
     }
@@ -167,8 +167,8 @@ public:
   // lightning pass shader
   circe::gl::Program l_pass_program;
   // scene
-  std::vector<ponos::point3> light_positions_;
-  std::vector<ponos::vec3> light_colors_;
+  std::vector<hermes::point3> light_positions_;
+  std::vector<hermes::vec3> light_colors_;
   circe::gl::SceneModel light_model;
   circe::gl::SceneModel model;
   circe::gl::SceneModel screen_quad;
