@@ -22,62 +22,102 @@
  *
 */
 
-//
-// Created by fuiri on 2/19/2018.
-//
-
 #ifndef CIRCE_INSTANCE_SET_H
 #define CIRCE_INSTANCE_SET_H
 
-#include <circe/gl/scene/scene_mesh.h>
 #include <circe/gl/scene/scene_object.h>
+#include <circe/gl/scene/scene_model.h>
 
 namespace circe::gl {
 
-/// Stores a base mesh and its instances descriptions on buffers for fast
-/// rendering.
+// *********************************************************************************************************************
+//                                                                                                        InstanceSet
+// *********************************************************************************************************************
+/// Stores a base mesh and its instance descriptions on buffers for fast rendering.
 class InstanceSet : public SceneObject {
 public:
+  class View {
+    friend class InstanceSet;
+  public:
+    View(View &&other) noexcept;
+    View(const View &other) = delete;
+    ~View();
+    View &operator=(const View &other) = delete;
+    View &operator=(View &&other) noexcept;
+    /// Access a single attribute of an element
+    /// Note: The buffer MUST be previously mapped
+    /// \tparam T attribute data type
+    /// \param attribute_name
+    /// \param element_id
+    /// \return reference to attribute value
+    template<typename T>
+    T &at(const std::string &attribute_name, u64 element_id) {
+      static T dummy{};
+      if (attributes_.attributes().empty()) {
+        return dummy;
+      }
+      if (!attributes_.contains(attribute_name))
+        return dummy;
+      auto element_address = element_id * attributes_.stride();
+      auto attribute_id = attributes_.attributeIndex(attribute_name);
+      auto attribute_address = element_address + attributes_.attributeOffset(attribute_id);
+      return *reinterpret_cast<T *>(mapped_data_ + attribute_address);
+    }
+    [[nodiscard]] std::string memoryDump(hermes::memory_dumper_options options =
+    hermes::memory_dumper_options::type_values |
+        hermes::memory_dumper_options::colored_output) const;
+  private:
+    explicit View(DeviceMemory::View &mem, const VertexAttributes &attributes, GLbitfield access);
+    const VertexAttributes &attributes_;
+    DeviceMemory::View &mem_;
+    u8 *mapped_data_{nullptr};
+  };
+  // *******************************************************************************************************************
+  //                                                                                                   STATIC METHODS
+  // *******************************************************************************************************************
+  // *******************************************************************************************************************
+  //                                                                                                 FRIEND FUNCTIONS
+  // *******************************************************************************************************************
+  // *******************************************************************************************************************
+  //                                                                                                     CONSTRUCTORS
+  // *******************************************************************************************************************
   InstanceSet();
-  /// \param rm base instance mesh
-  /// \param s instance shader
-  /// \param n **[optional | def = 0]** number of instances
-  explicit InstanceSet(SceneMesh *rm, const ShaderProgram &s, size_t n = 0);
   ~InstanceSet() override;
-  /// \param mesh base mesh for all instances
-  inline void setInstanceMesh(SceneMesh *mesh) { base_mesh_ = mesh; }
-  /// \param shader shader applied to each instance object
-  inline void setInstanceShader(const ShaderProgram &shader) { shader_ = shader; }
+  //                                                                                                       assignment
+  // *******************************************************************************************************************
+  //                                                                                                        OPERATORS
+  // *******************************************************************************************************************
+  //                                                                                                       assignment
+  //                                                                                                       arithmetic
+  //                                                                                                          boolean
+  // *******************************************************************************************************************
+  //                                                                                                          METHODS
+  // *******************************************************************************************************************
   /// \return total number of instances
-  inline u64 count() const { return count_; }
-  /// \param d buffer descriptor
-  /// \return index of the new buffer
-  uint add(BufferDescriptor d);
+  inline u64 count() const { return instance_count_; }
   /// reserve memory for n instances
   /// \param n number of instances
   void resize(uint n);
-  /// \param b buffer index (must belong to a float type)
-  /// \param i instance index
-  /// \return pointer to the first component of instance i
-  float *instanceF(uint b, uint i);
-  /// \param b buffer index (must belong to a uint type)
-  /// \param i instance index
-  /// \return pointer to the first component of instance i
-  uint *instanceU(uint b, uint i);
-  /// \param b buffer index
-  void bind(uint b);
+  View instanceData();
   void draw(const CameraInterface *camera, hermes::Transform transform) override;
-
+  // *******************************************************************************************************************
+  //                                                                                                    PUBLIC FIELDS
+  // *******************************************************************************************************************
+  SceneModel instance_model;                       ///< instance model
+  Program instance_program;
 private:
-  ShaderProgram shader_;                   ///< instance shader program
-  SceneMesh *base_mesh_{nullptr};          ///< base mesh
-  uint count_{0};                          ///< number of instances
+  DeviceMemory instance_buffer_;                   ///< instance buffer
+  std::unique_ptr<DeviceMemory::View> instance_buffer_view_;
+  VertexAttributes instance_attributes_;           ///< instance buffer attributes
+  size_t instance_count_{0};
+
+  std::vector<GLBufferInterface *> buffers_;      ///< buffers
+
   std::vector<uint> buffers_indices_;      ///< maps buffers -> data indices
   std::vector<bool> data_changed_;         ///< data of a buffer must be updated
   std::vector<std::vector<uint>> dataU_;   ///< unsigned int data
   std::vector<std::vector<float>> dataF_;  ///< float data
   std::vector<std::vector<uchar>> dataC_;  ///< unsigned byte data
-  std::vector<GLBufferInterface *> buffers_; ///< buffers
 };
 
 } // circe namespace

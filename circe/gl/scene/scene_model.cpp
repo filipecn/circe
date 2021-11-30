@@ -37,7 +37,9 @@ SceneModel SceneModel::fromFile(const hermes::Path &path, shape_options options)
   scene_model.ib_ = model.indices();
   scene_model.model_ = std::move(model);
   scene_model.vao_.bind();
+  scene_model.vb_.bind();
   scene_model.vb_.bindAttributeFormats();
+  scene_model.vao_.unbind();
   return std::move(scene_model);
 }
 
@@ -56,7 +58,9 @@ SceneModel::SceneModel(const Model &model) {
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model.indices();
   vao_.bind();
+  vb_.bind();
   vb_.bindAttributeFormats();
+  vao_.unbind();
 }
 
 SceneModel::SceneModel(Model &&model) noexcept {
@@ -65,7 +69,9 @@ SceneModel::SceneModel(Model &&model) noexcept {
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model_.indices();
   vao_.bind();
+  vb_.bind();
   vb_.bindAttributeFormats();
+  vao_.unbind();
 }
 
 SceneModel::~SceneModel() = default;
@@ -84,7 +90,9 @@ SceneModel &SceneModel::operator=(const Model &model) {
   ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());
   ib_ = model.indices();
   vao_.bind();
+  vb_.bind();
   vb_.bindAttributeFormats();
+  vao_.unbind();
   return *this;
 }
 
@@ -94,8 +102,24 @@ SceneModel &SceneModel::operator=(Model &&model) noexcept {
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model_.indices();
   vao_.bind();
+  vb_.bind();
   vb_.bindAttributeFormats();
+  vao_.unbind();
   return *this;
+}
+
+void SceneModel::bind() {
+  vao_.bind();
+}
+
+void SceneModel::unbind() {
+  vao_.unbind();
+}
+
+void SceneModel::bindBuffers() {
+  vao_.bind();
+  vb_.bind();
+  ib_.bind();
 }
 
 void SceneModel::draw() {

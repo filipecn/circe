@@ -272,7 +272,7 @@ bool DescriptorPool::allocate(
     std::vector<VkDescriptorSet> &descriptor_sets) {
   HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
   if (vk_descriptor_pool_ == VK_NULL_HANDLE)
-    HERMES_LOG_AND_RETURN_IF_NOT(init(), false, "unable to init descriptor pool")
+    HERMES_LOG_AND_RETURN_VALUE_IF_NOT(init(), false, "unable to init descriptor pool")
   std::vector<VkDescriptorSetLayout> dsls;
   dsls.reserve(descriptor_set_layouts.size());
   for (auto &dsl : descriptor_set_layouts)

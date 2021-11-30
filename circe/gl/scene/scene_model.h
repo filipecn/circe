@@ -63,7 +63,11 @@ public:
   inline u64 elementCount() const { return ib_.element_count; }
   VertexBuffer &vertexBuffer() { return vb_; }
   const IndexBuffer &indexBuffer() const { return ib_; }
+  IndexBuffer &indexBuffer()  { return ib_; }
   const Model &model() const { return model_; }
+  void bind();
+  void unbind();
+  void bindBuffers();
   void draw();
   // ***********************************************************************
   //                          PUBLIC FIELDS

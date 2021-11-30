@@ -49,6 +49,13 @@ public:
   static Color Purple(float alpha = 1.f) { return {1.f, 0.f, 1.f, alpha}; }
   static Color Yellow(float alpha = 1.f) { return {1.f, 1.f, 0.f, alpha}; }
   [[nodiscard]] hermes::vec3 rgb() const { return {r, g, b}; }
+  friend std::ostream &operator<<(std::ostream &os, const Color c) {
+    os << "Color [" << c.r << ", ";
+    os << c.g << ", ";
+    os << c.b << ", ";
+    os << c.a << "]";
+    return os;
+  }
   float r, g, b, a;
 };
 

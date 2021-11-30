@@ -38,12 +38,12 @@ public:
     model = circe::Shapes::box({{-1, -1, -1}, {1, 1, 1}}, circe::shape_options::normal);
     // textures
     cubemap = circe::gl::Texture::fromFiles({
-                                                "/home/filipecn/Desktop/skybox/right.jpg",
-                                                "/home/filipecn/Desktop/skybox/left.jpg",
-                                                "/home/filipecn/Desktop/skybox/top.jpg",
-                                                "/home/filipecn/Desktop/skybox/bottom.jpg",
-                                                "/home/filipecn/Desktop/skybox/front.jpg",
-                                                "/home/filipecn/Desktop/skybox/back.jpg",
+                                                "/home/filipecn/Desktop/desk/skybox/right.jpg",
+                                                "/home/filipecn/Desktop/desk/skybox/left.jpg",
+                                                "/home/filipecn/Desktop/desk/skybox/top.jpg",
+                                                "/home/filipecn/Desktop/desk/skybox/bottom.jpg",
+                                                "/home/filipecn/Desktop/desk/skybox/front.jpg",
+                                                "/home/filipecn/Desktop/desk/skybox/back.jpg",
                                             });
 
     cubemap.bind();
@@ -54,9 +54,9 @@ public:
     unfolded = circe::gl::Texture::fromTexture(cubemap);
 
     if (!skybox.program.link(shaders_path, "skybox"))
-      hermes::Log::error("Failed to load model shader: " + skybox.program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: " + skybox.program.err);
     if (!model.program.link(shaders_path, "env_map"))
-      hermes::Log::error("Failed to load model shader: " + model.program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: " + model.program.err);
   }
 
   void prepareFrame(const circe::gl::ViewportDisplay &display) override {

@@ -426,6 +426,10 @@ bool Program::link(const std::vector<hermes::Path> &shader_file_list) {
   return link(shaders);
 }
 
+bool Program::good() const {
+  return id_ != 0;
+}
+
 bool Program::use() {
   if (!id_)
     create();
@@ -565,6 +569,42 @@ int Program::locateAttribute(const std::string &name) const {
   if (it == attr_locations_.end())
     return -1;
   return it->second;
+}
+
+VertexAttributes Program::extractAttributes() const {
+  VertexAttributes vertex_attributes;
+  if (id_) {
+    GLint i;
+    GLint count;
+    {
+      GLint size; // size of the variable
+      GLenum type; // type of the variable (float, vec3 or mat4, etc)
+
+      const GLsizei bufSize = 30; // maximum name length
+      GLchar name[bufSize]; // variable name in GLSL
+      GLsizei length; // name length
+
+      glGetProgramiv(id_, GL_ACTIVE_ATTRIBUTES, &count);
+
+      GLint attribute_id = -1;
+      for (i = 0; i < count; i++) {
+        glGetActiveAttrib(id_, (GLuint) i, bufSize, &length, &size, &type, name);
+//        o << "Attribute #" << i << " Type: " << OpenGL::TypeToStr(type) << " Name: " << name << " location "
+//          << glGetAttribLocation(id_, name) << std::endl;
+#define SWITCH_CASE(GL_TYPE_NAME, HERMES_TYPE) \
+        case GL_TYPE_NAME: attribute_id = vertex_attributes.push<HERMES_TYPE>(name); break;
+        switch (type) {
+        SWITCH_CASE(GL_FLOAT_VEC4, hermes::vec4)
+        SWITCH_CASE(GL_FLOAT_VEC3, hermes::vec3)
+        SWITCH_CASE(GL_FLOAT_MAT4, hermes::mat4)
+        default: HERMES_LOG_ERROR("Invalid Shader-Vertex Attribute")
+        }
+#undef SWITCH_CASE
+        vertex_attributes.setAttributeLocation(attribute_id, glGetAttribLocation(id_, name));
+      }
+    }
+  }
+  return vertex_attributes;
 }
 
 GLuint Program::id() const { return id_; }
@@ -715,7 +755,7 @@ std::ostream &operator<<(std::ostream &o, const Program &program) {
       GLsizei length; // name length
 
       glGetProgramiv(program.id_, GL_ACTIVE_ATTRIBUTES, &count);
-      o << "Active Attributes: " << count << std::endl;
+      o << "Active VertexAttributes: " << count << std::endl;
 
       for (i = 0; i < count; i++) {
         glGetActiveAttrib(program.id_, (GLuint) i, bufSize, &length, &size, &type, name);

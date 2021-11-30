@@ -9,9 +9,9 @@ public:
     // setup reference grid
     hermes::Path shaders_path(std::string(SHADERS_PATH));
 //    mesh = circe::gl::SceneModel::fromFile("/home/filipecn/Desktop/teapot.obj", circe::shape_options::normal);
-    mesh = circe::Shapes::icosphere(8, circe::shape_options::normal);
+    mesh = circe::Shapes::icosphere(3, circe::shape_options::normal);
     if (!mesh.program.link(shaders_path, "scene_object"))
-      hermes::Log::error("Failed to load model shader: " + mesh.program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: " + mesh.program.err);
 
     /// setup UBO /////////////////////////////////////////////////////////////
     scene_ubo.push(mesh.program);

@@ -43,6 +43,7 @@ function(buildExample EXAMPLE_NAME)
 endfunction(buildExample)
 
 set(EXAMPLES
+        instances
         hello_circe
         shadows
         skybox
@@ -54,7 +55,6 @@ set(EXAMPLES
 #        compute_shader
 #        save_viewport
 #        viewports
-#        instances
 #        scene_mesh_example
 #        post_effects
 #        text

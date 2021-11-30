@@ -70,6 +70,7 @@ public:
     [[nodiscard]] inline u64 offset() const { return offset_; }
     /// \return device buffer object
     inline DeviceMemory &deviceMemory() { return buffer_; }
+    inline const DeviceMemory &deviceMemory() const { return buffer_; }
     /// \param access specifies a combination of access flags indicating
     /// the desired access to the range. (GL_MAP_READ_BIT, GL_MAP_WRITE_BIT)
     /// \return pointer to mapped memory

@@ -216,7 +216,7 @@ bool Image::init(const LogicalDevice::Ref &logical_device,
   };
   CHECK_VULKAN(vkCreateImage(logical_device.handle(), &image_create_info,
                              nullptr, &vk_image_))
-  HERMES_LOG_AND_RETURN_IF_NOT(vk_image_, false, "Could not create image.")
+  HERMES_LOG_AND_RETURN_VALUE_IF_NOT(vk_image_, false, "Could not create image.")
   return true;
 }
 

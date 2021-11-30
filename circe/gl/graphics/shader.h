@@ -28,6 +28,7 @@
 #include <circe/colors/color.h>
 #include <circe/gl/graphics/shader_manager.h>
 #include <circe/gl/io/buffer.h>
+#include <circe/gl/storage/vertex_attributes.h>
 
 #include <hermes/common/file_system.h>
 #include <hermes/geometry/transform.h>
@@ -153,6 +154,9 @@ public:
   /// \param shader_file_list files expect extensions: .frag, .vert
   /// \return
   bool link(const std::vector<hermes::Path> &shader_file_list);
+  /// Check if shader program is compiled with no errors
+  /// \return
+  [[nodiscard]] bool good() const;
   /// Activate program (tries to link if necessary)
   /// \return
   bool use();
@@ -169,7 +173,11 @@ public:
   /// locates attribute **name** in shader's program
   /// \param name attribute's name
   /// \return attributes layout location (-1 if not found)
+  [[deprecated]]
   [[nodiscard]] int locateAttribute(const std::string &name) const;
+  ///
+  /// \return
+  [[nodiscard]] VertexAttributes extractAttributes() const;
   ///
   /// \return
   [[nodiscard]] GLuint id() const;

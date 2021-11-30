@@ -72,35 +72,32 @@ u64 IndexBuffer::dataSizeInBytes() const {
 }
 
 void IndexBuffer::draw() {
-  static u64 last_element_count = 0;
-  static GLuint last_element_type = 0;
-  static u32 index_count = 0;
-  if (last_element_type != element_type || last_element_count != element_count) {
-    last_element_count = element_count;
-    last_element_type = element_type;
+  if (last_element_type_ != element_type || last_element_count_ != element_count) {
+    last_element_count_ = element_count;
+    last_element_type_ = element_type;
     switch (element_type) {
-    case GL_POINTS: index_count = element_count;
+    case GL_POINTS: index_count_ = element_count;
       break;
-    case GL_TRIANGLES: index_count = element_count * 3;
+    case GL_TRIANGLES: index_count_ = element_count * 3;
       break;
     case GL_TRIANGLE_STRIP:
-    case GL_TRIANGLE_FAN: index_count = element_count + 2;
+    case GL_TRIANGLE_FAN: index_count_ = element_count + 2;
       break;
-    case GL_LINES: index_count = element_count * 2;
+    case GL_LINES: index_count_ = element_count * 2;
       break;
-    case GL_LINE_STRIP: index_count = element_count + 1;
+    case GL_LINE_STRIP: index_count_ = element_count + 1;
       break;
-    case GL_LINE_LOOP: index_count = element_count;
+    case GL_LINE_LOOP: index_count_ = element_count;
       break;
     case GL_QUADS:hermes::Log::error("Index Buffer: QUADS are not supported.");
-      index_count = element_count * 4;
+      index_count_ = element_count * 4;
       break;
     default:hermes::Log::warn("Assuming one index per element in index buffer size.");
-      index_count = element_count;
+      index_count_ = element_count;
     };
   }
   mem_->bind();
-  CHECK_GL(glDrawElements(element_type, index_count, data_type,
+  CHECK_GL(glDrawElements(element_type, index_count_, data_type,
                           reinterpret_cast<void *>(mem_->offset())));
 }
 

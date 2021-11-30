@@ -85,7 +85,7 @@ public:
       c.a = a;
     return c;
   }
-  float a;
+  float a{1.f};
   std::vector<Color> colors;
 };
 

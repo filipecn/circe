@@ -20,7 +20,7 @@ void ViewportDisplay::render(const std::function<void(CameraInterface *)> &f) {
     if (renderCallback)
       renderCallback(camera.get());
   });
-  glDisable(GL_DEPTH_TEST);
+  //  glDisable(GL_DEPTH_TEST);
   GraphicsDisplay &gd = GraphicsDisplay::instance();
   glViewport(x, y, width, height);
   glScissor(x, y, width, height);

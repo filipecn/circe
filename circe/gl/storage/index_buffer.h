@@ -96,6 +96,10 @@ public:
   u64 element_count{0};
   GLuint element_type{GL_TRIANGLES};
   GLuint data_type{GL_UNSIGNED_INT};
+private:
+  u64 last_element_count_{0};
+  u64 last_element_type_{0};
+  u64 index_count_{0};
 };
 
 std::ostream &operator<<(std::ostream &os, const IndexBuffer &index_buffer);

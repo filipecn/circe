@@ -53,6 +53,10 @@ void VertexArrayObject::bind() const {
   glBindVertexArray(vao_object_id_);
 }
 
+void VertexArrayObject::unbind() const {
+  glBindVertexArray(0);
+}
+
 void VertexArrayObject::destroy() {
   glDeleteVertexArrays(1, &vao_object_id_);
   vao_object_id_ = 0;

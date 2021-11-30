@@ -232,13 +232,13 @@ std::vector<PhysicalDevice> Instance::enumerateAvailablePhysicalDevices() const 
   u32 devices_count = 0;
   R_CHECK_VULKAN(
       vkEnumeratePhysicalDevices(vk_instance_, &devices_count, nullptr), physical_devices)
-  HERMES_LOG_AND_RETURN_IF_NOT(
+  HERMES_LOG_AND_RETURN_VALUE_IF_NOT(
       devices_count != 0, physical_devices,
       "Could not get the number of available physical devices.")
   std::vector<VkPhysicalDevice> devices(devices_count);
   R_CHECK_VULKAN(
       vkEnumeratePhysicalDevices(vk_instance_, &devices_count, devices.data()), physical_devices)
-  HERMES_LOG_AND_RETURN_IF_NOT(devices_count != 0, physical_devices,
+  HERMES_LOG_AND_RETURN_VALUE_IF_NOT(devices_count != 0, physical_devices,
                                "Could not enumerate physical devices.")
   for (auto &device : devices)
     physical_devices.emplace_back(device);

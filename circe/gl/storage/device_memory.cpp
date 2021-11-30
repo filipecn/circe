@@ -114,16 +114,19 @@ void DeviceMemory::setUsage(GLuint _usage) {
 void DeviceMemory::resize(u64 size_in_bytes) {
   destroy();
   size_ = size_in_bytes;
+  allocate_(nullptr);
 }
 
 void DeviceMemory::allocate_(void *data) {
   destroy();
+  CHECK_GL_ERRORS
   glGenBuffers(1, &buffer_object_id_);
   glBindBuffer(target_, buffer_object_id_);
   CHECK_GL(glBufferData(target_, size_, data, usage_));
 }
 
 void DeviceMemory::allocate() {
+  CHECK_GL_ERRORS
   allocate_(nullptr);
 }
 

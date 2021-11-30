@@ -130,7 +130,7 @@ bool RenderEngine::setupDevice(const LogicalDevice &logical_device,
   logical_device_ = logical_device.ref();
 
   swap_chain_.setLogicalDevice(logical_device_);
-  HERMES_RETURN_IF_NOT(draw_command_pool_.init(logical_device_,
+  HERMES_RETURN_VALUE_IF_NOT(draw_command_pool_.init(logical_device_,
                                               VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
                                               queue_family_index), false)
   // setup synchronization objects
@@ -150,14 +150,14 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   // PRESENTATION MODE
   {
     VkPresentModeKHR present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
-    HERMES_RETURN_IF_NOT(physical_device_->selectPresentationMode(swap_chain_.surface(),
+    HERMES_RETURN_VALUE_IF_NOT(physical_device_->selectPresentationMode(swap_chain_.surface(),
                                                                  VK_PRESENT_MODE_MAILBOX_KHR,
                                                                  present_mode), false)
     swap_chain_.setPresentMode(present_mode);
   }
   // CHECK SURFACE CAPABILITIES
   VkSurfaceCapabilitiesKHR surface_capabilities;
-  HERMES_RETURN_IF_NOT(physical_device_->surfaceCapabilities(swap_chain_.surface(), surface_capabilities), false)
+  HERMES_RETURN_VALUE_IF_NOT(physical_device_->surfaceCapabilities(swap_chain_.surface(), surface_capabilities), false)
   // GET NUMBER OF SWAPCHAIN IMAGES
   {
     uint32_t number_of_images = 0;
@@ -167,7 +167,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   // QUERY IMAGE SIZE
   {
     VkExtent2D swap_chain_image_size;
-    HERMES_RETURN_IF_NOT(chooseSizeOfSwapchainImages(surface_capabilities, swap_chain_image_size), false)
+    HERMES_RETURN_VALUE_IF_NOT(chooseSizeOfSwapchainImages(surface_capabilities, swap_chain_image_size), false)
     if ((0 == swap_chain_image_size.width) || (0 == swap_chain_image_size.height))
       return false;
     swap_chain_.setImageSize(swap_chain_image_size);
@@ -192,7 +192,7 @@ bool RenderEngine::setPresentationSurface(const SurfaceKHR &surface,
   {
     VkFormat image_format;
     VkColorSpaceKHR image_color_space;
-    HERMES_RETURN_IF_NOT(physical_device_->selectFormatOfSwapchainImages(swap_chain_.surface(),
+    HERMES_RETURN_VALUE_IF_NOT(physical_device_->selectFormatOfSwapchainImages(swap_chain_.surface(),
                                                                         {desired_format, desired_color_space},
                                                                         image_format,
                                                                         image_color_space), false)

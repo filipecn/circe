@@ -74,6 +74,7 @@ public:
   }
   OrthographicProjection(float left, float right, float bottom, float top,
                          hermes::transform_options options = hermes::transform_options::left_handed) {
+    HERMES_UNUSED_VARIABLE(options)
     set(left, right, bottom, top);
   }
   /// \param z

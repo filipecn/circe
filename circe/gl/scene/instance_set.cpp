@@ -22,160 +22,123 @@
  *
  */
 
-//
-// Created by FilipeCN on 2/19/2018.
-//
-
 #include <circe/gl/scene/instance_set.h>
 
 #include <utility>
 
 namespace circe::gl {
 
+InstanceSet::View::View(DeviceMemory::View &mem, const VertexAttributes &attributes, GLbitfield access)
+    : attributes_(attributes), mem_(mem) {
+  mapped_data_ = reinterpret_cast<u8 *>(mem_.mapped(access));
+}
+
+InstanceSet::View::~View() {
+  if (mapped_data_) {
+    mem_.unmap();
+    mapped_data_ = nullptr;
+  }
+}
+
+InstanceSet::View::View(View &&other) noexcept: attributes_{other.attributes_}, mem_{other.mem_} {
+  if (mapped_data_) {
+    mem_.unmap();
+    mapped_data_ = nullptr;
+  }
+  mapped_data_ = other.mapped_data_;
+  other.mapped_data_ = nullptr;
+}
+
+InstanceSet::View &InstanceSet::View::operator=(View &&other) noexcept {
+  if (mapped_data_) {
+    mem_.unmap();
+    mapped_data_ = nullptr;
+  }
+  mapped_data_ = other.mapped_data_;
+  other.mapped_data_ = nullptr;
+  return *this;
+}
+
+std::string InstanceSet::View::memoryDump(hermes::memory_dumper_options options) const {
+  auto layout = hermes::MemoryDumper::RegionLayout()
+      .withSize(attributes_.stride(), mem_.size() / attributes_.stride());
+
+  layout = layout.withSubRegion(hermes::vec4::memoryDumpLayout().withColor(hermes::ConsoleColors::blue))
+      .withSubRegion(hermes::Transform::memoryDumpLayout().withColor(hermes::ConsoleColors::green));
+  for (auto attr : attributes_.attributes()) {
+  }
+
+  std::string
+      dump = hermes::MemoryDumper::dump(mapped_data_, mem_.size(), 16, layout, options);
+  return dump;
+}
+
 InstanceSet::InstanceSet() = default;
 
-InstanceSet::InstanceSet(SceneMesh *m, const ShaderProgram &s, size_t n)
-    : InstanceSet() {
-  shader_ = s;
-  if (n)
-    resize(n);
-}
-
-InstanceSet::~InstanceSet() {
-  for (auto &buffer : buffers_)
-    delete buffer;
-}
-
-uint InstanceSet::add(BufferDescriptor d) {
-  d.element_count = count_;
-  size_t b = buffers_.size();
-  size_t bs = d.element_count * d.element_size;
-  switch (d.data_type) {
-  case GL_UNSIGNED_INT: {
-    buffers_.emplace_back(new GLBuffer<uint>(d));
-    dataU_.emplace_back(std::vector<uint>());
-    buffers_indices_.emplace_back(dataU_.size() - 1);
-    if (count_)
-      dataU_[dataU_.size() - 1].resize(bs);
-    break;
-  }
-  case GL_UNSIGNED_BYTE: {
-    buffers_.emplace_back(new GLBuffer<uint>(d));
-    dataC_.emplace_back(std::vector<uchar>());
-    buffers_indices_.emplace_back(dataC_.size() - 1);
-    if (count_)
-      dataC_[dataC_.size() - 1].resize(bs);
-    break;
-  }
-  default: {
-    buffers_.emplace_back(new GLBuffer<float>(d));
-    dataF_.emplace_back(std::vector<float>());
-    buffers_indices_.emplace_back(dataF_.size() - 1);
-    if (count_)
-      dataF_[dataF_.size() - 1].resize(bs);
-  }
-  }
-  //  for (auto &attribute : d.attributes)
-  //    shader_.addVertexAttribute(attribute.first.c_str());
-  return b;
-}
+InstanceSet::~InstanceSet() = default;
 
 void InstanceSet::resize(uint n) {
-  count_ = n;
-  for (uint i = 0; i < buffers_.size(); i++) {
-    buffers_[i]->bufferDescriptor.element_count = n;
-    switch (buffers_[i]->bufferDescriptor.data_type) {
-    case GL_UNSIGNED_INT:
-      dataU_[buffers_indices_[i]].resize(
-          buffers_[i]->bufferDescriptor.element_count *
-              buffers_[i]->bufferDescriptor.element_size);
-      dynamic_cast<GLBuffer<uint> *>(buffers_[i])
-          ->set(&dataU_[buffers_indices_[i]][0], buffers_[i]->bufferDescriptor);
-      break;
-    case GL_UNSIGNED_BYTE:
-      dataC_[buffers_indices_[i]].resize(
-          buffers_[i]->bufferDescriptor.element_count *
-              buffers_[i]->bufferDescriptor.element_size);
-      dynamic_cast<GLBuffer<uchar> *>(buffers_[i])
-          ->set(&dataC_[buffers_indices_[i]][0], buffers_[i]->bufferDescriptor);
-      break;
-    default:
-      dataF_[buffers_indices_[i]].resize(
-          buffers_[i]->bufferDescriptor.element_count *
-              buffers_[i]->bufferDescriptor.element_size);
-      dynamic_cast<GLBuffer<float> *>(buffers_[i])
-          ->set(&dataF_[buffers_indices_[i]][0], buffers_[i]->bufferDescriptor);
+  if (!instance_program.good()) {
+    HERMES_LOG_WARNING("Bad instance program!")
+    return;
+  }
+  instance_count_ = n;
+  // first we need to split attributes between base and instance attributes
+  auto attributes = instance_program.extractAttributes();
+  std::set<std::string> base_attribute_names;
+  const auto &base_attributes = instance_model.vertexBuffer().attributes.attributes();
+  for (const auto &attribute : base_attributes)
+    base_attribute_names.insert(attribute.name);
+
+  instance_attributes_ = VertexAttributes();
+  for (auto attribute : attributes.attributes()) {
+    if (base_attribute_names.find(attribute.name) == base_attribute_names.end()) {
+      attribute.divisor = 1;
+      instance_attributes_.push(attribute);
     }
   }
-  data_changed_.resize(n, false);
-}
+  // resize instance buffer
+  instance_buffer_.setTarget(GL_ARRAY_BUFFER);
+  instance_buffer_.setUsage(GL_STREAM_DRAW);
+  instance_buffer_.resize(instance_count_ * instance_attributes_.stride());
+  instance_buffer_view_ = std::make_unique<DeviceMemory::View>(instance_buffer_);
+  // update vertex attributes
+  instance_model.bind();
+  instance_attributes_.bindFormats(1);
 
-float *InstanceSet::instanceF(uint b, uint i) {
-  if (i >= count_)
-    resize(i + 1);
-  data_changed_[b] = true;
-  return &dataF_[buffers_indices_[b]]
-  [i * buffers_[b]->bufferDescriptor.element_size];
-}
+  instance_model.vertexBuffer().bind();
+  CHECK_GL(glBindVertexBuffer(1, instance_buffer_.id(),
+                              instance_buffer_view_->offset(), instance_attributes_.stride()));
+  instance_model.indexBuffer().bind();
 
-uint *InstanceSet::instanceU(uint b, uint i) {
-  if (i >= count_)
-    resize(i + 1);
-  data_changed_[b] = true;
-  return &dataU_[buffers_indices_[b]]
-  [i * buffers_[b]->bufferDescriptor.element_size];
-}
-
-void InstanceSet::bind(uint b) {
-  if (data_changed_[b]) {
-    switch (buffers_[b]->bufferDescriptor.data_type) {
-    case GL_UNSIGNED_INT:
-      dynamic_cast<GLBuffer<uint> *>(buffers_[b])
-          ->set(&dataU_[buffers_indices_[b]][0]);
-      break;
-    case GL_UNSIGNED_BYTE:
-      dynamic_cast<GLBuffer<uchar> *>(buffers_[b])
-          ->set(&dataC_[buffers_indices_[b]][0]);
-      break;
-    default:
-      dynamic_cast<GLBuffer<float> *>(buffers_[b])
-          ->set(&dataF_[buffers_indices_[b]][0]);
-    }
-    data_changed_[b] = false;
-  }
-  buffers_[b]->bind();
+  instance_model.unbind();
+  CHECK_GL_ERRORS
 }
 
 void InstanceSet::draw(const CameraInterface *camera,
                        hermes::Transform transform) {
-  HERMES_UNUSED_VARIABLE(transform);
-  if (!base_mesh_ || !count_)
+  if (!instance_program.good() || !instance_model.vertexBuffer().vertexCount())
     return;
-  // bind buffers and locate attributes
-  shader_.begin();
-  base_mesh_->bind();
-  base_mesh_->vertexBuffer()->locateAttributes(shader_);
-  for (size_t i = 0; i < buffers_.size(); i++) {
-    bind(i);
-    buffers_[i]->locateAttributes(shader_, 1);
-  }
-  shader_.setUniform("model_view_matrix",
-                     hermes::transpose(camera->getViewTransform().matrix()));
-  shader_.setUniform(
-      "projection_matrix",
-      hermes::transpose(camera->getProjectionTransform().matrix()));
-  CHECK_GL_ERRORS;
-  //  shader_.setUniform("mvp",
-  //  hermes::transpose((camera->getProjectionTransform() *
-  //      camera->getViewTransform() * camera->getModelTransform()).matrix()));
+  instance_program.use();
+  instance_program.setUniform("model_view_matrix", camera->getViewTransform());
+  instance_program.setUniform("projection_matrix", camera->getProjectionTransform());
+
+  instance_model.bind();
+
   glDrawElementsInstanced(
-      base_mesh_->indexBuffer()->bufferDescriptor.element_type,
-      base_mesh_->indexBuffer()->bufferDescriptor.element_size *
-          base_mesh_->indexBuffer()->bufferDescriptor.element_count,
-      base_mesh_->indexBuffer()->bufferDescriptor.data_type, 0, count_);
+      instance_model.indexBuffer().element_type,
+      instance_model.indexBuffer().element_count,
+      instance_model.indexBuffer().data_type,
+      nullptr,
+      instance_count_);
+
+  instance_model.unbind();
+
   CHECK_GL_ERRORS;
-  shader_.end();
-  base_mesh_->unbind();
+}
+
+InstanceSet::View InstanceSet::instanceData() {
+  return InstanceSet::View(*instance_buffer_view_, instance_attributes_, GL_MAP_WRITE_BIT);
 }
 
 } // namespace circe

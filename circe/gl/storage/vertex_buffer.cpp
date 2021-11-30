@@ -29,58 +29,6 @@
 
 namespace circe::gl {
 
-VertexBuffer::Attributes::Attributes() = default;
-
-VertexBuffer::Attributes::Attributes(const std::vector<Attribute> &attributes) {
-  push(attributes);
-}
-
-VertexBuffer::Attributes::~Attributes() = default;
-
-void VertexBuffer::Attributes::clear() {
-  attributes_.clear();
-  attribute_name_id_map_.clear();
-  offsets_.clear();
-  stride_ = 0;
-}
-
-void VertexBuffer::Attributes::push(const std::vector<Attribute> &attributes) {
-  attributes_ = attributes;
-  updateOffsets();
-}
-
-u64 VertexBuffer::Attributes::push(u64 component_count,
-                                   const std::string &name,
-                                   GLenum data_type,
-                                   GLboolean normalized) {
-  u64 attribute_id = attributes_.size();
-  std::string attribute_name = name.empty() ? std::to_string(attribute_id) : name;
-  Attribute attr{
-      attribute_name,
-      component_count,
-      data_type,
-      normalized
-  };
-  attributes_.emplace_back(attr);
-  attribute_name_id_map_[attribute_name] = attribute_id;
-  offsets_.emplace_back(stride_);
-  stride_ += component_count * OpenGL::dataSizeInBytes(data_type);
-  return attribute_id;
-}
-
-void VertexBuffer::Attributes::updateOffsets() {
-  if (attributes_.empty()) {
-    offsets_.clear();
-    return;
-  }
-  offsets_.resize(attributes_.size());
-  u64 offset = 0;
-  for (const auto &a : attributes_) {
-    offsets_.emplace_back(offset);
-    offset += a.size * OpenGL::dataSizeInBytes(a.type);
-  }
-}
-
 VertexBuffer::VertexBuffer() = default;
 
 VertexBuffer::VertexBuffer(VertexBuffer &&other) noexcept {
@@ -139,13 +87,20 @@ u64 VertexBuffer::dataSizeInBytes() const {
   return vertex_count_ * attributes.stride();
 }
 
+void VertexBuffer::resize(u32 n) {
+  vertex_count_ = n;
+  allocate(bufferUsage());
+}
+
 void VertexBuffer::bind() {
   CHECK_GL(glBindVertexBuffer(binding_index_, mem_->deviceMemory().id(),
                               mem_->offset(), attributes.stride()));
 }
 
 void VertexBuffer::bindAttributeFormats() {
-  bind();
+  attributes.bindFormats(binding_index_);
+  return;
+  // TODO handle matrices
   for (u64 i = 0; i < attributes.attributes_.size(); ++i) {
     glEnableVertexAttribArray(i);
     // specify vertex attribute format
@@ -153,6 +108,7 @@ void VertexBuffer::bindAttributeFormats() {
                          attributes.attributes_[i].type, false, attributes.offsets_[i]);
     // resize the details of a single attribute
     glVertexAttribBinding(i, binding_index_);
+//    glVertexAttribDivisor(i, attributes.attributes_[i].divisor);
   }
 }
 
@@ -168,6 +124,24 @@ std::ostream &operator<<(std::ostream &os, const VertexBuffer &vb) {
     os << "\t\ttype: " << OpenGL::TypeToStr(attr[i].type) << std::endl;
   }
   return os;
+}
+
+std::string VertexBuffer::memoryDump(hermes::memory_dumper_options options) const {
+  HERMES_LOG_VARIABLE(attributes)
+  HERMES_LOG_VARIABLE(attributes.stride())
+  HERMES_LOG_VARIABLE(vertex_count_)
+  auto layout = hermes::MemoryDumper::RegionLayout()
+      .withSize(attributes.stride(), vertex_count_);
+
+  layout = layout.withSubRegion(hermes::vec4::memoryDumpLayout().withColor(hermes::ConsoleColors::blue))
+      .withSubRegion(hermes::Transform::memoryDumpLayout().withColor(hermes::ConsoleColors::green));
+  for (auto attr : attributes.attributes_) {
+  }
+
+  auto *data = reinterpret_cast<real_t *>(mem_->mapped(GL_MAP_READ_BIT));
+  std::string dump = hermes::MemoryDumper::dump(data, vertex_count_ * attributes.stride() / 4, 16, layout, options);
+  mem_->unmap();
+  return dump;
 }
 
 }

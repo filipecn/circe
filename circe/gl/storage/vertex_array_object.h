@@ -53,6 +53,7 @@ public:
   VertexArrayObject &operator=(VertexArrayObject &&other) noexcept;
   /// glBind
   void bind() const;
+  void unbind() const;
   /// glDelete
   void destroy();
   /// \return OpenGL object id

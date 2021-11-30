@@ -98,7 +98,7 @@ bool ShaderModule::load(const std::string &filename) {
   if (!logical_device_.good())
     return false;
   std::vector<u8> source_code = hermes::FileSystem::readBinaryFile(filename.c_str());
-  HERMES_LOG_AND_RETURN_IF_NOT(!source_code.empty(), false,
+  HERMES_LOG_AND_RETURN_VALUE_IF_NOT(!source_code.empty(), false,
                                hermes::Str::concat("Could not read shader file:", filename))
   VkShaderModuleCreateInfo shader_module_create_info = {
       VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO, // VkStructureType sType

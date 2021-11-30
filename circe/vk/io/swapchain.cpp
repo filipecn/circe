@@ -95,7 +95,7 @@ bool SwapChain::init() {
   u32 images_count = 0;
   R_CHECK_VULKAN(vkGetSwapchainImagesKHR(logical_device_.handle(), vk_swap_chain_,
                                          &images_count, nullptr), false)
-  HERMES_LOG_AND_RETURN_IF_NOT(0 != images_count, false,
+  HERMES_LOG_AND_RETURN_VALUE_IF_NOT(0 != images_count, false,
                                "Could not enumerate swapchain images.")
   images.resize(images_count);
   R_CHECK_VULKAN(vkGetSwapchainImagesKHR(logical_device_.handle(), vk_swap_chain_,

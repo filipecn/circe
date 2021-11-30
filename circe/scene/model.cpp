@@ -76,6 +76,8 @@ Model &Model::operator=(const std::vector<i32> &indices) {
 }
 
 Model &Model::operator=(const std::vector<f32> &vertex_data) {
+  HERMES_NOT_IMPLEMENTED
+  HERMES_UNUSED_VARIABLE(vertex_data);
   return *this;
 }
 
@@ -121,8 +123,10 @@ hermes::bbox3 Model::boundingBox() const {
 }
 
 void Model::fitToBox(const hermes::bbox3 &box) {
-
+  HERMES_NOT_IMPLEMENTED
+  HERMES_UNUSED_VARIABLE(box)
 }
+
 u64 Model::elementCount() const {
   if (indices_.empty())
     return 0;
