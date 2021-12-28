@@ -127,7 +127,7 @@ void InstanceSet::draw(const CameraInterface *camera,
 
   glDrawElementsInstanced(
       instance_model.indexBuffer().element_type,
-      instance_model.indexBuffer().element_count,
+      instance_model.indexBuffer().element_count * 3,
       instance_model.indexBuffer().data_type,
       nullptr,
       instance_count_);

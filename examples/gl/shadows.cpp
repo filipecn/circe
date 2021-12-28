@@ -42,7 +42,7 @@ struct LightObject {
 
 class ShadowsExample : public circe::gl::BaseApp {
 public:
-  ShadowsExample() : BaseApp(800, 800) {
+  ShadowsExample() : BaseApp(800, 800, "Shadows Example") {
     hermes::Path assets_path(std::string(ASSETS_PATH));
     hermes::Path shaders_path(std::string(SHADERS_PATH));
     // setup lights
@@ -115,8 +115,8 @@ public:
     };
   }
 
-  void prepareFrame(const circe::gl::ViewportDisplay &display) override {
-    circe::gl::BaseApp::prepareFrame(display);
+  void prepareFrame() override {
+    circe::gl::BaseApp::prepareFrame();
     ImGuizmo::BeginFrame();
     glDisable(GL_CULL_FACE);
 //    glEnable(GL_CULL_FACE);

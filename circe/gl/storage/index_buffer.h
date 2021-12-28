@@ -60,6 +60,8 @@ public:
       std::is_same_v<i32, T> || std::is_same_v<i16, T> || std::is_same_v<i8, T> ||
           std::is_same_v<u32, T> || std::is_same_v<u16, T> || std::is_same_v<u8, T>> * = nullptr>
   IndexBuffer &operator=(const std::vector<T> &data) {
+    if(data.empty())
+      return *this;
     auto data_type_size = sizeof(T);
     switch (data_type_size) {
     case 4: data_type = GL_UNSIGNED_INT;
@@ -68,25 +70,7 @@ public:
       break;
     default:data_type = GL_UNSIGNED_BYTE;
     }
-    switch (element_type) {
-    case GL_POINTS: element_count = data.size();
-      break;
-    case GL_TRIANGLES: element_count = data.size() / 3;
-      break;
-    case GL_TRIANGLE_STRIP:
-    case GL_TRIANGLE_FAN: element_count = data.size() - 2;
-      break;
-    case GL_LINES:element_count = data.size() / 2;
-      break;
-    case GL_LINE_STRIP: element_count = data.size() - 1;
-      break;
-    case GL_LINE_LOOP: element_count = data.size();
-      break;
-    case GL_QUADS: element_count = data.size() / 4;
-      break;
-    default: hermes::Log::warn("Element type considered GL_POINTS on index buffer assignment.");
-      element_count = data.size();
-    }
+    element_count = OpenGL::primitiveCount(element_type, data.size());
     setData(reinterpret_cast<const void *>(data.data()));
     return *this;
   }

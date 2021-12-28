@@ -35,6 +35,8 @@ SceneModel SceneModel::fromFile(const hermes::Path &path, shape_options options)
   scene_model.vb_ = model.data();
   scene_model.ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());
   scene_model.ib_ = model.indices();
+  scene_model.primitive_count_ = scene_model.ib_.element_count ? scene_model.ib_.element_count :
+                                 OpenGL::primitiveCount(scene_model.ib_.element_type, model.data().size());
   scene_model.model_ = std::move(model);
   scene_model.vao_.bind();
   scene_model.vb_.bind();
@@ -50,6 +52,7 @@ SceneModel::SceneModel(SceneModel &&other) noexcept {
   vao_ = std::move(other.vao_);
   vb_ = std::move(other.vb_);
   ib_ = std::move(other.ib_);
+  primitive_count_ = other.primitive_count_;
 }
 
 SceneModel::SceneModel(const Model &model) {
@@ -57,6 +60,8 @@ SceneModel::SceneModel(const Model &model) {
   vb_ = model.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model.indices();
+  primitive_count_ = ib_.element_count ? ib_.element_count :
+                     OpenGL::primitiveCount(ib_.element_type, vb_.vertexCount());
   vao_.bind();
   vb_.bind();
   vb_.bindAttributeFormats();
@@ -68,6 +73,8 @@ SceneModel::SceneModel(Model &&model) noexcept {
   vb_ = model_.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model_.indices();
+  primitive_count_ = ib_.element_count ? ib_.element_count :
+                     OpenGL::primitiveCount(ib_.element_type, vb_.vertexCount());
   vao_.bind();
   vb_.bind();
   vb_.bindAttributeFormats();
@@ -81,6 +88,7 @@ SceneModel &SceneModel::operator=(SceneModel &&other) noexcept {
   vao_ = std::move(other.vao_);
   vb_ = std::move(other.vb_);
   ib_ = std::move(other.ib_);
+  primitive_count_ = other.primitive_count_;
   return *this;
 }
 
@@ -89,6 +97,8 @@ SceneModel &SceneModel::operator=(const Model &model) {
   vb_ = model.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model.primitiveType());
   ib_ = model.indices();
+  primitive_count_ = ib_.element_count ? ib_.element_count :
+                     OpenGL::primitiveCount(ib_.element_type, vb_.vertexCount());
   vao_.bind();
   vb_.bind();
   vb_.bindAttributeFormats();
@@ -101,6 +111,8 @@ SceneModel &SceneModel::operator=(Model &&model) noexcept {
   vb_ = model_.data();
   ib_.element_type = OpenGL::PrimitiveToGL(model_.primitiveType());
   ib_ = model_.indices();
+  primitive_count_ = ib_.element_count ? ib_.element_count :
+                     OpenGL::primitiveCount(ib_.element_type, vb_.vertexCount());
   vao_.bind();
   vb_.bind();
   vb_.bindAttributeFormats();
@@ -125,7 +137,12 @@ void SceneModel::bindBuffers() {
 void SceneModel::draw() {
   vao_.bind();
   vb_.bind();
-  ib_.draw();
+  if (ib_.element_count)
+    ib_.draw();
+  else {
+    glDrawArrays(ib_.element_type, 0, vb_.vertexCount());
+    CHECK_GL_ERRORS
+  }
 }
 
 }

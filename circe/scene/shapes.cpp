@@ -100,32 +100,116 @@ Model Shapes::fromNMesh(const NMesh &mesh, shape_options options) {
 }
 
 Model Shapes::convert(const Model &model, shape_options options, const std::vector<u64> &attr_filter) {
+  // check options
+  const bool wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
+  const bool only_vertices = testMaskBit(options, shape_options::vertices);
+  // TODO the following options are not handled!
+  const bool generate_normals = testMaskBit(options, shape_options::normal);
+  const bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  // output model
   Model converted_model;
-  // filter attributes
+  // attribute description
+  StructDescriptor descriptor;
   if (attr_filter.empty())
-    converted_model = model.data();
+    descriptor = model.data().structDescriptor();
   else {
-    AoS aos;
-    // add fields
+    // filter attributes
     const auto &fields = model.data().fields();
     for (const auto &field_id : attr_filter) {
 #define ADD_FIELD(D, C, T) \
       if(fields[field_id].type == D && fields[field_id].component_count == C) \
-        aos.pushField<T>(fields[field_id].name);
+        descriptor.pushField<T>(fields[field_id].name);
       ADD_FIELD(DataType::F32, 1, f32)
       ADD_FIELD(DataType::F32, 2, vec2f)
       ADD_FIELD(DataType::F32, 3, vec3f)
 #undef ADD_FIELD
     }
-    aos.resize(model.data().size());
-    // copy fields
+  }
+
+  auto primitive_type = model.primitiveType();
+  // Lets check if there will be any change in some mesh count
+  size_t converted_model_element_count = model.elementCount();
+  size_t converted_model_vertex_count = model.data().size();
+  // For now, only wireframe options is able to change element count.
+  // Only if the input model is not a wireframe.
+  // The new element count will be given by edges count
+  std::set<std::pair<u64, u64>> edges;
+  if (wireframe && model.primitiveType() != GeometricPrimitiveType::LINES &&
+      model.primitiveType() != GeometricPrimitiveType::POINTS &&
+      model.primitiveType() != GeometricPrimitiveType::LINE_LOOP &&
+      model.primitiveType() != GeometricPrimitiveType::LINE_STRIP) {
+    // compute new elements
+    u32 element_size = 3;
+    switch (model.primitiveType()) {
+    case GeometricPrimitiveType::TRIANGLES: element_size = 3;
+      break;
+    case GeometricPrimitiveType::QUADS: element_size = 4;
+      break;
+    default:Log::warn("GeometricPrimitiveType not implemented in circe::Shapes::convert");
+    }
+    const auto &model_indices = model.indices();
+    u64 element_count = model.elementCount();
+    HERMES_ASSERT(element_count * element_size <= model_indices.size());
+    for (u64 e = 0; e < element_count; ++e)
+      for (u32 k = 0; k < element_size; ++k) {
+        u64 a = std::min(model_indices[e * element_size + k],
+                         model_indices[e * element_size + (k + 1) % element_size]);
+        u64 b = std::max(model_indices[e * element_size + k],
+                         model_indices[e * element_size + (k + 1) % element_size]);
+        edges.insert(std::make_pair(a, b));
+      }
+    primitive_type = GeometricPrimitiveType::LINES;
+  }
+  // In the case of vertex count, the unique_positions options will create
+  // new vertices
+  if (unique_positions)
+    converted_model_vertex_count = edges.empty() ? model.indices().size() : edges.size() * 2;
+
+  AoS aos;
+  aos.setStructDescriptor(descriptor);
+  aos.resize(converted_model_vertex_count);
+  auto &fields = aos.fields();
+
+  // First, lets create indices
+  std::vector<i32> indices;
+  if (edges.empty() && !unique_positions)
+    indices = model.indices();
+  else if (!edges.empty())
+    for (auto e : edges) {
+      indices.emplace_back(e.first);
+      indices.emplace_back(e.second);
+    }
+  // now we copy field data
+  // unique positions will get an empty indices vector
+  if (indices.empty()) {
+    const auto &model_indices = model.indices();
+    for (size_t i = 0; i < model_indices.size(); ++i) {
+      u64 f = 0;
+      for (size_t j = 0; j < fields.size(); ++j) {
+#define CPY_FIELD(D, C, T) \
+      if(fields[j].type == D && fields[j].component_count == C) {               \
+        const auto& field = model.data().field<T>(fields[j].name);              \
+          aos.valueAt<T>(f, i) = field[model_indices[i]];                       \
+          }
+        CPY_FIELD(DataType::F32, 1, f32)
+        CPY_FIELD(DataType::F32, 2, vec2f)
+        CPY_FIELD(DataType::F32, 3, vec3f)
+#undef CPY_FIELD
+        f++;
+      }
+    }
+  } else {
     u64 f = 0;
-    for (const auto &field_id : attr_filter) {
+    for (size_t field_id = 0; field_id < fields.size(); ++field_id) {
 #define CPY_FIELD(D, C, T) \
       if(fields[field_id].type == D && fields[field_id].component_count == C) { \
         const auto& field = model.data().field<T>(fields[field_id].name);       \
-        for(u64 i = 0; i < aos.size(); ++i)                                     \
-          aos.valueAt<T>(f, i) = field[i];}
+        for(u64 i : indices)                                                    \
+          aos.valueAt<T>(f, i) = field[i];                                      \
+          }
       CPY_FIELD(DataType::F32, 1, f32)
       CPY_FIELD(DataType::F32, 2, vec2f)
       CPY_FIELD(DataType::F32, 3, vec3f)
@@ -133,54 +217,33 @@ Model Shapes::convert(const Model &model, shape_options options, const std::vect
       f++;
     }
   }
-  if (testMaskBit(options, shape_options::wireframe)) {
-    if (model.primitiveType() == GeometricPrimitiveType::LINES ||
-        model.primitiveType() == GeometricPrimitiveType::POINTS ||
-        model.primitiveType() == GeometricPrimitiveType::LINE_LOOP ||
-        model.primitiveType() == GeometricPrimitiveType::LINE_STRIP)
-      converted_model = model.indices();
-    else {
-      converted_model.setPrimitiveType(GeometricPrimitiveType::LINES);
-      u32 element_size = 3;
-      switch (model.primitiveType()) {
-      case GeometricPrimitiveType::TRIANGLES: element_size = 3;
-        break;
-      case GeometricPrimitiveType::QUADS: element_size = 4;
-        break;
-      default:Log::warn("GeometricPrimitiveType not implemented in circe::Shapes::convert");
-      }
-      const auto &model_indices = model.indices();
-      u64 element_count = model.elementCount();
-      HERMES_ASSERT(element_count * element_size <= model_indices.size());
-      std::set<std::pair<u64, u64>> edges;
-      for (u64 e = 0; e < element_count; ++e)
-        for (u32 k = 0; k < element_size; ++k) {
-          u64 a = std::min(model_indices[e * element_size + k],
-                           model_indices[e * element_size + (k + 1) % element_size]);
-          u64 b = std::max(model_indices[e * element_size + k],
-                           model_indices[e * element_size + (k + 1) % element_size]);
-          edges.insert(std::make_pair(a, b));
-        }
-      std::vector<i32> indices;
-      for (auto e : edges) {
-        indices.emplace_back(e.first);
-        indices.emplace_back(e.second);
-      }
-      converted_model = indices;
-    }
-  }
+
+  // prepare output
+  converted_model = aos;
+  converted_model = indices;
+  converted_model.setPrimitiveType(primitive_type);
   return std::move(converted_model);
 }
 
 Model Shapes::icosphere(const point3 &center, real_t radius, u32 divisions, shape_options options) {
+  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool only_vertices = testMaskBit(options, shape_options::vertices);
+  const bool generate_normals = testMaskBit(options, shape_options::normal);
+  const bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
+  const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
+  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
+
   AoS aos;
   aos.pushField<point3>("position");
   u64 struct_size = 3;
-  if ((options & shape_options::normal) == shape_options::normal) {
+  if (generate_normals) {
     aos.pushField<vec3>("normal");
     struct_size += 3;
   }
-  if ((options & shape_options::uv) == shape_options::uv) {
+  if (generate_uvs) {
     aos.pushField<point2>("uv");
     struct_size += 2;
   }
@@ -246,11 +309,11 @@ Model Shapes::icosphere(const point3 &center, real_t radius, u32 divisions, shap
     // project vertex to unit sphere
     (*reinterpret_cast<vec3 *>(vertex_data.data() + struct_size * i)).normalize();
     // compute normal
-    if ((options & shape_options::normal) == shape_options::normal)
+    if (generate_normals)
       (*reinterpret_cast<vec3 *>(vertex_data.data() + struct_size * i + 3)) =
           (*reinterpret_cast<vec3 *>(vertex_data.data() + struct_size * i));
     // compute uv
-    if ((options & shape_options::uv) == shape_options::uv) {
+    if (generate_uvs) {
       (*reinterpret_cast<point2 *>(vertex_data.data() + struct_size * i + 6)).x = std::atan2(
           (*reinterpret_cast<vec3 *>(vertex_data.data() + struct_size * i)).y,
           (*reinterpret_cast<vec3 *>(vertex_data.data() + struct_size * i)).x);
@@ -268,7 +331,14 @@ Model Shapes::icosphere(const point3 &center, real_t radius, u32 divisions, shap
   aos = std::move(vertex_data);
   Model model;
   model = std::move(aos);
-  model = index_data;
+
+  if (!only_vertices)
+    model = index_data;
+
+  model.setPrimitiveType(GeometricPrimitiveType::TRIANGLES);
+  if (only_vertices)
+    model.setPrimitiveType(GeometricPrimitiveType::POINTS);
+
   return model;
 #undef STORE_POSITION
 #undef ADD_FACE
@@ -423,25 +493,30 @@ Model Shapes::plane(const Plane &plane,
 }
 
 Model Shapes::box(const bbox3 &box, shape_options options) {
+  // check options
   if (testMaskBit(options, shape_options::tangent_space))
     options = options | shape_options::tangent | shape_options::bitangent;
   const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
   const bool only_vertices = testMaskBit(options, shape_options::vertices);
   const bool generate_normals = testMaskBit(options, shape_options::normal);
-  bool generate_uvs = testMaskBit(options, shape_options::uv);
   const bool generate_tangents = testMaskBit(options, shape_options::tangent);
   const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
   const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
   const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
   const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
+  const bool generate_uvw = testMaskBit(options, shape_options::uvw);
+  const bool generate_uvs = testMaskBit(options, shape_options::uv);
 
-  Model model;
+  // model data
+  AoS aos;
 
-  const u64 position_id = model.pushAttribute<point3>("position");
-  const u64 normal_id = generate_normals ? model.pushAttribute<vec3>("normal") : 0;
-  const u64 uv_id = generate_uvs ? model.pushAttribute<point2>("uvs") : 0;
-  const u64 tangent_id = generate_tangents ? model.pushAttribute<vec3>("tangent") : 0;
-  const u64 bitangent_id = generate_bitangents ? model.pushAttribute<vec3>("bitangent") : 0;
+  // data fields
+  const u64 position_id = aos.pushField<point3>("position");
+  const u64 normal_id = generate_normals ? aos.pushField<vec3>("normal") : 0;
+  const u64 uv_id = generate_uvs ? aos.pushField<point2>("uvs") : 0;
+  const u64 uvw_id = generate_uvw ? aos.pushField<point3>("uvw") : 0;
+  const u64 tangent_id = generate_tangents ? aos.pushField<vec3>("tangent") : 0;
+  const u64 bitangent_id = generate_bitangents ? aos.pushField<vec3>("bitangent") : 0;
 
   // base vertices
   point3 base_vertices[8] = {
@@ -453,6 +528,7 @@ Model Shapes::box(const bbox3 &box, shape_options options) {
       {box.upper.x, box.lower.y, box.upper.z}, // 5
       {box.upper.x, box.upper.y, box.upper.z}, // 6
       {box.lower.x, box.upper.y, box.upper.z}};// 7
+
   // base uvs
   point2 base_uvs[4] = {
       {0, 0}, // 0
@@ -460,6 +536,18 @@ Model Shapes::box(const bbox3 &box, shape_options options) {
       {1, 1}, // 2
       {0, 1}, // 3
   };
+
+  point3 base_uvw[8] = {
+      {0, 0, 0}, // 0
+      {1, 0, 0}, // 1
+      {1, 1, 0}, // 2
+      {0, 1, 0}, // 3
+      {0, 0, 1}, // 4
+      {1, 0, 1}, // 5
+      {1, 1, 1}, // 6
+      {0, 1, 1}, // 7
+  };
+
   vec3 base_normals[6] = {
       {0, 0, -1}, // -Z
       {0, 0, 1}, // +Z
@@ -467,15 +555,6 @@ Model Shapes::box(const bbox3 &box, shape_options options) {
       {0, 1, 0}, // Y
       {-1, 0, 0}, // -X
       {1, 0, 0}, // X
-  };
-
-  std::vector<i32> base_vertex_indices = {
-      0, 1, 2, 3, // -Z face
-      4, 7, 6, 5, // +Z face
-      0, 4, 5, 1, // -Y face
-      3, 2, 6, 7, // +Y face
-      0, 3, 7, 4, // -X face
-      2, 1, 5, 6  // +X face
   };
 
   //           7
@@ -486,69 +565,79 @@ Model Shapes::box(const bbox3 &box, shape_options options) {
   //  0                     5
   //               1
 
+  std::vector<i32> base_vertex_indices = {
+      0, 1, 2, 3, // -Z face
+      4, 7, 6, 5, // +Z face
+      0, 4, 5, 1, // -Y face
+      3, 2, 6, 7, // +Y face
+      0, 3, 7, 4, // -X face
+      2, 1, 5, 6  // +X face
+  };
+
+
+  // data type
+  GeometricPrimitiveType primitive_type = GeometricPrimitiveType::TRIANGLES;
+  if (only_vertices)
+    primitive_type = GeometricPrimitiveType::POINTS;
+  else if (generate_wireframe)
+    primitive_type = GeometricPrimitiveType::LINES;
+
+  // compute number of vertices
+  size_t n_vertices = 8;
+  if (unique_positions && !only_vertices) {
+    n_vertices = 24;
+    if (generate_wireframe)
+      n_vertices = 8 * 6;
+  }
+  aos.resize(n_vertices);
+
+  size_t n_indices = 36;
+  if (generate_wireframe)
+    n_indices = 8; // a line per edge
+
+  // fill vertex data
   std::vector<i32> indices;
-  if (only_vertices) {
-    model.setPrimitiveType(GeometricPrimitiveType::POINTS);
-    model.resize(8);
-    for (int i = 0; i < 8; ++i) {
-      model.attributeValue<point3>(position_id, i) = base_vertices[i];
-      indices.emplace_back(i);
-    }
-  } else if (unique_positions || (!generate_normals && !generate_uvs)) {
-    model.resize(8);
-    for (int i = 0; i < 8; ++i)
-      model.attributeValue<point3>(position_id, i) = base_vertices[i];
-    if (generate_wireframe) {
-      model.setPrimitiveType(GeometricPrimitiveType::LINES);
-      indices = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 5, 2, 6, 3, 7, 4, 5, 5, 6, 6, 7, 7, 4};
+  if (generate_wireframe) {
+    indices = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 5, 2, 6, 3, 7, 4, 5, 5, 6, 6, 7, 7, 4};
+    if (unique_positions) {
     } else {
-      model.setPrimitiveType(GeometricPrimitiveType::TRIANGLES);
-      for (int f = 0; f < 6; ++f)
-        for (int jump = 0; jump < 2; ++jump) {
-          indices.emplace_back(base_vertex_indices[f * 4 + 0]);
-          indices.emplace_back(base_vertex_indices[f * 4 + jump + 1]);
-          indices.emplace_back(base_vertex_indices[f * 4 + jump + 2]);
-        }
+      for (int i = 0; i < n_vertices; ++i)
+        aos.valueAt<point3>(position_id, i) = base_vertices[i];
     }
   } else {
-    if (generate_wireframe) {
-      model.setPrimitiveType(GeometricPrimitiveType::LINES);
-      indices = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 1, 5, 2, 6, 3, 7, 4, 5, 5, 6, 6, 7, 7, 4};
-    } else if (generate_normals || generate_uvs) {
-      model.setPrimitiveType(GeometricPrimitiveType::TRIANGLES);
-      for (int f = 0; f < 6; ++f)
-        for (int jump = 0; jump < 2; ++jump) {
-          indices.emplace_back(f * 4 + 0);
-          indices.emplace_back(f * 4 + jump + 1);
-          indices.emplace_back(f * 4 + jump + 2);
-        }
-      // 4 vertices per cube quad face
-      model.resize(base_vertex_indices.size());
-      for (size_t i = 0; i < base_vertex_indices.size(); ++i)
-        model.attributeValue<point3>(position_id, i) =
-            base_vertices[base_vertex_indices[i]];
-      if (generate_uvs) {
+    // tesselate cube
+    for (int f = 0; f < 6; ++f)
+      for (int jump = 0; jump < 2; ++jump) {
+        indices.emplace_back(base_vertex_indices[f * 4 + 0]);
+        indices.emplace_back(base_vertex_indices[f * 4 + jump + 1]);
+        indices.emplace_back(base_vertex_indices[f * 4 + jump + 2]);
+      }
+
+    if (unique_positions) {
+      // we must duplicate each vertex per index
+    } else {
+      HERMES_ASSERT(n_vertices == 8)
+      for (int i = 0; i < n_vertices; ++i) {
+        aos.valueAt<point3>(position_id, i) = base_vertices[i];
+        if (generate_uvw)
+          aos.valueAt<point3>(uvw_id, i) = base_uvw[i];
+        if (generate_uvs)
+          aos.valueAt<point2>(uv_id, i) = base_uvs[i % 4];
       }
       if (generate_normals) {
         for (int f = 0; f < 6; ++f)
           for (int i = 0; i < 4; ++i)
-            model.attributeValue<vec3>(normal_id, f * 4 + i) =
+            aos.valueAt<vec3>(normal_id, f * 4 + i) =
                 flip_normals ? -base_normals[f] : base_normals[f];
       }
-      if (generate_tangents) {
-      }
-      if (generate_bitangents) {
-      }
-
-    } else {
-      model.setPrimitiveType(GeometricPrimitiveType::QUADS);
-      indices = base_vertex_indices;
-      model.resize(8);
-      for (int i = 0; i < 8; ++i)
-        model.attributeValue<point3>(position_id, i) = base_vertices[i];
     }
   }
-  model = indices;
+  // prepare model
+  Model model;
+  model.setPrimitiveType(primitive_type);
+  model = aos;
+  if (!indices.empty())
+    model = indices;
   return model;
 }
 

@@ -27,6 +27,7 @@
 
 #include <circe/gl/io/display_renderer.h>
 #include <circe/ui/ui_camera.h>
+#include <circe/colors/color.h>
 
 #include <functional>
 #include <memory>
@@ -74,17 +75,19 @@ public:
   void scroll(double dx, double dy);
   void key(int k, int scancode, int action, int modifiers) const;
 
-  // render callback
-  std::function<void(const ViewportDisplay&)> prepareRenderCallback;
+  // render callbacks
+  std::function<void(const ViewportDisplay &)> prepareRenderCallback;
   std::function<void(CameraInterface *)> renderCallback;
+  std::function<void()> renderEndCallback;
+  // input callbacks
   std::function<void(int, int, int)> buttonCallback;
   std::function<void(double, double)> mouseCallback;
   std::function<void(double, double)> scrollCallback;
   std::function<void(int, int, int, int)> keyCallback;
-  std::function<void()> renderEndCallback;
 
   // viewport
   int x, y, width, height;
+  circe::Color clear_screen_color{circe::Color::White()};
 
   std::shared_ptr<UserCamera> camera;
   std::shared_ptr<DisplayRenderer> renderer;

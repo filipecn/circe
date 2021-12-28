@@ -1,4 +1,4 @@
-/// Copyright (c) 2020, FilipeCN.
+/// Copyright (c) 2021, FilipeCN.
 ///
 /// The MIT License (MIT)
 ///
@@ -19,35 +19,10 @@
 /// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 /// IN THE SOFTWARE.
 ///
-///\file model.h
+///\file bvh.cpp
 ///\author FilipeCN (filipedecn@gmail.com)
-///\date 2020-01-03
+///\date 2021-12-13
 ///
 ///\brief
 
-#ifndef CIRCE_CIRCE_SCENE_SHAPE_OPTIONS_H
-#define CIRCE_CIRCE_SCENE_SHAPE_OPTIONS_H
-
-#include <circe/common/bitmask_operators.h>
-
-namespace circe {
-
-/// Shape's mesh attributes and configurations
-enum class shape_options {
-  none = 0x00, //!< the mesh contains only positions
-  normal = 0x01, //!< generate vertex normals
-  uv = 0x02, //!< generate vertex uv coordinates
-  uvw = 0x4, //!< generate vertex uvw coordinates
-  tangent_space = 0x8, //!< generate vertex tangent space (stores tangents and bitangents)
-  tangent = 0x10, //!< generate vertex tangent space (stores tangents)
-  bitangent = 0x20, //!< generate vertex tangent space (stores bitangents)
-  unique_positions = 0x40,  //!< vertex attributes are averaged to occupy a single index in the mesh
-  wireframe = 0x80, //!< only edges
-  vertices = 0x100, //!< only vertices
-  flip_normals = 0x200, //!< flip normals to point inwards (uv coordinates may change as well)
-  flip_faces = 0x400 //!< reverse face vertex order
-};
-CIRCE_ENABLE_BITMASK_OPERATORS(shape_options);
-}
-
-#endif //CIRCE_CIRCE_SCENE_SHAPE_OPTIONS_H
+#include "bvh.h"

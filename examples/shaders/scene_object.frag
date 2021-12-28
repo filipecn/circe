@@ -1,4 +1,7 @@
-#version 440 core
+#version 440 co    // resources
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
+    if (!mesh.model.program.link(shaders_path, "poly_mesh"))
+      HERMES_LOG_ERROR("Failed to load instance shader: " + mesh.model.program.err);re
 
 in vec3 fPosition;
 in vec3 fNormal;

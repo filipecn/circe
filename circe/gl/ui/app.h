@@ -73,7 +73,11 @@ public:
   virtual void scroll(double dx, double dy);
 
   std::vector<ViewportDisplay> viewports;
-  std::function<void()> renderCallback;
+  // render callbacks
+  std::function<void()> prepareRenderCallback;
+  std::function<void(circe::CameraInterface*)> renderCallback;
+  std::function<void()> finishRenderCallback;
+  // input callbacks
   std::function<void(unsigned int)> charCallback;
   std::function<void(int, const char **)> dropCallback;
   std::function<void(double, double)> scrollCallback;

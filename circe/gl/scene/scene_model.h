@@ -60,7 +60,7 @@ public:
   //                             METHODS
   // ***********************************************************************
   inline u64 vertexCount() const { return vb_.vertexCount(); }
-  inline u64 elementCount() const { return ib_.element_count; }
+  inline u64 elementCount() const { return primitive_count_; }
   VertexBuffer &vertexBuffer() { return vb_; }
   const IndexBuffer &indexBuffer() const { return ib_; }
   IndexBuffer &indexBuffer()  { return ib_; }
@@ -80,6 +80,7 @@ private:
   VertexBuffer vb_;
   IndexBuffer ib_;
   Model model_;
+  size_t primitive_count_{0};
 };
 
 }

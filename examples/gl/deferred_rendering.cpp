@@ -32,7 +32,7 @@
 
 class DeferredRenderingExample : public circe::gl::BaseApp {
 public:
-  DeferredRenderingExample() : BaseApp(WIDTH, HEIGHT) {
+  DeferredRenderingExample() : BaseApp(WIDTH, HEIGHT, "Deferred Rendering") {
     // resources
     hermes::Path assets_path(std::string(ASSETS_PATH));
     hermes::Path shaders_path(std::string(SHADERS_PATH));

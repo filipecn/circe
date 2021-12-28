@@ -10,6 +10,7 @@ public:
   enum MeshType {
     None,
     Sphere,
+    Cube,
     Circle,
     Quad
   };
@@ -23,7 +24,7 @@ public:
     if (!instance_set.instance_program.link(shaders_path, "instance"))
       HERMES_LOG_ERROR("Failed to load instance shader: " + instance_set.instance_program.err);
 
-    updateMesh(MeshType::Sphere);
+    updateMesh(MeshType::Cube);
 
     this->app_->scene.add(&instance_set);
   }
@@ -33,6 +34,8 @@ public:
     static MeshType mesh_choice = MeshType::None;
     if (ImGui::RadioButton("Sphere", mesh_choice == Sphere))
       mesh_choice = Sphere;
+    if (ImGui::RadioButton("Cube", mesh_choice == Cube))
+      mesh_choice = Cube;
     if (ImGui::RadioButton("Circle", mesh_choice == Circle))
       mesh_choice = Circle;
     if (ImGui::RadioButton("Quad", mesh_choice == Quad))
@@ -41,6 +44,12 @@ public:
     std::stringstream ss;
     ss << this->last_FPS_ << "fps" << std::endl;
     ImGui::Text(ss.str().c_str());
+
+    auto obj = circe::ImguiFolderDialog::folder_dialog_button("Pick obj");
+    if (obj)
+      HERMES_LOG_VARIABLE(obj.path)
+
+
     // open Dialog Simple
     if (ImGui::Button("Open File Dialog"))
       igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
@@ -90,13 +99,16 @@ public:
       last_type = type;
       SceneModel model;
       switch (type) {
-      case MeshType::Sphere:model = circe::Shapes::icosphere(2);
+      case MeshType::
+        Sphere:model = circe::Shapes::icosphere(2);
         instance_set.instance_model = std::move(model);
         break;
       case MeshType::Circle:
+      case MeshType::Cube:model = circe::Shapes::box(hermes::bbox3::unitBox());
+        instance_set.instance_model = std::move(model);
+        break;
       case MeshType::Quad:
-      default:
-        HERMES_NOT_IMPLEMENTED
+      default:HERMES_NOT_IMPLEMENTED
       }
 
       resize(100);

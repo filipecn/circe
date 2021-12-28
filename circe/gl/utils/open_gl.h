@@ -33,6 +33,29 @@ namespace circe::gl {
 
 class OpenGL final {
 public:
+  static size_t primitiveCount(GLuint primitive_type, GLuint index_count) {
+    size_t primitive_count = 0;
+    switch (primitive_type) {
+    case GL_POINTS: primitive_count = index_count;
+      break;
+    case GL_TRIANGLES: primitive_count = index_count / 3;
+      break;
+    case GL_TRIANGLE_STRIP:
+    case GL_TRIANGLE_FAN: primitive_count = index_count - 2;
+      break;
+    case GL_LINES:primitive_count = index_count / 2;
+      break;
+    case GL_LINE_STRIP: primitive_count = index_count - 1;
+      break;
+    case GL_LINE_LOOP: primitive_count = index_count;
+      break;
+    case GL_QUADS: primitive_count = index_count / 4;
+      break;
+    default: hermes::Log::warn("Element type considered GL_POINTS on index buffer assignment.");
+      primitive_count = index_count;
+    }
+    return primitive_count;
+  }
   static std::string PrimitiveToStr(hermes::GeometricPrimitiveType p) {
 #define ES(P) \
     if(p == P) return #P

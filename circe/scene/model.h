@@ -105,4 +105,4 @@ protected:
 
 }
 
-#endif //PONOS_CIRCE_CIRCE_GL_SCENE_MODEL_H
+#endif // CIRCE_CIRCE_GL_SCENE_MODEL_H

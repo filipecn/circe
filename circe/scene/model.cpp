@@ -112,7 +112,7 @@ std::ostream &operator<<(std::ostream &o, const Model &model) {
   };
   o << "Model:\n" << model.data_;
   o << "Model primitive type " << ESTR(model.element_type_) << std::endl;
-  o << "Model Indices:\n";
+  o << "Model Indices(" << model.elementCount() << " primitives):\n";
   for (auto i : model.indices_)
     o << i << " ";
   o << std::endl;
@@ -128,19 +128,18 @@ void Model::fitToBox(const hermes::bbox3 &box) {
 }
 
 u64 Model::elementCount() const {
-  if (indices_.empty())
-    return 0;
+  size_t index_count = indices_.empty() ? data_.size() : indices_.size();
   switch (element_type_) {
-  case hermes::GeometricPrimitiveType::TRIANGLES: return indices_.size() / 3;
-  case hermes::GeometricPrimitiveType::LINES: return indices_.size() / 2;
+  case hermes::GeometricPrimitiveType::TRIANGLES: return index_count / 3;
+  case hermes::GeometricPrimitiveType::LINES: return index_count / 2;
   case hermes::GeometricPrimitiveType::POINTS:
-  case hermes::GeometricPrimitiveType::LINE_LOOP: return indices_.size();
-  case hermes::GeometricPrimitiveType::LINE_STRIP: return indices_.size() - 1;
+  case hermes::GeometricPrimitiveType::LINE_LOOP: return index_count;
+  case hermes::GeometricPrimitiveType::LINE_STRIP: return index_count - 1;
   case hermes::GeometricPrimitiveType::TRIANGLE_STRIP:
-  case hermes::GeometricPrimitiveType::TRIANGLE_FAN: return indices_.size() - 2;
+  case hermes::GeometricPrimitiveType::TRIANGLE_FAN: return index_count - 2;
   case hermes::GeometricPrimitiveType::QUADS:
-  case hermes::GeometricPrimitiveType::TETRAHEDRA: return indices_.size() / 4;
-  default: return indices_.size();
+  case hermes::GeometricPrimitiveType::TETRAHEDRA: return index_count / 4;
+  default: return index_count;
   }
 }
 

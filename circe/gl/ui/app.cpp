@@ -5,7 +5,9 @@ namespace circe::gl {
 
 App::App(uint w, uint h, const char *t, bool defaultViewport)
     : initialized(false), windowWidth(w), windowHeight(h), title(t) {
+  prepareRenderCallback = nullptr;
   renderCallback = nullptr;
+  finishRenderCallback = nullptr;
   mouseCallback = nullptr;
   buttonCallback = nullptr;
   keyCallback = nullptr;
@@ -62,10 +64,12 @@ int App::run() {
 void App::exit() { GraphicsDisplay::instance().stop(); }
 
 void App::render() {
+  if (prepareRenderCallback)
+    prepareRenderCallback();
   for (auto &viewport : viewports)
-    viewport.render();
-  if (renderCallback)
-    renderCallback();
+    viewport.render(renderCallback);
+  if (finishRenderCallback)
+    finishRenderCallback();
 }
 
 void App::button(int button, int action, int modifiers) {

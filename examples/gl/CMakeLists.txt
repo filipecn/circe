@@ -43,24 +43,27 @@ function(buildExample EXAMPLE_NAME)
 endfunction(buildExample)
 
 set(EXAMPLES
+        2d
         instances
         hello_circe
         shadows
         skybox
+        picking
 #        texture_atlas
         deferred_rendering
+        volume_texture
+        viewports
 
 #        volume_box
 #        volume_box_2d
 #        compute_shader
 #        save_viewport
-#        viewports
 #        scene_mesh_example
 #        post_effects
 #        text
 #        scene_object_interaction
 #        compiling_shaders
-#        ssbo
+        ssbo
 #        mesh_editor
         )
 

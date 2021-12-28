@@ -16,6 +16,7 @@
 #include <circe/gl/helpers/cartesian_grid.h>
 #include <circe/gl/helpers/geometry_drawers.h>
 #include <circe/ui/gizmo.h>
+#include <circe/ui/imgui_utils.h>
 //#include <circe/gl/helpers/grid_model.h>
 //#include <circe/helpers/hemesh_model.h>
 #include <circe/gl/helpers/quad_tree_model.h>
@@ -33,7 +34,6 @@
 #include <circe/gl/io/screen_quad.h>
 #include <circe/gl/texture/texture.h>
 #include <circe/gl/io/viewport_display.h>
-#include <circe/gl/scene/bvh.h>
 #include <circe/scene/camera_interface.h>
 #include <circe/scene/light.h>
 #include <circe/scene/material.h>
@@ -59,6 +59,7 @@
 #include <circe/gl/ui/font_manager.h>
 #include <circe/gl/ui/interactive_object_interface.h>
 #include <circe/gl/ui/modifier_cursor.h>
+#include <circe/gl/ui/picker.h>
 #include <circe/gl/ui/scene_app.h>
 #include <circe/gl/ui/text_object.h>
 #include <circe/gl/ui/text_renderer.h>

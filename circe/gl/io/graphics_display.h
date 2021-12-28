@@ -112,6 +112,7 @@ public:
    * Assign the given color **(r, g, b, a)** to all pixels of the screen
    */
   static void clearScreen(float r, float g, float b, float a);
+  static void clearScreen(const circe::Color &color);
   // events
   void processInput();
   // user input

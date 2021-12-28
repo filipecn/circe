@@ -14,20 +14,24 @@ void ViewportDisplay::render(const std::function<void(CameraInterface *)> &f) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_DEPTH_TEST);
-  renderer->process([&]() {
-    if (f)
-      f(camera.get());
-    if (renderCallback)
-      renderCallback(camera.get());
-  });
+  // TODO fix process
+//  renderer->process([&]() {
+//    if (f)
+//      f(camera.get());
+//    if (renderCallback)
+//      renderCallback(camera.get());
+//  });
   //  glDisable(GL_DEPTH_TEST);
   GraphicsDisplay &gd = GraphicsDisplay::instance();
   glViewport(x, y, width, height);
   glScissor(x, y, width, height);
   glEnable(GL_SCISSOR_TEST);
-  circe::gl::GraphicsDisplay::clearScreen(1.f, 1.f, 1.f, 0.f);
-  // glEnable(GL_DEPTH_TEST);
-  renderer->render();
+  circe::gl::GraphicsDisplay::clearScreen(clear_screen_color);
+//  glEnable(GL_DEPTH_TEST);
+// TODO fix post-process
+//  renderer->render();
+  if (f)
+    f(camera.get());
   glDisable(GL_SCISSOR_TEST);
   if (renderEndCallback)
     renderEndCallback();
@@ -59,7 +63,7 @@ hermes::point2 ViewportDisplay::getMouseNPos() {
   hermes::point2 mp =
       GraphicsDisplay::instance().getMousePos() - hermes::vec2(x, y);
   return hermes::point2((mp.x - viewport[0]) / viewport[2] * 2.0 - 1.0,
-                       (mp.y - viewport[1]) / viewport[3] * 2.0 - 1.0);
+                        (mp.y - viewport[1]) / viewport[3] * 2.0 - 1.0);
 }
 
 bool ViewportDisplay::hasMouseFocus() const {
@@ -71,11 +75,11 @@ bool ViewportDisplay::hasMouseFocus() const {
 hermes::point3 ViewportDisplay::viewCoordToNormDevCoord(hermes::point3 p) const {
   float v[] = {0, 0, static_cast<float>(width), static_cast<float>(height)};
   return hermes::point3((p.x - v[0]) / (v[2] / 2.0) - 1.0,
-                       (p.y - v[1]) / (v[3] / 2.0) - 1.0, 2 * p.z - 1.0);
+                        (p.y - v[1]) / (v[3] / 2.0) - 1.0, 2 * p.z - 1.0);
 }
 
 hermes::point3 ViewportDisplay::unProject(const CameraInterface &c,
-                                         hermes::point3 p) {
+                                          hermes::point3 p) {
   return hermes::inverse(c.getTransform()) * p;
 }
 

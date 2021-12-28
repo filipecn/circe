@@ -96,9 +96,11 @@ void IndexBuffer::draw() {
       index_count_ = element_count;
     };
   }
-  mem_->bind();
-  CHECK_GL(glDrawElements(element_type, index_count_, data_type,
-                          reinterpret_cast<void *>(mem_->offset())));
+  if(mem_->size() && index_count_) {
+    mem_->bind();
+    CHECK_GL(glDrawElements(element_type, index_count_, data_type,
+                            reinterpret_cast<void *>(mem_->offset())));
+  }
 }
 
 GLuint IndexBuffer::bufferTarget() const {

@@ -76,6 +76,7 @@ set(CIRCE_HEADERS
         circe/colors/color_palette.h
         circe/common/bitmask_operators.h
         #        circe/io/utils.h
+        circe/scene/bvh.h
         circe/scene/array.h
         circe/scene/camera_interface.h
         circe/scene/camera_projection.h
@@ -84,6 +85,7 @@ set(CIRCE_HEADERS
         circe/scene/model.h
         circe/scene/shapes.h
         circe/scene/spatial_structure_interface.h
+        circe/ui/imgui_utils.h
         circe/ui/gizmo.h
         circe/ui/trackball.h
         circe/ui/trackball_interface.h
@@ -95,8 +97,10 @@ set(CIRCE_HEADERS
 
 set(CIRCE_SOURCES
         #        circe/io/utils.cpp
+        circe/scene/bvh.cpp
         circe/scene/model.cpp
         circe/scene/shapes.cpp
+        circe/ui/imgui_utils.cpp
         circe/ui/trackball_interface.cpp
         circe/ui/ui_camera.cpp
         circe/circe.cpp
@@ -126,6 +130,7 @@ set(CIRCE_GL_HEADERS
         circe/gl/ui/app.h
         circe/gl/ui/interactive_object_interface.h
         circe/gl/ui/modifier_cursor.h
+        circe/gl/ui/picker.h
         circe/gl/ui/scene_app.h
         #        circe/gl/ui/text_renderer.h
         #        circe/gl/ui/text_object.h
@@ -139,7 +144,6 @@ set(CIRCE_GL_HEADERS
         circe/gl/graphics/shadow_map.h
         #        circe/gl/helpers/bbox_model.h
         #        circe/gl/helpers/segment_model.h
-        #        circe/gl/helpers/bvh_model.h
         #        circe/gl/helpers/camera_model.h
         circe/gl/helpers/cartesian_grid.h
         #        circe/gl/helpers/geometry_drawers.h
@@ -161,7 +165,6 @@ set(CIRCE_GL_HEADERS
         circe/gl/texture/texture.h
         circe/gl/io/viewport_display.h
         circe/gl/io/user_input.h
-        circe/gl/scene/bvh.h
         circe/gl/scene/scene_model.h
         )
 
@@ -185,7 +188,6 @@ set(CIRCE_GL_SOURCES
         circe/gl/io/font_texture.cpp
         circe/gl/io/screen_quad.cpp
         circe/gl/io/viewport_display.cpp
-        #        circe/gl/scene/bvh.cpp
         circe/gl/scene/instance_set.cpp
         circe/gl/scene/mesh_utils.cpp
         circe/gl/scene/quad.cpp
@@ -206,6 +208,7 @@ set(CIRCE_GL_SOURCES
         circe/gl/texture/image_texture.cpp
         circe/gl/texture/texture.cpp
         circe/gl/ui/app.cpp
+        circe/gl/ui/picker.cpp
         #        circe/gl/ui/text_renderer.cpp
         #        circe/gl/ui/text_object.cpp
         #        circe/gl/ui/font_manager.cpp

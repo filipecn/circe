@@ -41,6 +41,13 @@ BaseApp::~BaseApp() {
   ImGui::DestroyContext();
 }
 
+void BaseApp::init() {
+//  app_->viewports[0].prepareRenderCallback = [&](const ViewportDisplay &vp) {
+//    this->prepareFrame(vp);
+//  };
+  prepare();
+}
+
 void BaseApp::prepare() {
   GraphicsDisplay::instance().mouseCallback = [&](double x, double y) {
     ImGuiIO &io = ImGui::GetIO();
@@ -69,24 +76,26 @@ void BaseApp::prepare() {
   ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
-void BaseApp::prepareFrame(const ViewportDisplay &display) {
+void BaseApp::prepareFrame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 }
 
+void BaseApp::startFrame() {
+  // start frame time
+  t_start = std::chrono::high_resolution_clock::now();
+  prepareFrame();
+}
+
 void BaseApp::finishFrame() {
-  // Rendering
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void BaseApp::nextFrame() {
-  // start frame time
-  auto t_start = std::chrono::high_resolution_clock::now();
-  // update scene
-  render(app_->getCamera());
+void BaseApp::endFrame() {
   finishFrame();
+  // compute FPS
   frame_counter_++;
   auto t_end = std::chrono::high_resolution_clock::now();
   auto t_diff = std::chrono::duration<double, std::milli>(t_end - t_start).count();
@@ -100,7 +109,12 @@ void BaseApp::nextFrame() {
   }
 }
 
+void BaseApp::nextFrame(circe::CameraInterface *camera) {
+  render(camera);
+}
+
 int BaseApp::run() {
+  init();
   return app_->run();
 }
 

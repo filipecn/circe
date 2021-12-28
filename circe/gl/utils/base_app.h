@@ -37,17 +37,17 @@ class BaseApp {
 public:
   template<typename... Args>
   explicit BaseApp(Args &&... args) {
-    app_ = std::make_unique<circe::gl::SceneApp<>>(std::forward<Args>(args)...);
-    app_->renderCallback = [&]() { this->nextFrame(); };
-    app_->viewports[0].prepareRenderCallback = [&](const ViewportDisplay&vp) {
-      this->prepareFrame(vp);
-    };
-    prepare();
+    app_ = std::make_unique<circe::gl::App>(std::forward<Args>(args)...);
+    app_->finishRenderCallback = [&]() { this->endFrame(); };
+    app_->prepareRenderCallback = [&]() { this->startFrame(); };
+    app_->renderCallback = [&](circe::CameraInterface *c) { this->nextFrame(c); };
   }
   virtual ~BaseApp();
+  void init();
   virtual void prepare();
+  // render
+  virtual void prepareFrame();
   virtual void render(circe::CameraInterface *camera) = 0;
-  virtual void prepareFrame(const ViewportDisplay& display);
   virtual void finishFrame();
   int run();
 
@@ -55,13 +55,16 @@ public:
   float frame_timer = 1.0f;
 
 protected:
-  void nextFrame();
+  void startFrame();
+  void nextFrame(circe::CameraInterface *camera);
+  void endFrame();
 
-  std::unique_ptr <circe::gl::SceneApp<>> app_;
+  std::unique_ptr<circe::gl::App> app_;
   // Frame counter to display fps
+  std::chrono::time_point<std::chrono::high_resolution_clock> t_start;
   uint32_t frame_counter_ = 0;
   uint32_t last_FPS_ = 0;
-  std::chrono::time_point <std::chrono::high_resolution_clock> last_timestamp_;
+  std::chrono::time_point<std::chrono::high_resolution_clock> last_timestamp_;
 };
 
 } // circe namespace

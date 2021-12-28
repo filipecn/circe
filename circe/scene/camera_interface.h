@@ -117,6 +117,10 @@ public:
   [[nodiscard]] virtual hermes::point3 getPosition() const { return pos; };
   /// \return  target position
   [[nodiscard]] virtual hermes::point3 getTarget() const { return target; }
+  [[nodiscard]] virtual hermes::vec3 getDirection() const { return target - pos; }
+  [[nodiscard]] virtual hermes::vec3 getRight() const {
+    return hermes::normalize(hermes::cross(up, target - pos));
+  }
   /// \param p target position
   virtual void setTarget(hermes::point3 p) {
     target = p;

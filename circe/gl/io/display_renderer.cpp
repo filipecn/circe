@@ -55,7 +55,6 @@ void DisplayRenderer::process(const std::function<void()> &f) {
 }
 
 void DisplayRenderer::render() {
-  return;
   resize(framebuffer_textures_->size().width, framebuffer_textures_->size().height);
   // render to display
   framebuffer_textures_[curBuffer_].bind(GL_TEXTURE0);

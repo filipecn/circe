@@ -537,6 +537,8 @@ std::ostream &operator<<(std::ostream &out, Texture &pt) {
       switch (pt.attributes_.type) {
       case GL_FLOAT:out << reinterpret_cast<f32 *>(data)[(int) (j * width + i)] << ",";
         break;
+      case GL_UNSIGNED_INT:out << reinterpret_cast<u32 *>(data)[(int) (j * width + i)] << ",";
+        break;
       default:out << static_cast<int>(data[(int) (j * width + i)]) << ",";
       }
     }
@@ -552,11 +554,29 @@ std::vector<unsigned char> Texture::texels() const {
   auto width = static_cast<int>(attributes_.size_in_texels.width);
   auto height = static_cast<int>(attributes_.size_in_texels.height);
 
-  std::vector<unsigned char> data(4 * width * height, 0);
+  size_t element_size = 1;
+  if(attributes_.type == GL_FLOAT)
+    element_size = 4;
+  std::vector<unsigned char> data(element_size * 4 * width * height, 0);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(attributes_.target, texture_object_);
   glGetTexImage(attributes_.target, 0, attributes_.format, attributes_.type, &data[0]);
+  CHECK_GL_ERRORS;
+  return data;
+}
+
+std::vector<unsigned char> Texture::texels(hermes::index2 offset, hermes::size2 size) const {
+  if (offset.i < 0 || offset.j < 0 || offset.i + size.width >= attributes_.size_in_texels.width
+      || offset.j + size.height >= attributes_.size_in_texels.height)
+    return {};
+
+  std::vector<unsigned char> data(4 * size.total());
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(attributes_.target, texture_object_);
+  glGetTextureSubImage(attributes_.target, 0, offset.i, offset.j, 0, size.width, size.height, 1,
+                       GL_RGBA, GL_UNSIGNED_BYTE, data.size(), &data[0]);
   CHECK_GL_ERRORS;
   return data;
 }
@@ -587,4 +607,5 @@ void Texture::resize(const hermes::size2 &new_size) {
   attributes_.size_in_texels.depth = 1;
   setTexels(nullptr);
 }
+
 } // namespace circe

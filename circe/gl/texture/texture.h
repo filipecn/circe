@@ -166,6 +166,7 @@ public:
   /// retrieve texture pixel data
   /// \return list of pixels by row major
   [[nodiscard]] std::vector<unsigned char> texels() const;
+  [[nodiscard]] std::vector<unsigned char> texels(hermes::index2 offset, hermes::size2 size) const;
   // ***********************************************************************
   //                           METRICS
   // ***********************************************************************

@@ -140,8 +140,13 @@ public:
   /// Link pre-attached shaders
   /// \return
   bool link();
-  /// Seach for files matching folder/shader_name.ext, where the values tried
-  /// for ext are frag, vert, ...
+  /// Search for files matching folder/shader_name.ext, where expected ext are
+  ///                         .vert - a vertex shader
+  ///                         .tesc - a tessellation control shader
+  ///                         .tese - a tessellation evaluation shader
+  ///                         .geom - a geometry shader
+  ///                         .frag - a fragment shader
+  ///                         .comp - a compute shader
   /// \param folder path/to/folder containing shaders
   /// \param shader_name shader name without extension
   /// \return
@@ -151,7 +156,13 @@ public:
   /// \return
   bool link(const std::vector<Shader> &shader_list);
   /// Attach and create program
-  /// \param shader_file_list files expect extensions: .frag, .vert
+  /// \param shader_file_list files expect extensions:
+  ///                         .vert - a vertex shader
+  ///                         .tesc - a tessellation control shader
+  ///                         .tese - a tessellation evaluation shader
+  ///                         .geom - a geometry shader
+  ///                         .frag - a fragment shader
+  ///                         .comp - a compute shader
   /// \return
   bool link(const std::vector<hermes::Path> &shader_file_list);
   /// Check if shader program is compiled with no errors
@@ -187,17 +198,17 @@ public:
   [[nodiscard]] inline const std::vector<UniformBlock> &uniformBlocks() const { return uniform_blocks_; }
   // Uniforms
   void setUniform(const std::string &name, const hermes::Transform &t) const;
-  void setUniform(const std::string &name, const hermes::mat4 &m);
-  void setUniform(const std::string &name, const hermes::mat3 &m);
-  void setUniform(const std::string &name, const hermes::vec4 &v);
-  void setUniform(const std::string &name, const hermes::vec3 &v);
-  void setUniform(const std::string &name, const hermes::vec2 &v);
-  void setUniform(const std::string &name, const hermes::point3 &v);
-  void setUniform(const std::string &name, const Color &c);
-  void setUniform(const std::string &name, int i);
-  void setUniform(const std::string &name, float f);
+  void setUniform(const std::string &name, const hermes::mat4 &m) const;
+  void setUniform(const std::string &name, const hermes::mat3 &m) const;
+  void setUniform(const std::string &name, const hermes::vec4 &v) const;
+  void setUniform(const std::string &name, const hermes::vec3 &v) const;
+  void setUniform(const std::string &name, const hermes::vec2 &v) const;
+  void setUniform(const std::string &name, const hermes::point3 &v) const;
+  void setUniform(const std::string &name, const Color &c) const;
+  void setUniform(const std::string &name, int i) const;
+  void setUniform(const std::string &name, float f) const;
   template<typename T>
-  void setUniform(const std::string &name, const std::string &field, size_t index, const T &value) {
+  void setUniform(const std::string &name, const std::string &field, size_t index, const T &value) const {
     setUniform(name + "[" + std::to_string(index) + "]." + field, value);
   }
   [[nodiscard]] bool hasUniform(const std::string &name) const;
