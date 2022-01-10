@@ -66,8 +66,9 @@ void App::exit() { GraphicsDisplay::instance().stop(); }
 void App::render() {
   if (prepareRenderCallback)
     prepareRenderCallback();
-  for (auto &viewport : viewports)
-    viewport.render(renderCallback);
+  for (current_rendering_viewport_ = 0; current_rendering_viewport_ < viewports.size();
+       ++current_rendering_viewport_)
+    viewports[current_rendering_viewport_].render(renderCallback);
   if (finishRenderCallback)
     finishRenderCallback();
 }
@@ -129,6 +130,10 @@ void App::charFunc(unsigned int pointcode) {
 void App::drop(int count, const char **filenames) {
   if (dropCallback)
     dropCallback(count, filenames);
+}
+
+size_t App::currentRenderingViewport() const {
+  return current_rendering_viewport_;
 }
 
 } // namespace circe

@@ -15,7 +15,7 @@ public:
     Quad
   };
 
-  InstancesApp() : BaseApp(800, 800) {
+  InstancesApp() : BaseApp(800, 800, "") {
     // resources
     hermes::Path assets_path(std::string(ASSETS_PATH));
     hermes::Path shaders_path(std::string(SHADERS_PATH));
@@ -26,7 +26,7 @@ public:
 
     updateMesh(MeshType::Cube);
 
-    this->app_->scene.add(&instance_set);
+//    this->app->scene.add(&instance_set);
   }
 
   void render(circe::CameraInterface *camera) override {
@@ -84,11 +84,12 @@ public:
       instance_data.at<circe::Color>("color", i) = color;
       auto s = rng.randomFloat() * 2 + 0.1;
       auto transform =
-          hermes::transpose((hermes::Transform::scale(s, s, s) *
-              hermes::Transform::translate(hermes::vec3(sampler.sample(
-                  hermes::bbox3(hermes::point3(-5, -5, -5),
-                                hermes::point3(5, 5, 5)))))).matrix());
-      instance_data.at<hermes::mat4>("transform_matrix", i) = transform;
+          hermes::Transform::translate(hermes::vec3(sampler.sample(
+              hermes::bbox3(hermes::point3(-5, -5, -5),
+                            hermes::point3(5, 5, 5)))))
+              *
+                  hermes::Transform::scale(s, s, s);
+      instance_data.at<hermes::mat4>("transform_matrix", i) = hermes::transpose(transform.matrix());
     }
     //    HERMES_LOG_VARIABLE(instance_data.memoryDump())
   }
@@ -104,7 +105,7 @@ public:
         instance_set.instance_model = std::move(model);
         break;
       case MeshType::Circle:
-      case MeshType::Cube:model = circe::Shapes::box(hermes::bbox3::unitBox());
+      case MeshType::Cube:model = circe::Shapes::box(hermes::bbox3::unitBox(true));
         instance_set.instance_model = std::move(model);
         break;
       case MeshType::Quad:

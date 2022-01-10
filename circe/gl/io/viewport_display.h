@@ -52,14 +52,15 @@ public:
    * height)** to **(1, 1)**
    * \return normalized mouse coordinates relative to the viewport
    */
-  hermes::point2 getMouseNPos();
+  [[nodiscard]] hermes::point2 getMouseNPos() const;
+  [[nodiscard]] hermes::index2 getMousePos() const;
   /// \return true if mouse is inside viewport region
   [[nodiscard]] bool hasMouseFocus() const;
   /* convert
    * \param p **[in]** point (in view space)
    * \return **p** mapped to NDC (**[-1,1]**)
    */
-  hermes::point3 viewCoordToNormDevCoord(hermes::point3 p) const;
+  [[nodiscard]] hermes::point3 viewCoordToNormDevCoord(hermes::point3 p) const;
   /* convert
    * \param c **[in]** camera
    * \param p **[in]** point (in screen space)
@@ -67,7 +68,9 @@ public:
    * world space
    */
   hermes::point3 unProject(const CameraInterface &c, hermes::point3 p);
-  hermes::point3 unProject();
+  [[nodiscard]] hermes::point3 unProject(const hermes::point3 &p) const;
+  [[nodiscard]] hermes::point3 unProject() const;
+  [[nodiscard]] hermes::index2 project(const hermes::point3 &p) const;
 
   void render(const std::function<void(CameraInterface *)> &f = nullptr);
   void mouse(double x, double y);

@@ -49,6 +49,7 @@ set(EXAMPLES
         shadows
         skybox
         picking
+        profiler
 #        texture_atlas
         deferred_rendering
         volume_texture

@@ -42,7 +42,7 @@ BaseApp::~BaseApp() {
 }
 
 void BaseApp::init() {
-//  app_->viewports[0].prepareRenderCallback = [&](const ViewportDisplay &vp) {
+//  app->viewports[0].prepareRenderCallback = [&](const ViewportDisplay &vp) {
 //    this->prepareFrame(vp);
 //  };
   prepare();
@@ -52,17 +52,17 @@ void BaseApp::prepare() {
   GraphicsDisplay::instance().mouseCallback = [&](double x, double y) {
     ImGuiIO &io = ImGui::GetIO();
     if (!io.WantCaptureMouse)
-      app_->mouse(x, y);
+      app->mouse(x, y);
   };
   GraphicsDisplay::instance().buttonCallback = [&](int b, int a, int m) {
     ImGuiIO &io = ImGui::GetIO();
     if (!io.WantCaptureMouse)
-      app_->button(b, a, m);
+      app->button(b, a, m);
   };
   GraphicsDisplay::instance().scrollCallback = [&](double x, double y) {
     ImGuiIO &io = ImGui::GetIO();
     if (!io.WantCaptureMouse)
-      app_->scroll(x, y);
+      app->scroll(x, y);
   };
   // Setup Dear ImGui context
   ImGui::CreateContext();
@@ -115,7 +115,7 @@ void BaseApp::nextFrame(circe::CameraInterface *camera) {
 
 int BaseApp::run() {
   init();
-  return app_->run();
+  return app->run();
 }
 
 } // circe::gl namespace

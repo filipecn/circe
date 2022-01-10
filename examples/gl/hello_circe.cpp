@@ -3,7 +3,7 @@
 
 class HelloCirce : public circe::gl::BaseApp {
 public:
-  HelloCirce() : BaseApp(800, 800) {
+  HelloCirce() : BaseApp(800, 800, "") {
     // setup object model
     hermes::Path assets_path(std::string(ASSETS_PATH));
     // setup reference grid

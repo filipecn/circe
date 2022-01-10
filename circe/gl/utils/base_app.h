@@ -37,14 +37,15 @@ class BaseApp {
 public:
   template<typename... Args>
   explicit BaseApp(Args &&... args) {
-    app_ = std::make_unique<circe::gl::App>(std::forward<Args>(args)...);
-    app_->finishRenderCallback = [&]() { this->endFrame(); };
-    app_->prepareRenderCallback = [&]() { this->startFrame(); };
-    app_->renderCallback = [&](circe::CameraInterface *c) { this->nextFrame(c); };
+    app = std::make_unique<circe::gl::App>(std::forward<Args>(args)...);
+    app->finishRenderCallback = [&]() { this->endFrame(); };
+    app->prepareRenderCallback = [&]() { this->startFrame(); };
+    app->renderCallback = [&](circe::CameraInterface *c) { this->nextFrame(c); };
   }
   virtual ~BaseApp();
   void init();
   virtual void prepare();
+
   // render
   virtual void prepareFrame();
   virtual void render(circe::CameraInterface *camera) = 0;
@@ -59,7 +60,7 @@ protected:
   void nextFrame(circe::CameraInterface *camera);
   void endFrame();
 
-  std::unique_ptr<circe::gl::App> app_;
+  std::unique_ptr<circe::gl::App> app;
   // Frame counter to display fps
   std::chrono::time_point<std::chrono::high_resolution_clock> t_start;
   uint32_t frame_counter_ = 0;

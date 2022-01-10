@@ -54,6 +54,7 @@ public:
   virtual void bind();
   /// \return
   inline DeviceMemory::View *memory() { return mem_.get(); }
+  inline const DeviceMemory::View *memory() const { return mem_.get(); }
 
 protected:
   // memory resource

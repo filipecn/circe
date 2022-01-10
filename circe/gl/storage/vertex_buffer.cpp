@@ -93,8 +93,8 @@ void VertexBuffer::resize(u32 n) {
 }
 
 void VertexBuffer::bind() {
-  CHECK_GL(glBindVertexBuffer(binding_index_, mem_->deviceMemory().id(),
-                              mem_->offset(), attributes.stride()));
+  if (mem_->deviceMemory().id()) CHECK_GL(glBindVertexBuffer(binding_index_, mem_->deviceMemory().id(),
+                                                             mem_->offset(), attributes.stride()));
 }
 
 void VertexBuffer::bindAttributeFormats() {

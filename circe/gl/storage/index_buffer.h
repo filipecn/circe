@@ -49,6 +49,10 @@ public:
   [[nodiscard]] u64 dataSizeInBytes() const override;
   /// glDrawElements
   void draw();
+  ///
+  /// \param index_offset
+  /// \param element_count
+  void draw(size_t index_offset, size_t element_count);
   // ***********************************************************************
   //                            OPERATORS
   // ***********************************************************************
@@ -60,7 +64,7 @@ public:
       std::is_same_v<i32, T> || std::is_same_v<i16, T> || std::is_same_v<i8, T> ||
           std::is_same_v<u32, T> || std::is_same_v<u16, T> || std::is_same_v<u8, T>> * = nullptr>
   IndexBuffer &operator=(const std::vector<T> &data) {
-    if(data.empty())
+    if (data.empty())
       return *this;
     auto data_type_size = sizeof(T);
     switch (data_type_size) {

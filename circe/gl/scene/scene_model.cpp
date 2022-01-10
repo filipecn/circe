@@ -129,18 +129,61 @@ void SceneModel::unbind() {
 }
 
 void SceneModel::bindBuffers() {
+  if (!vb_.vertexCount())
+    return;
   vao_.bind();
   vb_.bind();
-  ib_.bind();
+  if (ib_.element_count)
+    ib_.bind();
 }
 
 void SceneModel::draw() {
+  if (!vb_.vertexCount())
+    return;
   vao_.bind();
   vb_.bind();
   if (ib_.element_count)
     ib_.draw();
   else {
     glDrawArrays(ib_.element_type, 0, vb_.vertexCount());
+    CHECK_GL_ERRORS
+  }
+}
+
+void SceneModel::draw(size_t index_offset, size_t element_count) {
+  if (!vb_.vertexCount())
+    return;
+  vao_.bind();
+  vb_.bind();
+  if (ib_.element_count)
+    ib_.draw(index_offset, element_count);
+  else {
+    glDrawArrays(ib_.element_type, index_offset, element_count * OpenGL::primitiveSize(ib_.element_type));
+    CHECK_GL_ERRORS
+  }
+}
+
+SceneModel::Patch::Patch() = default;
+
+SceneModel::Patch::Patch(const SceneModel &model, size_t index_offset, size_t element_count) :
+    index_offset(index_offset), element_count(element_count),
+    element_type_(model.ib_.element_type),
+    data_type_(model.ib_.data_type),
+    index_buffer_(model.ib_.element_count) {
+  if (model.ib_.element_count)
+    offset_ = model.ib_.memory()->offset();
+}
+
+SceneModel::Patch::~Patch() = default;
+
+void SceneModel::Patch::draw() const {
+  if (index_buffer_) {
+    CHECK_GL(glDrawElements(element_type_,
+                            OpenGL::primitiveSize(element_type_) * element_count,
+                            data_type_,
+                            reinterpret_cast<void *>(offset_ + index_offset)));
+  } else {
+    glDrawArrays(element_type_, index_offset, element_count * OpenGL::primitiveSize(element_type_));
     CHECK_GL_ERRORS
   }
 }

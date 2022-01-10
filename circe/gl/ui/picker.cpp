@@ -95,6 +95,27 @@ const char *mesh_pick_fs =
     "}\n"
     "}";
 
+const char *instance_pick_vs =
+    "#version 440 core\n"
+    "layout(location = 0) in vec3 position;\n"
+    "layout(location = 2) in mat4 transform_matrix\n;"
+    "layout(location = 3) uniform mat4 projection;\n"
+    "layout(location = 4) uniform mat4 model;\n"
+    "layout(location = 5) uniform mat4 view;\n"
+    "out flat int instance;"
+    "void main() {\n"
+    "  gl_Position = projection * view * model * transform_matrix * vec4(position, 1.0);"
+    "  instance = gl_InstanceID;"
+    "}";
+
+const char *instance_pick_fs =
+    "#version 440 core\n"
+    "layout(location = 0) out unsigned int result;"
+    "in flat int instance;"
+    "void main() {\n"
+    "  result = instance + 1;"
+    "}";
+
 Picker::Picker() {
   // compile programs
   program_.attach(Shader(GL_VERTEX_SHADER, object_pick_vs));
@@ -119,6 +140,7 @@ void Picker::pick(const circe::CameraInterface *camera,
     program_.use();
     program_.setUniform("projection", camera->getProjectionTransform());
     program_.setUniform("view", camera->getViewTransform());
+    program_.setUniform("model", hermes::Transform());
     f(program_);
   });
   glDisable(GL_SCISSOR_TEST);
@@ -262,6 +284,43 @@ void MeshPicker::setResolution(const hermes::size2 &resolution_in_pixels) {
 //  fbo_.attachTexture(t_barycentric_, GL_COLOR_ATTACHMENT2);
 
   fbo_.setOutputBuffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2});
+}
+
+InstancePicker::InstancePicker() {
+  program_.destroy();
+  program_.attach(Shader(GL_VERTEX_SHADER, instance_pick_vs));
+  program_.attach(Shader(GL_FRAGMENT_SHADER, instance_pick_fs));
+  HERMES_ASSERT_WITH_LOG(program_.link(), program_.err)
+}
+
+InstancePicker::~InstancePicker() = default;
+
+void InstancePicker::pick(const circe::CameraInterface *camera,
+                  const hermes::index2 &pick_position,
+                  const std::function<void(const Program &)> &f) {
+  // check pick position
+  if (!(pick_position < t_object_id_.size().slice()) || !(pick_position >= hermes::index2(0, 0)))
+    return;
+
+  glEnable(GL_SCISSOR_TEST);
+  glScissor(static_cast<int>(pick_position.i - 1), static_cast<int>(pick_position.j - 1), 3, 3);
+  t_object_id_.bind();
+  fbo_.render([&]() {
+    program_.use();
+    program_.setUniform("projection", camera->getProjectionTransform());
+    program_.setUniform("view", camera->getViewTransform());
+    program_.setUniform("model", hermes::Transform());
+    f(program_);
+  });
+  glDisable(GL_SCISSOR_TEST);
+  // get result
+  // TODO I should get just the subregion! but it is not working for some reason....
+  //  auto data = t_object_id_.texels({static_cast<int>(pick_position.x - 1),
+  //                                      static_cast<int>(pick_position.y - 1)}, {3, 3});
+  auto data = t_object_id_.texels();
+  // get mouse texel
+  picked_index = reinterpret_cast<i32 *>(data.data())[(int) pick_position.j * t_object_id_.size().width
+      + (int) pick_position.i] - 1;
 }
 
 }

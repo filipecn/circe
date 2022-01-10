@@ -85,6 +85,8 @@ set(CIRCE_HEADERS
         circe/scene/model.h
         circe/scene/shapes.h
         circe/scene/spatial_structure_interface.h
+        circe/ui/imgui_logger.h
+        circe/ui/imgui_profiler.h
         circe/ui/imgui_utils.h
         circe/ui/gizmo.h
         circe/ui/trackball.h
@@ -100,6 +102,8 @@ set(CIRCE_SOURCES
         circe/scene/bvh.cpp
         circe/scene/model.cpp
         circe/scene/shapes.cpp
+        circe/ui/imgui_logger.cpp
+        circe/ui/imgui_profiler.cpp
         circe/ui/imgui_utils.cpp
         circe/ui/trackball_interface.cpp
         circe/ui/ui_camera.cpp
@@ -145,7 +149,7 @@ set(CIRCE_GL_HEADERS
         #        circe/gl/helpers/bbox_model.h
         #        circe/gl/helpers/segment_model.h
         #        circe/gl/helpers/camera_model.h
-        circe/gl/helpers/cartesian_grid.h
+#        circe/gl/helpers/cartesian_grid.h
         #        circe/gl/helpers/geometry_drawers.h
         #        circe/gl/helpers/grid_model.h
         #        circe/gl/helpers/quad_tree_model.h
@@ -166,6 +170,7 @@ set(CIRCE_GL_HEADERS
         circe/gl/io/viewport_display.h
         circe/gl/io/user_input.h
         circe/gl/scene/scene_model.h
+        circe/gl/utils/helpers.h
         )
 
 set(CIRCE_GL_SOURCES
@@ -177,7 +182,7 @@ set(CIRCE_GL_SOURCES
         circe/gl/graphics/shadow_map.cpp
         #        circe/gl/helpers/bbox_model.cpp
         #        circe/gl/helpers/segment_model.cpp
-        circe/gl/helpers/cartesian_grid.cpp
+#        circe/gl/helpers/cartesian_grid.cpp
         #        circe/gl/helpers/geometry_drawers.cpp
         circe/gl/imgui/imgui_impl_glfw.cpp
         circe/gl/imgui/imgui_impl_opengl3.cpp
@@ -213,6 +218,7 @@ set(CIRCE_GL_SOURCES
         #        circe/gl/ui/text_object.cpp
         #        circe/gl/ui/font_manager.cpp
         circe/gl/utils/base_app.cpp
+        circe/gl/utils/helpers.cpp
         circe/gl/utils/open_gl.cpp
         )
 

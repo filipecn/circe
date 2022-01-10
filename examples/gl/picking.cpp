@@ -26,18 +26,18 @@
 ///\brief
 
 #include "common.h"
+#include <hermes/random/rng.h>
 
 #define WIDTH 800
 #define HEIGHT 800
 
-struct PickingExample : public circe::gl::BaseApp {
-  PickingExample() : circe::gl::BaseApp(WIDTH, HEIGHT, "Picking Example") {
+struct MeshPickingExample {
+  MeshPickingExample() {
     hermes::Path shaders_path(std::string(SHADERS_PATH));
-    if (!object.program.link(shaders_path, "picking"))
-      HERMES_LOG_ERROR("Failed to load model shader: " + object.program.err)
+    HERMES_ASSERT_WITH_LOG(object.program.link(shaders_path, "picking"), object.program.err)
 
     auto sphere = circe::Shapes::icosphere(1);
-    // Picker requires per face information, so we need to ensure unique index
+    // The mesh picker requires per face information, so we need to ensure unique index
     // positions, i.e. a single vertex for each index
     // Also, we need just the position attribute
     auto model = circe::Shapes::convert(sphere, circe::shape_options::unique_positions);
@@ -63,11 +63,9 @@ struct PickingExample : public circe::gl::BaseApp {
     }
   }
 
-  void prepareFrame(const circe::gl::ViewportDisplay &display) override {
-    BaseApp::prepareFrame(display);
-    // pick logic
+  void pick(const circe::CameraInterface *camera) {
     auto &gd = circe::gl::GraphicsDisplay::instance();
-    picker.pick(display.camera.get(), gd.getMousePos(), [&](const auto &shader) {
+    picker.pick(camera, gd.getMousePos(), [&](const auto &shader) {
       shader.setUniform("object_id", 1);
       shader.setUniform("model", object.transform);
       object.draw();
@@ -81,8 +79,7 @@ struct PickingExample : public circe::gl::BaseApp {
     ssbo.memory()->unmap();
   }
 
-  void render(circe::CameraInterface *camera) override {
-    // usual render
+  void render(circe::CameraInterface *camera) {
     ssbo.bind();
     object.program.use();
     object.program.setUniform("view", camera->getViewTransform());
@@ -91,25 +88,116 @@ struct PickingExample : public circe::gl::BaseApp {
     object.program.setUniform("edge_width", picker.edge_width);
     object.program.setUniform("vertex_width", picker.vertex_width);
     object.draw();
-
-    // ui
-    ImGui::Begin("Picking");
-    ImGui::Text("Object ID");
-    ImGui::Text("%s", hermes::Str::format("{}", picker.picked_index).c_str());
-    ImGui::Text("Primitive ID");
-    ImGui::Text("%s", hermes::Str::format("{}", picker.picked_primitive_index).c_str());
-    ImGui::Text("Edge ID");
-    ImGui::Text("%s", hermes::Str::format("{}", picker.picked_edge_index).c_str());
-    ImGui::SliderFloat("edge size", &picker.edge_width, 1.f, 5.f);
-    ImGui::Text("Vertex ID");
-    ImGui::Text("%s", hermes::Str::format("{}", picker.picked_vertex_index).c_str());
-    ImGui::SliderFloat("vertex size", &picker.vertex_width, 1.f, 15.f);
-    ImGui::End();
   }
 
   circe::gl::SceneModel object;
   circe::gl::MeshPicker picker;
   circe::gl::ShaderStorageBuffer ssbo;
+};
+
+struct InstancePickingExample {
+  InstancePickingExample() {
+    hermes::Path shaders_path(std::string(SHADERS_PATH));
+    instances.instance_model = circe::Shapes::box(hermes::bbox3::unitBox(true));
+    HERMES_ASSERT_WITH_LOG(instances.instance_program.link(shaders_path, "instance"),
+                           instances.instance_program.err)
+    size_t n = 100;
+    instances.resize(n);
+    auto instance_data = instances.instanceData();
+    circe::ColorPalette palette = circe::HEAT_MATLAB_PALETTE;
+    hermes::RNGSampler sampler;
+    hermes::HaltonSequence rng;
+    for (size_t i = 0; i < n; i++) {
+      auto color = palette((1.f * i) / n, 1);
+      instance_data.at<circe::Color>("color", i) = color.withAlpha(0.3);
+      auto s = rng.randomFloat() * 2 + 0.1;
+      auto transform =
+          hermes::Transform::translate(hermes::vec3(sampler.sample(
+              hermes::bbox3(hermes::point3(-15, -15, -15),
+                            hermes::point3(15, 15, 15)))))
+              *
+                  hermes::Transform::scale(s, s, s);
+      instance_data.at<hermes::mat4>("transform_matrix", i) = hermes::transpose(transform.matrix());
+    }
+    picker.setResolution({WIDTH, HEIGHT});
+  }
+
+  void pick(const circe::CameraInterface *camera) {
+    static int current_pick{-1};
+    auto &gd = circe::gl::GraphicsDisplay::instance();
+    picker.pick(camera, gd.getMousePos(), [&](const auto &shader) {
+      // TODO it is only working because the "transform_matrix" attribute is
+      // TODO in the same location in both shaders (instances and picker)
+      instances.instance_model.bind();
+
+      glDrawElementsInstanced(
+          instances.instance_model.indexBuffer().element_type,
+          instances.instance_model.indexBuffer().element_count * 3,
+          instances.instance_model.indexBuffer().data_type,
+          nullptr,
+          instances.count());
+    });
+
+    if (picker.picked_index >= 0 && picker.picked_index < instances.count()) {
+      auto instance_data = instances.instanceData();
+      if (current_pick != picker.picked_index)
+        instance_data.at<circe::Color>("color", current_pick).a = 0.3f;
+      instance_data.at<circe::Color>("color", picker.picked_index).a = 1.f;
+    } else if (current_pick >= 0) {
+      auto instance_data = instances.instanceData();
+      instance_data.at<circe::Color>("color", current_pick).a = 0.3f;
+    }
+    current_pick = picker.picked_index;
+  }
+
+  void render(circe::CameraInterface *camera) {
+    instances.draw(camera, hermes::Transform());
+  }
+
+  circe::gl::InstanceSet instances;
+  circe::gl::InstancePicker picker;
+};
+
+struct PickingExample : public circe::gl::BaseApp {
+  PickingExample() : circe::gl::BaseApp(WIDTH, HEIGHT, "Picking Example") {
+
+  }
+
+  void prepareFrame() override {
+    circe::gl::BaseApp::prepareFrame();
+    if (mode == 0)
+      mesh_picker_example.pick(this->app->getCamera());
+    else if (mode == 1)
+      instance_picker_example.pick(this->app->getCamera());
+  }
+
+  void render(circe::CameraInterface *camera) override {
+    ImGui::Begin("Picking");
+    ImGui::Combo("mode", &mode, "mesh\0instance\0");
+    if (mode == 0) {
+      mesh_picker_example.render(camera);
+      // ui
+      ImGui::Text("Object ID");
+      ImGui::Text("%s", hermes::Str::format("{}", mesh_picker_example.picker.picked_index).c_str());
+      ImGui::Text("Primitive ID");
+      ImGui::Text("%s", hermes::Str::format("{}", mesh_picker_example.picker.picked_primitive_index).c_str());
+      ImGui::Text("Edge ID");
+      ImGui::Text("%s", hermes::Str::format("{}", mesh_picker_example.picker.picked_edge_index).c_str());
+      ImGui::SliderFloat("edge size", &mesh_picker_example.picker.edge_width, 1.f, 5.f);
+      ImGui::Text("Vertex ID");
+      ImGui::Text("%s", hermes::Str::format("{}", mesh_picker_example.picker.picked_vertex_index).c_str());
+      ImGui::SliderFloat("vertex size", &mesh_picker_example.picker.vertex_width, 1.f, 15.f);
+    } else if (mode == 1) {
+      instance_picker_example.render(camera);
+      ImGui::Text("Instance ID");
+      ImGui::Text("%s", hermes::Str::format("{}", instance_picker_example.picker.picked_index).c_str());
+    }
+    ImGui::End();
+  }
+
+  int mode{0};
+  MeshPickingExample mesh_picker_example;
+  InstancePickingExample instance_picker_example;
 };
 
 int main() {

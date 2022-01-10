@@ -34,6 +34,21 @@ namespace circe::gl {
 
 class SceneModel {
 public:
+  class Patch {
+  public:
+    Patch();
+    explicit Patch(const SceneModel &model, size_t index_offset, size_t element_count);
+    ~Patch();
+    size_t index_offset{0};
+    size_t element_count{0};
+    /// note: SceneModel must be bound before this call
+    void draw() const;
+  private:
+    size_t offset_{0};
+    GLuint element_type_{GL_TRIANGLES};
+    GLuint data_type_{GL_UNSIGNED_INT};
+    bool index_buffer_{false};
+  };
   // ***********************************************************************
   //                          STATIC METHODS
   // ***********************************************************************
@@ -63,12 +78,16 @@ public:
   inline u64 elementCount() const { return primitive_count_; }
   VertexBuffer &vertexBuffer() { return vb_; }
   const IndexBuffer &indexBuffer() const { return ib_; }
-  IndexBuffer &indexBuffer()  { return ib_; }
+  IndexBuffer &indexBuffer() { return ib_; }
   const Model &model() const { return model_; }
   void bind();
   void unbind();
   void bindBuffers();
   void draw();
+  ///
+  /// \param index_offset
+  /// \param element_count
+  void draw(size_t index_offset, size_t element_count);
   // ***********************************************************************
   //                          PUBLIC FIELDS
   // ***********************************************************************

@@ -102,7 +102,7 @@ public:
       glColor(activeColor);
     else
       glColor(fillColor);
-    draw_circle(c);
+//    draw_circle(c);
   }
 
   void mouseMove() override {

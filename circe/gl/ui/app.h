@@ -46,7 +46,7 @@ public:
    * the
    * same size of the window
    */
-  explicit App(uint w, uint h, const char *t, bool defaultViewport = true);
+  explicit App(uint w, uint h, const char *t = "", bool defaultViewport = true);
   virtual ~App() = default;
   /** \brief add
    * \param x **[in]** first pixel in X
@@ -64,9 +64,10 @@ public:
   void init();
   int run();
   static void exit();
-  template <typename T = UserCamera> T *getCamera(size_t i = 0) {
+  template<typename T = UserCamera> T *getCamera(size_t i = 0) {
     return static_cast<T *>(viewports[i].camera.get());
   }
+  [[nodiscard]] size_t currentRenderingViewport() const;
 
   virtual void button(int b, int a, int m);
   virtual void mouse(double x, double y);
@@ -75,7 +76,7 @@ public:
   std::vector<ViewportDisplay> viewports;
   // render callbacks
   std::function<void()> prepareRenderCallback;
-  std::function<void(circe::CameraInterface*)> renderCallback;
+  std::function<void(circe::CameraInterface *)> renderCallback;
   std::function<void()> finishRenderCallback;
   // input callbacks
   std::function<void(unsigned int)> charCallback;
@@ -90,6 +91,8 @@ protected:
   bool initialized;
   size_t windowWidth, windowHeight;
   std::string title;
+
+  size_t current_rendering_viewport_{0};
 
   virtual void render();
   virtual void charFunc(unsigned int pointcode);

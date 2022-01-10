@@ -69,7 +69,6 @@ public:
   /// \return MVP transform
   [[nodiscard]] virtual hermes::Transform getTransform() const {
     return projection->transform * view * model;
-    return model * view * projection->transform;
   }
   /// \return camera projection const ptr
   [[nodiscard]] const CameraProjection *getCameraProjection() const {

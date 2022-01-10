@@ -161,6 +161,8 @@ public:
   /// \return
   static Model segment(const hermes::Segment3 &s,
                        shape_options options = shape_options::none);
+
+  static Model curve(const std::vector<hermes::point3> &vertices, shape_options options = shape_options::none);
 };
 
 }

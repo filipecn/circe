@@ -33,6 +33,26 @@ namespace circe::gl {
 
 class OpenGL final {
 public:
+  static size_t primitiveSize(GLuint primitive_type) {
+    size_t primitive_size = 0;
+    switch (primitive_type) {
+    case GL_POINTS: primitive_size = 1;
+      break;
+    case GL_TRIANGLES: primitive_size = 3;
+      break;
+    case GL_QUADS: primitive_size = 4;
+      break;
+    case GL_LINES:primitive_size = 2;
+      break;
+    case GL_TRIANGLE_STRIP:
+    case GL_TRIANGLE_FAN:
+    case GL_LINE_STRIP:
+    case GL_LINE_LOOP:
+    default: hermes::Log::warn("Element type considered GL_POINTS on index buffer assignment.");
+      primitive_size = 1;
+    }
+    return primitive_size;
+  }
   static size_t primitiveCount(GLuint primitive_type, GLuint index_count) {
     size_t primitive_count = 0;
     switch (primitive_type) {

@@ -101,9 +101,9 @@ public:
     ssbo = aos;
     ssbo.setBindingIndex(1);
     // controls
-    this->app_->keyCallback = [&](int key, int scancode, int action, int modifiers) {
+    this->app->keyCallback = [&](int key, int scancode, int action, int modifiers) {
       if (key == GLFW_KEY_ESCAPE)
-        this->app_->exit();
+        this->app->exit();
       if (key == GLFW_KEY_R)
         operation = ImGuizmo::OPERATION::ROTATE;
       if (key == GLFW_KEY_W)
@@ -174,7 +174,7 @@ public:
     depth_buffer_view.render(lights[0].shadow_map.depthMap());
     ImGui::End();
     // gizmo
-    ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
+    ImGuizmo::SetRect(0, 0, this->app->viewports[0].width, this->app->viewports[0].height);
     circe::Gizmo::update(camera, lights[0].model_transform, operation);
 
     updateLights();

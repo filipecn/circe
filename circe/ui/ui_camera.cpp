@@ -75,6 +75,9 @@ UserCamera2D::UserCamera2D() {
 }
 
 void UserCamera2D::update() {
+  auto view_vector = hermes::normalize(this->target - this->pos);
+  if (hermes::Check::is_zero(hermes::cross(view_vector, this->up).length2()))
+    this->up = {view_vector.y, view_vector.x, view_vector.z};
   this->view = hermes::Transform::lookAt(this->pos, this->target, this->up);
   inv_view = hermes::inverse(view);
   inv_model = hermes::inverse(model);

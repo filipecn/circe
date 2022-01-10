@@ -96,7 +96,7 @@ void IndexBuffer::draw() {
       index_count_ = element_count;
     };
   }
-  if(mem_->size() && index_count_) {
+  if (mem_->size() && index_count_) {
     mem_->bind();
     CHECK_GL(glDrawElements(element_type, index_count_, data_type,
                             reinterpret_cast<void *>(mem_->offset())));
@@ -109,6 +109,14 @@ GLuint IndexBuffer::bufferTarget() const {
 
 GLuint IndexBuffer::bufferUsage() const {
   return GL_STATIC_DRAW;
+}
+
+void IndexBuffer::draw(size_t index_offset, size_t element_count) {
+  if (mem_->size() && element_count) {
+    mem_->bind();
+    CHECK_GL(glDrawElements(element_type, OpenGL::primitiveSize(element_type) * element_count, data_type,
+                            reinterpret_cast<void *>(mem_->offset() + index_offset)));
+  }
 }
 
 std::ostream &operator<<(std::ostream &os, const IndexBuffer &index_buffer) {

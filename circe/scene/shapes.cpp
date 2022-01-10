@@ -615,6 +615,7 @@ Model Shapes::box(const bbox3 &box, shape_options options) {
 
     if (unique_positions) {
       // we must duplicate each vertex per index
+      // TODO
     } else {
       HERMES_ASSERT(n_vertices == 8)
       for (int i = 0; i < n_vertices; ++i) {
@@ -695,9 +696,66 @@ Model Shapes::segment(const Segment3 &s, shape_options options) {
     model.attributeValue<point2>(1, 0) = {0.f, 0.f};
     model.attributeValue<point2>(1, 1) = {1.f, 1.f};
   }
-  std::vector<i32> indices = {0, 1};
-  model = indices;
   model.setPrimitiveType(GeometricPrimitiveType::LINES);
+  return model;
+}
+
+Model Shapes::curve(const std::vector<hermes::point3> &vertices, shape_options options) {
+  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
+  const bool only_vertices = testMaskBit(options, shape_options::vertices);
+  const bool generate_normals = testMaskBit(options, shape_options::normal);
+  const bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_uvw = testMaskBit(options, shape_options::uvw);
+  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
+  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
+  const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
+  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
+
+  // model data
+  AoS aos;
+
+  // data fields
+  const u64 position_id = aos.pushField<point3>("position");
+  const u64 normal_id = generate_normals ? aos.pushField<vec3>("normal") : 0;
+  const u64 uv_id = generate_uvs ? aos.pushField<point2>("uvs") : 0;
+  const u64 uvw_id = generate_uvw ? aos.pushField<point3>("uvw") : 0;
+  const u64 tangent_id = generate_tangents ? aos.pushField<vec3>("tangent") : 0;
+  const u64 bitangent_id = generate_bitangents ? aos.pushField<vec3>("bitangent") : 0;
+
+  // data type
+  GeometricPrimitiveType primitive_type = GeometricPrimitiveType::LINE_STRIP;
+  if (only_vertices)
+    primitive_type = GeometricPrimitiveType::POINTS;
+  else if (unique_positions)
+    primitive_type = GeometricPrimitiveType::LINES;
+
+  // compute number of vertices
+  size_t n_vertices = vertices.size();
+  if (unique_positions)
+    n_vertices = (n_vertices - 1) * 2;
+
+  aos.resize(n_vertices);
+
+  if (unique_positions) {
+    // duplicate vertices
+    size_t n_edges = vertices.size() - 1;
+    for (size_t e = 0; e < n_edges; ++e) {
+      aos.valueAt<point3>(position_id, e * 2 + 0) = vertices[e + 0];
+      aos.valueAt<point3>(position_id, e * 2 + 1) = vertices[e + 1];
+    }
+  } else {
+    // just copy data
+    for (size_t v = 0; v < n_vertices; ++v) {
+      aos.valueAt<point3>(position_id, v) = vertices[v];
+      // TODO
+    }
+  }
+
+  // prepare model
+  Model model;
+  model.setPrimitiveType(primitive_type);
+  model = aos;
   return model;
 }
 

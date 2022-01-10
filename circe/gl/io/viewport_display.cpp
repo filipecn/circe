@@ -58,12 +58,18 @@ void ViewportDisplay::key(int k, int scancode, int action, int modifiers) const 
     keyCallback(k, scancode, action, modifiers);
 }
 
-hermes::point2 ViewportDisplay::getMouseNPos() {
+hermes::point2 ViewportDisplay::getMouseNPos() const {
   int viewport[] = {0, 0, width, height};
   hermes::point2 mp =
       GraphicsDisplay::instance().getMousePos() - hermes::vec2(x, y);
   return hermes::point2((mp.x - viewport[0]) / viewport[2] * 2.0 - 1.0,
                         (mp.y - viewport[1]) / viewport[3] * 2.0 - 1.0);
+}
+
+hermes::index2 ViewportDisplay::getMousePos() const {
+  hermes::point2 mp =
+      GraphicsDisplay::instance().getMousePos() - hermes::vec2(x, y);
+  return hermes::index2(mp.x, mp.y);
 }
 
 bool ViewportDisplay::hasMouseFocus() const {
@@ -83,9 +89,18 @@ hermes::point3 ViewportDisplay::unProject(const CameraInterface &c,
   return hermes::inverse(c.getTransform()) * p;
 }
 
-hermes::point3 ViewportDisplay::unProject() {
+hermes::point3 ViewportDisplay::unProject(const hermes::point3 &p) const {
+  return hermes::inverse(camera->getTransform()) * p;
+}
+
+hermes::point3 ViewportDisplay::unProject() const {
   return hermes::inverse(camera->getTransform()) *
       hermes::point3(getMouseNPos().x, getMouseNPos().y, 0.f);
+}
+
+hermes::index2 ViewportDisplay::project(const hermes::point3 &p) const {
+  auto s = camera->getTransform()(p);
+  return {static_cast<int>((s.x + 1) * width / 2), static_cast<int>((s.y + 1) * height / 2)};
 }
 
 } // namespace circe

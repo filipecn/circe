@@ -59,8 +59,7 @@ public:
       HERMES_LOG_ERROR("Failed to load model shader: " + model.program.err);
   }
 
-  void prepareFrame(const circe::gl::ViewportDisplay &display) override {
-    circe::gl::BaseApp::prepareFrame(display);
+  void prepareFrame() override {
     ImGuizmo::BeginFrame();
   }
 
@@ -92,7 +91,7 @@ public:
                  {0, 1}, {1, 0});
     ImGui::End();
     // gizmo
-    ImGuizmo::SetRect(0, 0, this->app_->viewports[0].width, this->app_->viewports[0].height);
+    ImGuizmo::SetRect(0, 0, this->app->viewports[0].width, this->app->viewports[0].height);
     hermes::Transform t;
     circe::Gizmo::update(camera, t, ImGuizmo::OPERATION::TRANSLATE);
   }

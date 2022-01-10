@@ -37,8 +37,8 @@ enum class shape_options {
   none = 0x00, //!< the mesh contains only positions
   normal = 0x01, //!< generate vertex normals
   uv = 0x02, //!< generate vertex uv coordinates
-  uvw = 0x4, //!< generate vertex uvw coordinates
-  tangent_space = 0x8, //!< generate vertex tangent space (stores tangents and bitangents)
+  uvw = 0x04, //!< generate vertex uvw coordinates
+  tangent_space = 0x08, //!< generate vertex tangent space (stores tangents and bitangents)
   tangent = 0x10, //!< generate vertex tangent space (stores tangents)
   bitangent = 0x20, //!< generate vertex tangent space (stores bitangents)
   unique_positions = 0x40,  //!< vertex attributes are averaged to occupy a single index in the mesh
