@@ -31,6 +31,14 @@ namespace circe {
 
 class Color {
 public:
+  static Color rbgFromU32(u32 color) {
+    return Color((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+  }
+
+  static Color fromU32(u32 r, u32 g, u32 b, u32 a = 255) {
+    return {r / 255.f, g / 255.f, b / 255.f, a / 255.f};
+  }
+
   Color() {
     r = g = b = 0.f;
     a = 1.f;

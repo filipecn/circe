@@ -43,7 +43,7 @@ public:
     updateMesh(mesh_choice);
     std::stringstream ss;
     ss << this->last_FPS_ << "fps" << std::endl;
-    ImGui::Text(ss.str().c_str());
+    ImGui::Text("%s", ss.str().c_str());
 
     auto obj = circe::ImguiFolderDialog::folder_dialog_button("Pick obj");
     if (obj)
@@ -76,7 +76,7 @@ public:
     instance_set.resize(n);
     auto instance_data = instance_set.instanceData();
     // setup instance properties
-    circe::ColorPalette palette = circe::HEAT_MATLAB_PALETTE;
+    circe::ColorPalette palette = circe::ColorPalette::Batlow();
     hermes::RNGSampler sampler;
     hermes::HaltonSequence rng;
     for (size_t i = 0; i < n; i++) {

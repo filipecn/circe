@@ -124,6 +124,7 @@ const circe::Color &HLogger::colorFrom(const hermes::logging_options &options) c
     return error_color;
   if (HERMES_MASK_BIT(options, hermes::logging_options::critical))
     return critical_color;
+  return info_color;
 }
 
 }

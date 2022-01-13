@@ -70,13 +70,16 @@ struct MeshPickingExample {
       shader.setUniform("model", object.transform);
       object.draw();
     });
-    // update vertex and edge states
-    auto m = ssbo.memory()->mapped(GL_MAP_WRITE_BIT);
-    std::memset(m, 0, ssbo.dataSizeInBytes());
-    ssbo.descriptor.valueAt<i32>(m, 0, picker.picked_primitive_index) = 1;
-    ssbo.descriptor.valueAt<i32>(m, 1, picker.picked_primitive_index) =
-        picker.picked_edge_index * 10 + picker.picked_vertex_index;
-    ssbo.memory()->unmap();
+    if (picker.picked_primitive_index) {
+      HERMES_PROFILE_SCOPE("pick update")
+      // update vertex and edge states
+      auto m = ssbo.memory()->mapped(GL_MAP_WRITE_BIT);
+      std::memset(m, 0, ssbo.dataSizeInBytes());
+      ssbo.descriptor.valueAt<i32>(m, 0, picker.picked_primitive_index) = 1;
+      ssbo.descriptor.valueAt<i32>(m, 1, picker.picked_primitive_index) =
+          picker.picked_edge_index * 10 + picker.picked_vertex_index;
+      ssbo.memory()->unmap();
+    }
   }
 
   void render(circe::CameraInterface *camera) {
@@ -104,7 +107,7 @@ struct InstancePickingExample {
     size_t n = 100;
     instances.resize(n);
     auto instance_data = instances.instanceData();
-    circe::ColorPalette palette = circe::HEAT_MATLAB_PALETTE;
+    circe::ColorPalette palette = circe::ColorPalette::MatlabHeatMap();
     hermes::RNGSampler sampler;
     hermes::HaltonSequence rng;
     for (size_t i = 0; i < n; i++) {
@@ -165,6 +168,7 @@ struct PickingExample : public circe::gl::BaseApp {
 
   void prepareFrame() override {
     circe::gl::BaseApp::prepareFrame();
+    HERMES_PROFILE_SCOPE("picking")
     if (mode == 0)
       mesh_picker_example.pick(this->app->getCamera());
     else if (mode == 1)
@@ -172,6 +176,7 @@ struct PickingExample : public circe::gl::BaseApp {
   }
 
   void render(circe::CameraInterface *camera) override {
+    HERMES_PROFILE_FUNCTION()
     ImGui::Begin("Picking");
     ImGui::Combo("mode", &mode, "mesh\0instance\0");
     if (mode == 0) {
@@ -192,12 +197,23 @@ struct PickingExample : public circe::gl::BaseApp {
       ImGui::Text("Instance ID");
       ImGui::Text("%s", hermes::Str::format("{}", instance_picker_example.picker.picked_index).c_str());
     }
+    profiler_view.render();
     ImGui::End();
+  }
+
+  void finishFrame() override {
+    HERMES_PROFILE_START_BLOCK("imgui")
+    circe::gl::BaseApp::finishFrame();
+    HERMES_PROFILE_END_BLOCK
+    profiler_view.update();
   }
 
   int mode{0};
   MeshPickingExample mesh_picker_example;
   InstancePickingExample instance_picker_example;
+
+  // metrics
+  circe::HProfiler profiler_view;
 };
 
 int main() {

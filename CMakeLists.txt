@@ -107,6 +107,7 @@ set(CIRCE_SOURCES
         circe/ui/imgui_utils.cpp
         circe/ui/trackball_interface.cpp
         circe/ui/ui_camera.cpp
+        circe/colors/color_palette.cpp
         circe/circe.cpp
         circe/io/io.cpp
         )

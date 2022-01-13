@@ -26,6 +26,7 @@
 ///\brief
 
 #include <circe/gl/ui/picker.h>
+#include <hermes/common/profiler.h>
 
 namespace circe::gl {
 
@@ -209,6 +210,7 @@ void MeshPicker::pick(const circe::CameraInterface *camera,
     f(program_);
   });
   glDisable(GL_SCISSOR_TEST);
+  HERMES_PROFILE_SCOPE("pick data")
   // get result
   // TODO I should get just the subregion! but it is not working for some reason....
   //  auto data = t_object_id_.texels({static_cast<int>(pick_position.x - 1),
@@ -296,8 +298,8 @@ InstancePicker::InstancePicker() {
 InstancePicker::~InstancePicker() = default;
 
 void InstancePicker::pick(const circe::CameraInterface *camera,
-                  const hermes::index2 &pick_position,
-                  const std::function<void(const Program &)> &f) {
+                          const hermes::index2 &pick_position,
+                          const std::function<void(const Program &)> &f) {
   // check pick position
   if (!(pick_position < t_object_id_.size().slice()) || !(pick_position >= hermes::index2(0, 0)))
     return;
@@ -313,6 +315,7 @@ void InstancePicker::pick(const circe::CameraInterface *camera,
     f(program_);
   });
   glDisable(GL_SCISSOR_TEST);
+  HERMES_PROFILE_SCOPE("pick data")
   // get result
   // TODO I should get just the subregion! but it is not working for some reason....
   //  auto data = t_object_id_.texels({static_cast<int>(pick_position.x - 1),

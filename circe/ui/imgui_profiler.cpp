@@ -32,12 +32,10 @@
 namespace circe {
 
 HProfiler::HProfiler() {
-
+  hermes::profiler::Profiler::setMaxBlockCount(200);
 }
 
-HProfiler::~HProfiler() {
-
-}
+HProfiler::~HProfiler() = default;
 
 static const char *res_names = "tnums";
 
@@ -98,6 +96,7 @@ hermes::Str prettyTicks(u64 ticks, f64 *value = nullptr, HProfiler::Resolution *
 
 /// code inspired in https://github.com/sebh/Dx11Base/blob/master/Application/WinMain.cpp
 void HProfiler::render() {
+  HERMES_PROFILE_SCOPE("profiler view render")
 
   u64 window_end = current_time ? current_time : hermes::profiler::now();
   u64 window_start = (window_end > window_size_) ? window_end - window_size_ : 0;

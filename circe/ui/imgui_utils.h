@@ -43,6 +43,7 @@ public:
     bool valid{false};
   };
   static Result folder_dialog_button(const std::string &label, const hermes::Path &path = ".");
+  static Result folder_dialog_menu_item(const std::string &label, const hermes::Path &path = ".");
 
 };
 
