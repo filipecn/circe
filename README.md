@@ -23,13 +23,12 @@ very old ancient blog: http://aergia.weebly.com/
 
 ## Usage
 
-Please check the [docs]() for an good introduction, details of the API and examples. 
+Please check the [docs]() for a good introduction, details of the API and examples. 
 
 The example bellow creates a blank window of size 800x800:
 
 ```c++
-#include
-<circe/circe.h>
+#include <circe/circe.h>
 
 // Circe provides a BaseApp class to help you quickly setup an application
 // Just inherit from it and override some methods
@@ -93,6 +92,7 @@ Depending on what you want to compile, you may need to set some `cmake` options:
 
 Circe dependencies are:
 
+- [hermes](https://github.com/filipecn/hermes) - for all the basics
 - [GLFW](http://www.glfw.org) - for window management and user input
 - [imgui](https://github.com/ocornut/imgui) - for user interface
 - [stb](https://github.com/nothings/stb) - for image files and text fonts
