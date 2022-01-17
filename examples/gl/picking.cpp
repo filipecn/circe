@@ -71,7 +71,7 @@ struct MeshPickingExample {
       object.draw();
     });
     if (picker.picked_primitive_index) {
-      HERMES_PROFILE_SCOPE("pick update")
+      HERMES_PROFILE_SCOPE("pick update");
       // update vertex and edge states
       auto m = ssbo.memory()->mapped(GL_MAP_WRITE_BIT);
       std::memset(m, 0, ssbo.dataSizeInBytes());
@@ -103,7 +103,7 @@ struct InstancePickingExample {
     hermes::Path shaders_path(std::string(SHADERS_PATH));
     instances.instance_model = circe::Shapes::box(hermes::bbox3::unitBox(true));
     HERMES_ASSERT_WITH_LOG(instances.instance_program.link(shaders_path, "instance"),
-                           instances.instance_program.err)
+                           instances.instance_program.err);
     size_t n = 100;
     instances.resize(n);
     auto instance_data = instances.instanceData();
@@ -168,7 +168,7 @@ struct PickingExample : public circe::gl::BaseApp {
 
   void prepareFrame() override {
     circe::gl::BaseApp::prepareFrame();
-    HERMES_PROFILE_SCOPE("picking")
+    HERMES_PROFILE_SCOPE("picking");
     if (mode == 0)
       mesh_picker_example.pick(this->app->getCamera());
     else if (mode == 1)
@@ -176,7 +176,7 @@ struct PickingExample : public circe::gl::BaseApp {
   }
 
   void render(circe::CameraInterface *camera) override {
-    HERMES_PROFILE_FUNCTION()
+    HERMES_PROFILE_FUNCTION();
     ImGui::Begin("Picking");
     ImGui::Combo("mode", &mode, "mesh\0instance\0");
     if (mode == 0) {
@@ -202,7 +202,7 @@ struct PickingExample : public circe::gl::BaseApp {
   }
 
   void finishFrame() override {
-    HERMES_PROFILE_START_BLOCK("imgui")
+    HERMES_PROFILE_START_BLOCK("imgui");
     circe::gl::BaseApp::finishFrame();
     HERMES_PROFILE_END_BLOCK
     profiler_view.update();

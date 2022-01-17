@@ -53,11 +53,11 @@ public:
     // process options
     if ((options & shape_options::tangent_space) == shape_options::tangent_space)
       options = options | shape_options::tangent | shape_options::bitangent;
-    const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
-    const bool generate_normals = testMaskBit(options, shape_options::normal);
-    bool generate_uvs = testMaskBit(options, shape_options::uv);
-    const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-    const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+    const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+    const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+    bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+    const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+    const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
 
     // setup fields
     hermes::AoS aos;
@@ -71,7 +71,7 @@ public:
     auto vertex_positions = mesh.positions();
 
     std::vector<i32> indices;
-    if (testMaskBit(options, shape_options::wireframe)) {
+    if (CIRCE_MASK_BIT(options, shape_options::wireframe)) {
       model.setPrimitiveType(hermes::GeometricPrimitiveType::LINES);
       for (auto f : mesh.faces()) {
         u64 a = hermes::Numbers::greatest<u64>();
@@ -80,7 +80,7 @@ public:
         indices.emplace_back(a);
         indices.emplace_back(b);
       }
-    } else if (testMaskBit(options, shape_options::vertices)) {
+    } else if (CIRCE_MASK_BIT(options, shape_options::vertices)) {
       model.setPrimitiveType(hermes::GeometricPrimitiveType::POINTS);
       for (u64 i = 0; i < mesh.vertexCount(); ++i)
         indices.emplace_back(i);

@@ -599,7 +599,7 @@ VertexAttributes Program::extractAttributes() const {
         SWITCH_CASE(GL_FLOAT_VEC4, hermes::vec4)
         SWITCH_CASE(GL_FLOAT_VEC3, hermes::vec3)
         SWITCH_CASE(GL_FLOAT_MAT4, hermes::mat4)
-        default: HERMES_LOG_ERROR("Invalid Shader-Vertex Attribute")
+        default: HERMES_LOG_ERROR("Invalid Shader-Vertex Attribute");
         }
 #undef SWITCH_CASE
         vertex_attributes.setAttributeLocation(attribute_id, glGetAttribLocation(id_, name));
@@ -614,7 +614,7 @@ GLuint Program::id() const { return id_; }
 void Program::setUniform(const std::string &name, const hermes::Transform &t) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniformMatrix4fv(loc, 1, GL_TRUE, &t.matrix()[0][0]);
@@ -623,7 +623,7 @@ void Program::setUniform(const std::string &name, const hermes::Transform &t) co
 void Program::setUniform(const std::string &name, const hermes::mat4 &m) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
@@ -632,7 +632,7 @@ void Program::setUniform(const std::string &name, const hermes::mat4 &m) const {
 void Program::setUniform(const std::string &name, const hermes::mat3 &m) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniformMatrix3fv(loc, 1, GL_FALSE, &m[0][0]);
@@ -641,7 +641,7 @@ void Program::setUniform(const std::string &name, const hermes::mat3 &m) const {
 void Program::setUniform(const std::string &name, const hermes::vec4 &v) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniform4fv(loc, 1, &v.x);
@@ -650,7 +650,7 @@ void Program::setUniform(const std::string &name, const hermes::vec4 &v) const {
 void Program::setUniform(const std::string &name, const hermes::vec3 &v) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniform3fv(loc, 1, &v.x);
@@ -659,7 +659,7 @@ void Program::setUniform(const std::string &name, const hermes::vec3 &v) const {
 void Program::setUniform(const std::string &name, const hermes::point3 &v) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   CHECK_GL(glUniform3fv(loc, 1, &v.x));
@@ -668,7 +668,7 @@ void Program::setUniform(const std::string &name, const hermes::point3 &v) const
 void Program::setUniform(const std::string &name, const hermes::vec2 &v) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniform2fv(loc, 1, &v.x);
@@ -677,7 +677,7 @@ void Program::setUniform(const std::string &name, const hermes::vec2 &v) const {
 void Program::setUniform(const std::string &name, const Color &c) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniform4fv(loc, 1, &c.r);
@@ -686,7 +686,7 @@ void Program::setUniform(const std::string &name, const Color &c) const {
 void Program::setUniform(const std::string &name, int i) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniform1i(loc, i);
@@ -695,7 +695,7 @@ void Program::setUniform(const std::string &name, int i) const {
 void Program::setUniform(const std::string &name, float f) const {
   GLint loc = getUniLoc(name);
   if (loc == -1) {
-    HERMES_LOG_WARNING(hermes::Str::format("Shader attribute {} not located.", name));
+    HERMES_LOG_WARNING("Shader attribute {} not located.", name);
     return;
   }
   glUniform1f(loc, f);

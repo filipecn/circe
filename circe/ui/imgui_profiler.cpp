@@ -96,13 +96,13 @@ hermes::Str prettyTicks(u64 ticks, f64 *value = nullptr, HProfiler::Resolution *
 
 /// code inspired in https://github.com/sebh/Dx11Base/blob/master/Application/WinMain.cpp
 void HProfiler::render() {
-  HERMES_PROFILE_SCOPE("profiler view render")
+  HERMES_PROFILE_SCOPE("profiler view render");
 
   u64 window_end = current_time ? current_time : hermes::profiler::now();
   u64 window_start = (window_end > window_size_) ? window_end - window_size_ : 0;
   u64 total_duration = window_end - window_start;
 
-  HERMES_ASSERT(window_start)
+  HERMES_ASSERT(window_start);
 
   const auto &blocks = hermes::profiler::Profiler::blockList();
 
@@ -146,7 +146,7 @@ void HProfiler::render() {
   const float max_width = ImGui::GetWindowWidth() - 20;
   const float ms2pixel = max_width / total_duration_res;
 
-  HERMES_ASSERT(window_end >= window_start)
+  HERMES_ASSERT(window_end >= window_start);
 
   auto *painter = ImGui::GetWindowDrawList();
 

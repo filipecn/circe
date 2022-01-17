@@ -218,7 +218,7 @@ void getGlVersion(int *major, int *minor) {
 //void glColor(Color c) { glColor4f(c.r, c.g, c.b, c.a); }
 
 void glApplyTransform(const hermes::Transform &transform) {
-  std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
+  HERMES_LOG_ERROR("forbidden call");
   exit(-1);
   float m[16];
   transform.matrix().column_major(m);
@@ -226,7 +226,7 @@ void glApplyTransform(const hermes::Transform &transform) {
 }
 
 hermes::Transform glGetProjectionTransform() {
-  std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
+  HERMES_LOG_ERROR("forbidden call");
   exit(-1);
   float m[16];
   glGetFloatv(GL_PROJECTION_MATRIX, m);
@@ -234,7 +234,7 @@ hermes::Transform glGetProjectionTransform() {
 }
 
 hermes::Transform glGetModelviewTransform() {
-  std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
+  HERMES_LOG_ERROR("forbidden call");
   exit(-1);
   float m[16];
   glGetFloatv(GL_MODELVIEW_MATRIX, m);
@@ -242,7 +242,7 @@ hermes::Transform glGetModelviewTransform() {
 }
 
 hermes::Transform glGetMVPTransform() {
-  std::cerr << "forbiden call at " << LOG_LOCATION << std::endl;
+  HERMES_LOG_ERROR("forbidden call");
   exit(-1);
   return glGetProjectionTransform() * glGetModelviewTransform();
   return glGetModelviewTransform() * glGetProjectionTransform();

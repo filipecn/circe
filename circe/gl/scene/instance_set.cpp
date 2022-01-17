@@ -79,7 +79,7 @@ InstanceSet::~InstanceSet() = default;
 
 void InstanceSet::resize(uint n) {
   if (!instance_program.good()) {
-    HERMES_LOG_WARNING("Bad instance program!")
+    HERMES_LOG_WARNING("Bad instance program!");
     return;
   }
   instance_count_ = n;

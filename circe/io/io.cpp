@@ -67,7 +67,7 @@ Model io::readOBJ(const hermes::Path &path, shape_options options, u32 mesh_id) 
   u64 position_id{0}, normal_id{0}, color_id{0}, uv_id{0};
   if (!attrib.vertices.empty())
     position_id = model.pushAttribute<hermes::point3>("position");
-  if (!attrib.normals.empty() || testMaskBit(options, shape_options::normal))
+  if (!attrib.normals.empty() || CIRCE_MASK_BIT(options, shape_options::normal))
     normal_id = model.pushAttribute<hermes::vec3>("normal");
   if (!attrib.colors.empty())
     color_id = model.pushAttribute<hermes::vec3>("color");

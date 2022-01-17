@@ -88,10 +88,13 @@ Depending on what you want to compile, you may need to set some `cmake` options:
 | BUILD_EXAMPLES  | build examples | OFF |
 | BUILD_DOCS  | generates documentation | OFF |
 
+Suppose you would like to use `VULKAN` and build the examples, your `cmake` command then will look like this:
+````shell
+cmake .. -DUSE_VULKAN=ON -DBUILD_EXAMPLES=ON
+````
+
 ### Dependencies
-
-Circe dependencies are:
-
+All dependencies are handled by `cmake` or have been included into the source, so there is no need to get them yourself.
 - [hermes](https://github.com/filipecn/hermes) - for all the basics
 - [GLFW](http://www.glfw.org) - for window management and user input
 - [imgui](https://github.com/ocornut/imgui) - for user interface
@@ -99,11 +102,14 @@ Circe dependencies are:
 - [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) - for reading/writing obj files
 - [glad](https://github.com/Dav1dde/glad) - for handling OpenGL extension functions
 
-They are all handled by `cmake` or have been included into the source, so there is no need to get them yourself.
 
 ## TODO
 
 - [ ] create `cmake` variables for dependencies
+
+## Notes
+- This library is my personal lib that I use in my projects, at my own risk :) Please keep it in mind.
+- I've been developing Circe under Ubuntu 20.04 and Nvidia, I have no idea how it behaves on other systems (or distributions).
 
 ## Contact
 

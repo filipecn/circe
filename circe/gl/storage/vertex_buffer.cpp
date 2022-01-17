@@ -127,9 +127,9 @@ std::ostream &operator<<(std::ostream &os, const VertexBuffer &vb) {
 }
 
 std::string VertexBuffer::memoryDump(hermes::memory_dumper_options options) const {
-  HERMES_LOG_VARIABLE(attributes)
-  HERMES_LOG_VARIABLE(attributes.stride())
-  HERMES_LOG_VARIABLE(vertex_count_)
+  HERMES_LOG_VARIABLE(attributes);
+  HERMES_LOG_VARIABLE(attributes.stride());
+  HERMES_LOG_VARIABLE(vertex_count_);
   auto layout = hermes::MemoryDumper::RegionLayout()
       .withSize(attributes.stride(), vertex_count_);
 

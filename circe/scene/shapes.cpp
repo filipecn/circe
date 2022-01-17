@@ -37,11 +37,11 @@ Model Shapes::fromNMesh(const NMesh &mesh, shape_options options) {
   // process options
   if ((options & shape_options::tangent_space) == shape_options::tangent_space)
     options = options | shape_options::tangent | shape_options::bitangent;
-  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
-  const bool generate_normals = testMaskBit(options, shape_options::normal);
-  bool generate_uvs = testMaskBit(options, shape_options::uv);
-  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
 
   // setup fields
   AoS aos;
@@ -55,7 +55,7 @@ Model Shapes::fromNMesh(const NMesh &mesh, shape_options options) {
   auto vertex_positions = mesh.positions();
 
   std::vector<i32> indices;
-  if (testMaskBit(options, shape_options::wireframe)) {
+  if (CIRCE_MASK_BIT(options, shape_options::wireframe)) {
     model.setPrimitiveType(GeometricPrimitiveType::LINES);
     for (auto f : mesh.faces()) {
       u64 a = Numbers::greatest<u64>();
@@ -64,7 +64,7 @@ Model Shapes::fromNMesh(const NMesh &mesh, shape_options options) {
       indices.emplace_back(a);
       indices.emplace_back(b);
     }
-  } else if (testMaskBit(options, shape_options::vertices)) {
+  } else if (CIRCE_MASK_BIT(options, shape_options::vertices)) {
     model.setPrimitiveType(GeometricPrimitiveType::POINTS);
     for (u64 i = 0; i < mesh.vertexCount(); ++i)
       indices.emplace_back(i);
@@ -101,14 +101,14 @@ Model Shapes::fromNMesh(const NMesh &mesh, shape_options options) {
 
 Model Shapes::convert(const Model &model, shape_options options, const std::vector<u64> &attr_filter) {
   // check options
-  const bool wireframe = testMaskBit(options, shape_options::wireframe);
-  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
-  const bool only_vertices = testMaskBit(options, shape_options::vertices);
+  const bool wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
   // TODO the following options are not handled!
-  const bool generate_normals = testMaskBit(options, shape_options::normal);
-  const bool generate_uvs = testMaskBit(options, shape_options::uv);
-  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
   // output model
   Model converted_model;
   // attribute description
@@ -226,15 +226,15 @@ Model Shapes::convert(const Model &model, shape_options options, const std::vect
 }
 
 Model Shapes::icosphere(const point3 &center, real_t radius, u32 divisions, shape_options options) {
-  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
-  const bool only_vertices = testMaskBit(options, shape_options::vertices);
-  const bool generate_normals = testMaskBit(options, shape_options::normal);
-  const bool generate_uvs = testMaskBit(options, shape_options::uv);
-  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
-  const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
-  const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
-  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
+  const bool flip_normals = CIRCE_MASK_BIT(options, shape_options::flip_normals);
+  const bool flip_faces = CIRCE_MASK_BIT(options, shape_options::flip_faces);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
 
   AoS aos;
   aos.pushField<point3>("position");
@@ -494,18 +494,18 @@ Model Shapes::plane(const Plane &plane,
 
 Model Shapes::box(const bbox3 &box, shape_options options) {
   // check options
-  if (testMaskBit(options, shape_options::tangent_space))
+  if (CIRCE_MASK_BIT(options, shape_options::tangent_space))
     options = options | shape_options::tangent | shape_options::bitangent;
-  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
-  const bool only_vertices = testMaskBit(options, shape_options::vertices);
-  const bool generate_normals = testMaskBit(options, shape_options::normal);
-  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
-  const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
-  const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
-  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
-  const bool generate_uvw = testMaskBit(options, shape_options::uvw);
-  const bool generate_uvs = testMaskBit(options, shape_options::uv);
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
+  const bool flip_normals = CIRCE_MASK_BIT(options, shape_options::flip_normals);
+  const bool flip_faces = CIRCE_MASK_BIT(options, shape_options::flip_faces);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
+  const bool generate_uvw = CIRCE_MASK_BIT(options, shape_options::uvw);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
 
   // model data
   AoS aos;
@@ -643,13 +643,13 @@ Model Shapes::box(const bbox3 &box, shape_options options) {
 }
 
 Model Shapes::box(const bbox2 &box, shape_options options) {
-  if (testMaskBit(options, shape_options::tangent_space))
+  if (CIRCE_MASK_BIT(options, shape_options::tangent_space))
     options = options | shape_options::tangent | shape_options::bitangent;
-  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
-  const bool generate_normals = testMaskBit(options, shape_options::normal);
-  bool generate_uvs = testMaskBit(options, shape_options::uv);
-  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
 
   Model model;
 
@@ -658,7 +658,7 @@ Model Shapes::box(const bbox2 &box, shape_options options) {
 
   std::vector<i32> indices;
 
-  if (testMaskBit(options, shape_options::unique_positions)) {
+  if (CIRCE_MASK_BIT(options, shape_options::unique_positions)) {
     // TODO
   } else {
     model.resize(4);
@@ -687,12 +687,12 @@ Model Shapes::box(const bbox2 &box, shape_options options) {
 Model Shapes::segment(const Segment3 &s, shape_options options) {
   Model model;
   model.pushAttribute<point3>("position");
-  if (testMaskBit(options, shape_options::uv))
+  if (CIRCE_MASK_BIT(options, shape_options::uv))
     model.pushAttribute<point2>("uv");
   model.resize(2);
   model.attributeValue<point3>(0, 0) = s.a;
   model.attributeValue<point3>(0, 1) = s.b;
-  if (testMaskBit(options, shape_options::uv)) {
+  if (CIRCE_MASK_BIT(options, shape_options::uv)) {
     model.attributeValue<point2>(1, 0) = {0.f, 0.f};
     model.attributeValue<point2>(1, 1) = {1.f, 1.f};
   }
@@ -701,16 +701,16 @@ Model Shapes::segment(const Segment3 &s, shape_options options) {
 }
 
 Model Shapes::curve(const std::vector<hermes::point3> &vertices, shape_options options) {
-  const bool generate_wireframe = testMaskBit(options, shape_options::wireframe);
-  const bool only_vertices = testMaskBit(options, shape_options::vertices);
-  const bool generate_normals = testMaskBit(options, shape_options::normal);
-  const bool generate_uvs = testMaskBit(options, shape_options::uv);
-  const bool generate_uvw = testMaskBit(options, shape_options::uvw);
-  const bool generate_tangents = testMaskBit(options, shape_options::tangent);
-  const bool generate_bitangents = testMaskBit(options, shape_options::bitangent);
-  const bool flip_normals = testMaskBit(options, shape_options::flip_normals);
-  const bool flip_faces = testMaskBit(options, shape_options::flip_faces);
-  const bool unique_positions = testMaskBit(options, shape_options::unique_positions);
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_uvw = CIRCE_MASK_BIT(options, shape_options::uvw);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
+  const bool flip_normals = CIRCE_MASK_BIT(options, shape_options::flip_normals);
+  const bool flip_faces = CIRCE_MASK_BIT(options, shape_options::flip_faces);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
 
   // model data
   AoS aos;

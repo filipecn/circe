@@ -34,7 +34,7 @@
 namespace circe::gl {
 
 Texture unfoldCubemap(const Texture &cubemap, texture_options output_options) {
-  bool output_is_equirectangular = circe::testMaskBit(output_options, circe::texture_options::equirectangular);
+  bool output_is_equirectangular = CIRCE_MASK_BIT(output_options, circe::texture_options::equirectangular);
   Texture output;
   output.setTarget(GL_TEXTURE_2D);
   output.setInternalFormat(cubemap.internalFormat());
@@ -126,8 +126,8 @@ Texture unfoldCubemap(const Texture &cubemap, texture_options output_options) {
 }
 
 Texture convertToCubemap(const Texture &input, texture_options input_options, hermes::size2 resolution) {
-  bool input_is_hdr = circe::testMaskBit(input_options, circe::texture_options::hdr);
-  bool input_is_equirectangular = testMaskBit(input_options, texture_options::equirectangular);
+  bool input_is_hdr = CIRCE_MASK_BIT(input_options, circe::texture_options::hdr);
+  bool input_is_equirectangular = CIRCE_MASK_BIT(input_options, texture_options::equirectangular);
   std::string vs;
   std::string fs;
   Program program;
@@ -306,9 +306,9 @@ Texture Texture::fromFile(const hermes::Path &path,
                           circe::texture_options input_options,
                           circe::texture_options output_options) {
   // check input options
-  bool input_is_hdr = circe::testMaskBit(input_options, circe::texture_options::hdr);
+  bool input_is_hdr = CIRCE_MASK_BIT(input_options, circe::texture_options::hdr);
   // check output options
-  bool output_is_cubemap = circe::testMaskBit(output_options, circe::texture_options::cubemap);
+  bool output_is_cubemap = CIRCE_MASK_BIT(output_options, circe::texture_options::cubemap);
   // texture object
   Texture texture;
   // read file
@@ -381,8 +381,8 @@ Texture Texture::fromTexture(const Texture &texture, circe::texture_options outp
   // check input options
   bool input_is_cubemap = texture.target() == GL_TEXTURE_CUBE_MAP;
   // check output options
-  bool output_is_cubemap = circe::testMaskBit(output_options, circe::texture_options::cubemap);
-  bool output_is_equirectangular = circe::testMaskBit(output_options, circe::texture_options::equirectangular);
+  bool output_is_cubemap = CIRCE_MASK_BIT(output_options, circe::texture_options::cubemap);
+  bool output_is_equirectangular = CIRCE_MASK_BIT(output_options, circe::texture_options::equirectangular);
 
   if (input_is_cubemap && !output_is_cubemap)
     return unfoldCubemap(texture, output_options);

@@ -122,7 +122,7 @@ Picker::Picker() {
   program_.attach(Shader(GL_VERTEX_SHADER, object_pick_vs));
   program_.attach(Shader(GL_FRAGMENT_SHADER, object_pick_fs));
   if (!program_.link())
-    HERMES_LOG_ERROR("Failed to compile picker shader: " + program_.err)
+    HERMES_LOG_ERROR("Failed to compile picker shader: {}", program_.err);
 }
 
 Picker::~Picker() = default;
@@ -184,7 +184,7 @@ MeshPicker::MeshPicker() {
   program_.attach(Shader(GL_VERTEX_SHADER, mesh_pick_vs));
   program_.attach(Shader(GL_FRAGMENT_SHADER, mesh_pick_fs));
   if (!program_.link())
-    HERMES_LOG_ERROR("Failed to compile picker shader: " + program_.err)
+    HERMES_LOG_ERROR("Failed to compile picker shader: {}", program_.err);
 }
 
 MeshPicker::~MeshPicker() = default;
@@ -210,7 +210,7 @@ void MeshPicker::pick(const circe::CameraInterface *camera,
     f(program_);
   });
   glDisable(GL_SCISSOR_TEST);
-  HERMES_PROFILE_SCOPE("pick data")
+  HERMES_PROFILE_SCOPE("pick data");
   // get result
   // TODO I should get just the subregion! but it is not working for some reason....
   //  auto data = t_object_id_.texels({static_cast<int>(pick_position.x - 1),
@@ -292,7 +292,7 @@ InstancePicker::InstancePicker() {
   program_.destroy();
   program_.attach(Shader(GL_VERTEX_SHADER, instance_pick_vs));
   program_.attach(Shader(GL_FRAGMENT_SHADER, instance_pick_fs));
-  HERMES_ASSERT_WITH_LOG(program_.link(), program_.err)
+  HERMES_ASSERT_WITH_LOG(program_.link(), program_.err);
 }
 
 InstancePicker::~InstancePicker() = default;
@@ -315,7 +315,7 @@ void InstancePicker::pick(const circe::CameraInterface *camera,
     f(program_);
   });
   glDisable(GL_SCISSOR_TEST);
-  HERMES_PROFILE_SCOPE("pick data")
+  HERMES_PROFILE_SCOPE("pick data");
   // get result
   // TODO I should get just the subregion! but it is not working for some reason....
   //  auto data = t_object_id_.texels({static_cast<int>(pick_position.x - 1),
