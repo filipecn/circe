@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['getting_20started_9',['Getting Started',['../md_docs_0_getting_started.html',1,'']]]
+  ['d_20',['d',['../classcirce_1_1ProceduralColorPalette.html#aa53ba2238658ba3d437806e7a5ad4ca4',1,'circe::ProceduralColorPalette']]]
 ];

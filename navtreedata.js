@@ -22,46 +22,38 @@ for the JavaScript code in this file
 */
 var NAVTREE =
 [
-  [ "Hermes", "index.html", [
-    [ "Circe", "index.html", [
-      [ "Usage", "index.html#autotoc_md2", null ],
-      [ "Build", "index.html#autotoc_md3", [
-        [ "Dependencies", "index.html#autotoc_md4", null ]
-      ] ],
-      [ "TODO", "index.html#autotoc_md5", null ],
-      [ "Notes", "index.html#autotoc_md6", null ],
-      [ "Contact", "index.html#autotoc_md7", null ]
-    ] ],
-    [ "Getting Started", "md_docs_0_getting_started.html", [
-      [ "File Structure", "md_docs_0_getting_started.html#autotoc_md9", null ]
+  [ "Circe", "index.html", [
+    [ "Getting Started", "index.html", [
+      [ "Features", "index.html#autotoc_md1", null ],
+      [ "Structure", "index.html#autotoc_md2", null ],
+      [ "Download", "index.html#autotoc_md3", null ],
+      [ "Contact", "index.html#autotoc_md4", null ]
     ] ],
     [ "Building Circe", "md_docs_1_build_and_install.html", [
-      [ "cmake", "md_docs_1_build_and_install.html#autotoc_md11", null ],
-      [ "Build Options", "md_docs_1_build_and_install.html#autotoc_md12", null ],
-      [ "Dependencies", "md_docs_1_build_and_install.html#autotoc_md13", [
-        [ "CUDA", "md_docs_1_build_and_install.html#autotoc_md14", null ],
-        [ "Vulkan", "md_docs_1_build_and_install.html#autotoc_md15", null ]
+      [ "cmake", "md_docs_1_build_and_install.html#autotoc_md6", null ],
+      [ "Build Options", "md_docs_1_build_and_install.html#autotoc_md7", null ],
+      [ "Dependencies", "md_docs_1_build_and_install.html#autotoc_md8", [
+        [ "CUDA", "md_docs_1_build_and_install.html#autotoc_md9", null ],
+        [ "Vulkan", "md_docs_1_build_and_install.html#autotoc_md10", null ]
       ] ],
-      [ "Install", "md_docs_1_build_and_install.html#autotoc_md16", null ],
-      [ "Build", "md_docs_1_build_and_install.html#autotoc_md17", null ],
-      [ "Summary", "md_docs_1_build_and_install.html#autotoc_md18", null ],
-      [ "Troubleshooting", "md_docs_1_build_and_install.html#autotoc_md20", null ]
+      [ "Install", "md_docs_1_build_and_install.html#autotoc_md11", null ],
+      [ "Build", "md_docs_1_build_and_install.html#autotoc_md12", null ],
+      [ "Summary", "md_docs_1_build_and_install.html#autotoc_md13", null ],
+      [ "Troubleshooting", "md_docs_1_build_and_install.html#autotoc_md15", null ]
     ] ],
     [ "Linking Circe", "md_docs_2_linking.html", [
-      [ "cmake", "md_docs_2_linking.html#autotoc_md22", null ],
-      [ "CUDA", "md_docs_2_linking.html#autotoc_md23", null ],
-      [ "Vulkan", "md_docs_2_linking.html#autotoc_md25", null ],
-      [ "Troubleshooting", "md_docs_2_linking.html#autotoc_md26", null ]
+      [ "cmake", "md_docs_2_linking.html#autotoc_md17", null ],
+      [ "CUDA", "md_docs_2_linking.html#autotoc_md18", null ],
+      [ "Vulkan", "md_docs_2_linking.html#autotoc_md20", null ],
+      [ "Troubleshooting", "md_docs_2_linking.html#autotoc_md21", null ]
     ] ],
-    [ "Logging", "md_docs_logging.html", null ],
-    [ "Memory", "md_docs_memory.html", null ],
-    [ "Code Profiling", "md_docs_profiling.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
+        [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],

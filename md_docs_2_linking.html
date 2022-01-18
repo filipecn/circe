@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>Hermes: Linking Circe</title>
+<title>Circe: Linking Circe</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -50,7 +50,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Hermes
+   <div id="projectname">Circe
    </div>
   </td>
  </tr>
@@ -111,10 +111,10 @@ $(document).ready(function(){initNavTree('md_docs_2_linking.html',''); initResiz
 </div><!--header-->
 <div class="contents">
 <div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#autotoc_md22">cmake</a></li>
-<li class="level1"><a href="#autotoc_md23">CUDA</a></li>
-<li class="level1"><a href="#autotoc_md25">Vulkan</a></li>
-<li class="level1"><a href="#autotoc_md26">Troubleshooting</a></li>
+<ul><li class="level1"><a href="#autotoc_md17">cmake</a></li>
+<li class="level1"><a href="#autotoc_md18">CUDA</a></li>
+<li class="level1"><a href="#autotoc_md20">Vulkan</a></li>
+<li class="level1"><a href="#autotoc_md21">Troubleshooting</a></li>
 </ul>
 </div>
 <div class="textblock"><p>Once <code>circe</code> is built and/or installed (instructions) you are free to use it in your project.</p>
@@ -149,7 +149,7 @@ $(document).ready(function(){initNavTree('md_docs_2_linking.html',''); initResiz
 <div class="line">./a.out</div>
 <div class="line">hello circe!</div>
 </div><!-- fragment --><p>Please notice the last 3 linked libs <code>pthread X11 dl</code>. These come from <code>GLFW</code> and may vary depending on your system configuration.</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
+<h1><a class="anchor" id="autotoc_md17"></a>
 cmake</h1>
 <p>If you use <code>cmake</code> in your project, then it might be useful to have a <code>circe.cmake</code> (listed later) that conveniently sets variables - CIRCE_LIBRARIES and CIRCE_INCLUDES - pointing to respective <code>circe</code> locations. This method requires you to do the following modifications to your <code>CMakeLists.txt</code>: </p><div class="fragment"><div class="line">include(ExternalProject)</div>
 <div class="line"># let cmake know where to find circe.cmake file</div>
@@ -193,7 +193,7 @@ cmake</h1>
 <div class="line">set(CIRCE_INCLUDES ${CIRCE_INCLUDES} CACHE STRING &quot;&quot;)</div>
 <div class="line">set(CIRCE_LIBRARIES ${CIRCE_LIBRARIES} CACHE STRING &quot;&quot;)</div>
 </div><!-- fragment --><p>Notice that inside <code>CMAKE_ARGS</code> section, in <code>ExternalProject_Add</code> function, you can pass the options you want from <code>circe</code>. We will need to do this for <code>CUDA</code> for example.</p>
-<h1><a class="anchor" id="autotoc_md23"></a>
+<h1><a class="anchor" id="autotoc_md18"></a>
 CUDA</h1>
 <p>For any option other than BUILD_WITH_CUDA the process is exactly the same as above. Just pass the <code>cmake</code> arguments the way you want and be happy. In the case of <code>CUDA</code>, there will be two main changes in the <code>circe.cmake</code>: </p><div class="fragment"><div class="line"># Add the CUDA option in CMAKE_ARGS section</div>
 <div class="line">ExternalProject_Add(</div>
@@ -234,10 +234,10 @@ CUDA</h1>
 <div class="line">        )</div>
 </div><!-- fragment --><hr  />
 <p> Alright! If you are still there and could compile your code along with <code>circe</code>, then it is time to use! Please check the introduction page to get yourself started!</p>
-<h1><a class="anchor" id="autotoc_md25"></a>
+<h1><a class="anchor" id="autotoc_md20"></a>
 Vulkan</h1>
 <p><em>TODO</em></p>
-<h1><a class="anchor" id="autotoc_md26"></a>
+<h1><a class="anchor" id="autotoc_md21"></a>
 Troubleshooting</h1>
 <p><em>TODO</em> </p>
 </div></div><!-- contents -->

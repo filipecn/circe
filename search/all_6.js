@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['operator_26_13',['operator&amp;',['../bitmask__operators_8h.html#a3a621adc8d0e431d00aa7c3ab3cdc605',1,'circe']]],
-  ['operator_5e_14',['operator^',['../bitmask__operators_8h.html#ac9017e0ee1ebc9da1a7b21ee27689c7e',1,'circe']]],
-  ['operator_7c_15',['operator|',['../bitmask__operators_8h.html#a386c63c97e35744eb1f308133849a1fd',1,'circe']]],
-  ['operator_7e_16',['operator~',['../bitmask__operators_8h.html#a77c06206fab16eb21cafbce8ab7fd8e3',1,'circe']]]
+  ['g_23',['g',['../classcirce_1_1Color.html#a6abb7f2956a5e03a8dcb759d05802f61',1,'circe::Color']]],
+  ['gray_24',['Gray',['../classcirce_1_1Color.html#a1c778a79ebeb544fd075dfdc4a698564',1,'circe::Color']]],
+  ['green_25',['Green',['../classcirce_1_1Color.html#a420d72921671c2a6255c75a0dc533106',1,'circe::Color']]],
+  ['getting_20started_26',['Getting Started',['../index.html',1,'']]]
 ];

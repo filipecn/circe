@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>Hermes: Building Circe</title>
+<title>Circe: Building Circe</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -50,7 +50,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Hermes
+   <div id="projectname">Circe
    </div>
   </td>
  </tr>
@@ -111,16 +111,16 @@ $(document).ready(function(){initNavTree('md_docs_1_build_and_install.html','');
 </div><!--header-->
 <div class="contents">
 <div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#autotoc_md11">cmake</a></li>
-<li class="level1"><a href="#autotoc_md12">Build Options</a></li>
-<li class="level1"><a href="#autotoc_md13">Dependencies</a><ul><li class="level2"><a href="#autotoc_md14">CUDA</a></li>
-<li class="level2"><a href="#autotoc_md15">Vulkan</a></li>
+<ul><li class="level1"><a href="#autotoc_md6">cmake</a></li>
+<li class="level1"><a href="#autotoc_md7">Build Options</a></li>
+<li class="level1"><a href="#autotoc_md8">Dependencies</a><ul><li class="level2"><a href="#autotoc_md9">CUDA</a></li>
+<li class="level2"><a href="#autotoc_md10">Vulkan</a></li>
 </ul>
 </li>
-<li class="level1"><a href="#autotoc_md16">Install</a></li>
-<li class="level1"><a href="#autotoc_md17">Build</a></li>
-<li class="level1"><a href="#autotoc_md18">Summary</a></li>
-<li class="level1"><a href="#autotoc_md20">Troubleshooting</a></li>
+<li class="level1"><a href="#autotoc_md11">Install</a></li>
+<li class="level1"><a href="#autotoc_md12">Build</a></li>
+<li class="level1"><a href="#autotoc_md13">Summary</a></li>
+<li class="level1"><a href="#autotoc_md15">Troubleshooting</a></li>
 </ul>
 </div>
 <div class="textblock"><p>Circe is in <a href="https://github.com/filipecn/circe">github</a>, so you can download directly in the website or you can just <code>clone</code> the repository like this:</p>
@@ -131,7 +131,7 @@ $(document).ready(function(){initNavTree('md_docs_1_build_and_install.html','');
 <div class="fragment"><div class="line">ls </div>
 <div class="line">CMake CMakeLists.txt docs Doxyfile examples ext circe LICENSE README.md tests</div>
 </div><!-- fragment --><p>Now you are all set to build circe!</p>
-<h1><a class="anchor" id="autotoc_md11"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 cmake</h1>
 <p>Since there are no raw makefiles or anything, the easy way to go is with <a href="https://cmake.org/">cmake</a>. <code>cmake</code> is a tool that generates all the makefiles for you in a very portable manner, so you can just call <code>make</code> later. Usually, people create a separate directory for all the generated files and binaries:</p>
 <div class="fragment"><div class="line">mkdir build</div>
@@ -141,7 +141,7 @@ cmake</h1>
 </blockquote>
 <p>then you can invoke <code>cmake</code> from the newly created folder: </p><div class="fragment"><div class="line">cmake ..</div>
 </div><!-- fragment --><p>This will tell <code>cmake</code> that the source code is in the parent folder (if you created <code>build</code> inside <code>circe</code>) and <code>cmake</code> will generate all its files, include the makefiles, in the current (<code>build</code>) folder. Calling <code>cmake</code> with no configuration options (just the <code>..</code> argument) will configure <code>circe</code> on its default setting: which is just the circe library. But of course there are other things you may want to compile along with the core library.</p>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md7"></a>
 Build Options</h1>
 <p>We set compilation options in the <code>cmake</code> command. For example, <code>circe</code> provides unit tests, <code>CUDA</code> and <code>Vulkan</code> support. You need to tell <code>cmake</code> if you want these extra features. An option can <em>turned</em> <code>ON</code> or <code>OFF</code>, depending on whether it is set or not - so options with value <code>ON</code> are options you want. Here is a list of all the options you can use when configuring <code>cmake</code> for <code>circe</code>:</p>
 <table class="markdownTable">
@@ -162,7 +162,7 @@ Build Options</h1>
 </table>
 <p>You set an option by using the <code>-D</code> argument in the command line. Suppose you would like to use <code>Vulkan</code> (USE_VULKAN option) and also perform build the examples (BUILD_EXAMPLES option), your <code>cmake</code> command then will look like this:</p>
 <div class="fragment"><div class="line">cmake .. -DUSE_VULKAN=ON -DBUILD_EXAMPLES=ON</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md13"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md8"></a>
 Dependencies</h1>
 <p>Here is the list of all external libraries that <code>circe</code> uses:</p>
 <table class="markdownTable">
@@ -185,30 +185,30 @@ Dependencies</h1>
 </table>
 <p>All the libraries listed above are handled automatically by <code>cmake</code>, so there is no need to get or install any of them. <code>hermes</code> and <code>GLFW</code> are downloaded and compiled in the process, and the rest are header-only libraries, which are already included in the repository.</p>
 <p>The only cases where you will need to take extra actions are when use the options USE_VULKAN or BUILD_WITH_CUDA. Both cases require you to manually install the <code>CUDA</code> toolkit and the <code>Vulkan</code> <a href="https://vulkan.lunarg.com/">SDK</a> in your machine, respectively.</p>
-<h2><a class="anchor" id="autotoc_md14"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
 CUDA</h2>
 <p>You will need to have <code>CUDA</code> runtime libraries installed in your machine and let <code>cmake</code> know where <code>nvcc</code> (<code>CUDA</code> compiler) is located passing the <code>CMAKE_CUDA_COMPILER</code> variable. For example, in my machine <code>nvcc</code> is located at <code>/usr/local/cuda-11.0/bin/nvcc</code>, so my <code>cmake</code> command would look like this: </p><div class="fragment"><div class="line">cmake .. -DBUILD_WITH_CUDA=ON -DCMAKE_CUDA_COMPILER=/usr/local/cuda-11.0/bin/nvcc</div>
 </div><!-- fragment --><p>Right now, my <code>cmake</code> file is very simple regarding <code>CUDA</code>, I just call the <code>enable_language(CUDA)</code> function inside it and include CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES (which is defined automatically by <code>cmake</code>).</p>
 <p>&gt;I'm currently using Ubuntu 20.04 with no special setting. Hopefully <code>cmake</code> will be able to </p><blockquote class="doxtable">
 <p>handle <code>CUDA</code> in your system as well :) </p>
 </blockquote>
-<h2><a class="anchor" id="autotoc_md15"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Vulkan</h2>
 <p>Circe is also handling <code>Vulkan</code> in a very simple fashion. It just links against <code>vulkan dl</code> libraries. So it is currently just expecting <code>Vulkan</code> libraries to be installed in the usual system folders that <code>gcc</code> looks into.</p>
-<h1><a class="anchor" id="autotoc_md16"></a>
+<h1><a class="anchor" id="autotoc_md11"></a>
 Install</h1>
 <p>You can also install <code>circe</code> headers and library wherever you want. By default, the installation folder is the <code>build</code> folder from where you ran the <code>cmake</code> command. In order to install in another location use the INSTALL_PATH variable when running the <code>cmake</code> command like this:</p>
 <div class="fragment"><div class="line">cmake .. -DINSTALL_PATH=/my/install/location</div>
 </div><!-- fragment --><blockquote class="doxtable">
 <p><b>Important:</b> Circe will also put in the installation folder all the dependencies for you as well (but neither CUDA nor Vulkan) </p>
 </blockquote>
-<h1><a class="anchor" id="autotoc_md17"></a>
+<h1><a class="anchor" id="autotoc_md12"></a>
 Build</h1>
 <p>If the <code>cmake</code> command runs successfully, then you can proceed to compilation:</p>
 <div class="fragment"><div class="line">make -j8</div>
 </div><!-- fragment --><p>and install </p><div class="fragment"><div class="line">make install</div>
 </div><!-- fragment --><p>Hopefully you will not encounter any errors! Now you are free include and link <code>circe</code> to your project :)</p>
-<h1><a class="anchor" id="autotoc_md18"></a>
+<h1><a class="anchor" id="autotoc_md13"></a>
 Summary</h1>
 <p>So putting all together, we get something like this: </p><div class="fragment"><div class="line">git clone https://github.com/filipecn/circe.git</div>
 <div class="line">cd circe</div>
@@ -218,7 +218,7 @@ Summary</h1>
 <div class="line">make -j8 install</div>
 </div><!-- fragment --><hr  />
 <p> Check the next page to see how use <code>circe</code> in your project.</p>
-<h1><a class="anchor" id="autotoc_md20"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 Troubleshooting</h1>
 <p><em>TODO</em> </p>
 </div></div><!-- contents -->

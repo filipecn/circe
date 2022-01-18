@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>Hermes: Circe</title>
+<title>Circe: Getting Started</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -50,7 +50,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Hermes
+   <div id="projectname">Circe
    </div>
   </td>
  </tr>
@@ -107,13 +107,24 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Circe </div>  </div>
+<div class="title">Getting Started </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#autotoc_md1">Features</a></li>
+<li class="level1"><a href="#autotoc_md2">Structure</a></li>
+<li class="level1"><a href="#autotoc_md3">Download</a></li>
+<li class="level1"><a href="#autotoc_md4">Contact</a></li>
+</ul>
+</div>
 <div class="textblock"><p><a href="https://opensource.org/licenses/MIT"><object type="image/svg+xml" data="https://img.shields.io/badge/License-MIT-yellow.svg" style="pointer-events: none;">License: MIT</object></a></p>
-<hr  />
-<p>Circe is a minimalist framework that can be used in <code>OpenGL</code> (and soon <code>Vulkan</code>) based applications. Circe serves as a boiler-plate solution for your graphics applications, so you don't spend time with the basics. The goal is to achieve results with fewer lines of code, but also allowing great flexibility. In principle, circe should allow experienced users to control advanced features, while allowing less experienced users to make use of it as well.</p>
-<p>Here is what Circe can provide to you with ease:</p>
+<p>Circe is a minimalist framework that can be used in <code>OpenGL</code> (and soon <code>Vulkan</code>) based applications. Circe serves as a boiler-plate solution for your graphics applications, so you don't spend time with the basics. The goal is to achieve results with fewer lines of code, but also with great flexibility. In principle, circe should allow experienced users to control advanced features, while allowing less experienced users to make use of it as well.</p>
+<blockquote class="doxtable">
+<p>This library is my personal lib I use in my projects, at my own risk :) Please keep it in mind. But I really hope it can be useful to you too. </p>
+</blockquote>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Features</h1>
+<p>Here is some of what Circe can provide to you:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone"></th><th class="markdownTableHeadNone">some features  </th></tr>
@@ -124,96 +135,38 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><b>UI</b> </td><td class="markdownTableBodyNone">imgui included, profiler view, console output, gizmo, file dialog  </td></tr>
 </table>
-<p>You can find Circe in <a href="https://github.com/filipecn/circe">github</a>.</p>
-<p>very old ancient blog: <a href="http://aergia.weebly.com/">http://aergia.weebly.com/</a></p>
+<p>Check the [gallery]() for more images and examples.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
-Usage</h1>
-<p>Please check the [docs]() for a good introduction, details of the API and examples.</p>
-<p>The example bellow creates a blank window of size 800x800:</p>
-<div class="fragment"><div class="line"> {c++}</div>
-<div class="line">#include &lt;circe/circe.h&gt;</div>
-<div class="line"> </div>
-<div class="line">// Circe provides a BaseApp class to help you quickly setup an application</div>
-<div class="line">// Just inherit from it and override some methods</div>
-<div class="line">class HelloCirce :</div>
-<div class="line">public circe::gl::BaseApp {</div>
-<div class="line">public:</div>
-<div class="line">  HelloCirce() : BaseApp(800, 800, &quot;Hello Circe Window Title&quot;) {</div>
-<div class="line">  }</div>
-<div class="line">  // the render method is the only method required to override,</div>
-<div class="line">  // all other methods are optional</div>
-<div class="line">  void render(circe::CameraInterface *camera) override {</div>
-<div class="line">    // render your stuff</div>
-<div class="line">  }</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line">int main() {</div>
-<div class="line">  return HelloCirce().run();</div>
-<div class="line">}</div>
-</div><!-- fragment --><p>You can create and render your models like this:</p>
-<div class="fragment"><div class="line"> {c++}</div>
-<div class="line">// The scene model holds are OpenGL buffers and bind them properly</div>
-<div class="line">circe::gl::SceneModel model;</div>
-<div class="line">// You can create scene models from built-in shapes for example:</div>
-<div class="line">// create a wireframe box</div>
-<div class="line">model = circe::Shapes::box(hermes::bbox3::unitBox(), circe::shape_options::wireframe);</div>
-<div class="line">// create a sphere with uv coordinates and normals</div>
-<div class="line">model = circe::Shapes::icosphere({0,0,0}, 1, circe::shape_options::normals |</div>
-<div class="line">                                             circe::shape_options::uv);</div>
-<div class="line">// when rendering, just call</div>
-<div class="line">model.draw();</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md3"></a>
-Build</h1>
-<p>In order to build and use Circe (with no options), you can do as usual with <code>cmake</code>:</p>
-<div class="fragment"><div class="line">git clone https://github.com/filipecn/hermes.git</div>
-<div class="line">cd hermes</div>
+Structure</h1>
+<h1><a class="anchor" id="autotoc_md3"></a>
+Download</h1>
+<p>You can find Circe at <a href="https://github.com/filipecn/circe">github</a>.</p>
+<p>&gt;Please check the build and link instructions to learn how to build and use <code>circe</code> into your project.</p>
+<p>But if are impatient, here is what you can do: </p><div class="fragment"><div class="line">git clone https://github.com/filipecn/circe.git</div>
+<div class="line">cd circe</div>
 <div class="line">mkdir build</div>
 <div class="line">cd build</div>
-<div class="line">cmake ..</div>
+<div class="line">cmake .. -DINSTALL_PATH=/my/install/location</div>
 <div class="line">make -j8 install</div>
-</div><!-- fragment --><p>Depending on what you want to compile, you may need to set some <code>cmake</code> options:</p>
-<table class="markdownTable">
-<tr class="markdownTableHead">
-<th class="markdownTableHeadNone">variable </th><th class="markdownTableHeadNone">description </th><th class="markdownTableHeadNone">default  </th></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">BUILD_ALL </td><td class="markdownTableBodyNone">set all variables below to ON </td><td class="markdownTableBodyNone">OFF  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">USE_VULKAN </td><td class="markdownTableBodyNone">compiles with support to Vulkan </td><td class="markdownTableBodyNone">OFF  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">BUILD_WITH_CUDA </td><td class="markdownTableBodyNone">compiles with support to CUDA </td><td class="markdownTableBodyNone">OFF  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">BUILD_TESTS </td><td class="markdownTableBodyNone">build unit-tests </td><td class="markdownTableBodyNone">OFF  </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">BUILD_EXAMPLES </td><td class="markdownTableBodyNone">build examples </td><td class="markdownTableBodyNone">OFF  </td></tr>
-<tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">BUILD_DOCS </td><td class="markdownTableBodyNone">generates documentation </td><td class="markdownTableBodyNone">OFF  </td></tr>
-</table>
-<p>Suppose you would like to use <code>VULKAN</code> and build the examples, your <code>cmake</code> command then will look like this: </p><div class="fragment"><div class="line">cmake .. -DUSE_VULKAN=ON -DBUILD_EXAMPLES=ON</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md4"></a>
-Dependencies</h2>
-<p>All dependencies are handled by <code>cmake</code> or have been included into the source, so there is no need to get them yourself.</p><ul>
-<li><a href="https://github.com/filipecn/hermes">hermes</a> - for all the basics</li>
-<li><a href="http://www.glfw.org">GLFW</a> - for window management and user input</li>
-<li><a href="https://github.com/ocornut/imgui">imgui</a> - for user interface</li>
-<li><a href="https://github.com/nothings/stb">stb</a> - for image files and text fonts</li>
-<li><a href="https://github.com/tinyobjloader/tinyobjloader">tinyobjloader</a> - for reading/writing obj files</li>
-<li><a href="https://github.com/Dav1dde/glad">glad</a> - for handling OpenGL extension functions</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md5"></a>
-TODO</h1>
-<ul>
-<li>[ ] create <code>cmake</code> variables for dependencies</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md6"></a>
-Notes</h1>
-<ul>
-<li>This library is my personal lib that I use in my projects, at my own risk :) Please keep it in mind.</li>
-<li>I've been developing Circe under Ubuntu 20.04 and Nvidia, I have no idea how it behaves on other systems (or distributions).</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md7"></a>
+</div><!-- fragment --><p>and to compile along with your code here is what to do: </p><div class="fragment"><div class="line"># compilation command</div>
+<div class="line">g++ -I/my/install/location/include                \</div>
+<div class="line">    -l/my/install/location/lib/libcirce.a         \</div>
+<div class="line">    -l/my/install/location/lib/libglad.a          \</div>
+<div class="line">    -l/my/install/location/lib/libglfw3.a         \</div>
+<div class="line">    -l/my/install/location/lib/libtinyobjloader.a \</div>
+<div class="line">    -lpthread                             \</div>
+<div class="line">    -lX11                                 \</div>
+<div class="line">    -ldl                                  \</div>
+<div class="line">    main.cpp  </div>
+<div class="line"># run</div>
+<div class="line">./a.out</div>
+<div class="line">hello circe!</div>
+</div><!-- fragment --><blockquote class="doxtable">
+<p>I've been developing Circe under Ubuntu 20.04 and Nvidia, I have no idea how it behaves on other configurations. </p>
+</blockquote>
+<h1><a class="anchor" id="autotoc_md4"></a>
 Contact</h1>
-<p>Please feel free to contact me :)</p>
-<p><a href="#" onclick="location.href='mai'+'lto:'+'fil'+'ip'+'ede'+'cn'+'@gm'+'ai'+'l.c'+'om'; return false;">e-mail</a> </p>
+<p>Please feel free to contact me by <a href="#" onclick="location.href='mai'+'lto:'+'fil'+'ip'+'ede'+'cn'+'@gm'+'ai'+'l.c'+'om'; return false;">e-mail</a> :) </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->

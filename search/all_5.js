@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['memory_12',['Memory',['../md_docs_memory.html',1,'']]]
+  ['fromu32_22',['fromU32',['../classcirce_1_1Color.html#a389fde9105e2e1912442d73f28c64ee5',1,'circe::Color']]]
 ];
