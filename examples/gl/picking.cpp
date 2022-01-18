@@ -107,7 +107,7 @@ struct InstancePickingExample {
     size_t n = 100;
     instances.resize(n);
     auto instance_data = instances.instanceData();
-    circe::ColorPalette palette = circe::ColorPalette::MatlabHeatMap();
+    circe::ColorPalette palette = circe::ColorPalettes::MatlabHeatMap();
     hermes::RNGSampler sampler;
     hermes::HaltonSequence rng;
     for (size_t i = 0; i < n; i++) {

@@ -9,6 +9,8 @@ boiler-plate solution for your graphics applications, so you don't spend time wi
 results with fewer lines of code, but also allowing great flexibility. In principle, circe should allow experienced
 users to control advanced features, while allowing less experienced users to make use of it as well.
 
+>This library is my personal lib that I use in my projects, at my own risk :) Please keep it in mind.
+
 Here is what Circe can provide to you with ease:
 
 |  | some features |
@@ -17,15 +19,14 @@ Here is what Circe can provide to you with ease:
 | **scene**     |  instancing, built-in shapes, GPU picking |
 | **UI**     | imgui included, profiler view, console output, gizmo, file dialog  |
 
-You can find Circe in [github](https://github.com/filipecn/circe).
 
 very old ancient blog: http://aergia.weebly.com/
 
 ## Usage
 
-Please check the [docs]() for a good introduction, details of the API and examples. 
+Please check the [docs](https://filipecn.github.io/circe/) for a good introduction, details of the API and examples. 
 
-The example bellow creates a blank window of size 800x800:
+For a quick preview, the example bellow creates a blank window of size 800x800:
 
 ```c++
 #include <circe/circe.h>
@@ -49,15 +50,15 @@ int main() {
 }
 ```
 
-You can create and render your models like this:
+Here is an example on how you can create and render your models:
 
 ```c++
-// The scene model holds are OpenGL buffers and bind them properly
+// The scene model holds all the OpenGL buffers and bind them properly
 circe::gl::SceneModel model;
 // You can create scene models from built-in shapes for example:
 // create a wireframe box
 model = circe::Shapes::box(hermes::bbox3::unitBox(), circe::shape_options::wireframe);
-// create a sphere with uv coordinates and normals
+// create a unit sphere with uv coordinates and normals
 model = circe::Shapes::icosphere({0,0,0}, 1, circe::shape_options::normals |
                                              circe::shape_options::uv);
 // when rendering, just call
@@ -65,12 +66,11 @@ model.draw();
 ```
 
 ## Build
-
 In order to build and use Circe (with no options), you can do as usual with `cmake`:
 
 ```shell
-git clone https://github.com/filipecn/hermes.git
-cd hermes
+git clone https://github.com/filipecn/circe.git
+cd circe
 mkdir build
 cd build
 cmake ..
@@ -92,6 +92,9 @@ Suppose you would like to use `VULKAN` and build the examples, your `cmake` comm
 ````shell
 cmake .. -DUSE_VULKAN=ON -DBUILD_EXAMPLES=ON
 ````
+> Please check the [docs](https://filipecn.github.io/circe/) for details about the build process of `circe`.
+
+>I've been developing Circe under Ubuntu 20.04 and Nvidia, I have no idea how it behaves on other configurations.
 
 ### Dependencies
 All dependencies are handled by `cmake` or have been included into the source, so there is no need to get them yourself.
@@ -107,12 +110,6 @@ All dependencies are handled by `cmake` or have been included into the source, s
 
 - [ ] create `cmake` variables for dependencies
 
-## Notes
-- This library is my personal lib that I use in my projects, at my own risk :) Please keep it in mind.
-- I've been developing Circe under Ubuntu 20.04 and Nvidia, I have no idea how it behaves on other systems (or distributions).
-
 ## Contact
 
-Please feel free to contact me :)
-
-[e-mail](mailto:filipedecn@gmail.com)
+Please feel free to contact me by [e-mail](mailto:filipedecn@gmail.com) :)

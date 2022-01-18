@@ -29,6 +29,8 @@
 
 namespace circe {
 
+/// \brief Batlow color map data
+/// \note Extracted from https://www.fabiocrameri.ch/colourmaps/
 u32 batlow[] = {
     0x011959, 0x041E5A, 0x06215B, 0x08255B, 0x0A285C, 0x0B2D5D, 0x0C2F5D, 0x0D335E, 0x0E375E, 0x0F395F, 0x103D5F,
     0x103F60, 0x114260, 0x114460, 0x124761, 0x134A61, 0x144C62, 0x154F62, 0x165062, 0x175362, 0x195662, 0x1A5762,
@@ -40,6 +42,7 @@ u32 batlow[] = {
     0xF8A17B, 0xF9A382, 0xFAA587, 0xFCA78E, 0xFCA995, 0xFDAB9A, 0xFDADA0, 0xFDAFA5, 0xFDB1AB, 0xFDB3B1, 0xFDB4B6,
     0xFDB7BC, 0xFDB8C0, 0xFDBAC7, 0xFDBCCB, 0xFCBED1, 0xFCC0D8, 0xFCC2DC, 0xFCC4E3, 0xFBC6E8, 0xFBC8EF, 0xFBCAF3};
 
+/// \brief Matlab Heat color map data
 f32 matlab_heat[] =
     {0.64706f, 0.f, 0.14902f, 0.67059f, 0.015686f, 0.14902f, 0.69412f, 0.035294f, 0.14902f, 0.71373f, 0.05098f,
      0.14902f, 0.73725f, 0.070588f, 0.14902f, 0.75686f, 0.086275f, 0.14902f, 0.77647f, 0.10588f, 0.14902f, 0.79608f,
@@ -69,28 +72,18 @@ f32 matlab_heat[] =
      0.031373f, 0.50588f, 0.26667f, 0.023529f, 0.4902f, 0.25882f, 0.011765f, 0.47059f, 0.24706f, 0.0078431f, 0.45098f,
      0.23529f, 0.f, 0.42745f, 0.22745f, 0.f, 0.40784f, 0.21569f};
 
-#define HEAT_1_COLOR_PALETTE                                                   \
-  ColorPalette(                                                                \
-      {246, 170, 111, 238, 132, 110, 215, 99, 105, 162, 85, 94, 70, 83, 90})
 
-#define HEAT_COLOR_PALETTE                                                     \
-  ColorPalette(                                                                \
-      {255, 171, 130, 255, 106, 79, 255, 71, 55, 255, 47, 47, 255, 0, 0})
-
-#define HEAT_GREEN_COLOR_PALETTE                                               \
-  ColorPalette({202, 3, 0, 255, 101, 25, 202, 206, 23, 56, 140, 4, 4, 115, 49})
-
-ColorPalette ColorPalette::MatlabHeatMap() {
+ColorPalette ColorPalettes::MatlabHeatMap() {
   return std::move(ColorPalette(matlab_heat, sizeof(matlab_heat) / (sizeof(float) * 3)));
 }
 
-ColorPalette ColorPalette::Batlow() {
-  return std::move(ColorPalette(batlow, 100));
+ColorPalette ColorPalettes::Batlow() {
+  return std::move(ColorPalette(batlow, 99));
 }
 
 ColorPalette::ColorPalette(const u32 *c, size_t n) {
   for (size_t i = 0; i < n; ++i)
-    colors.emplace_back(Color::rbgFromU32(c[n]));
+    colors.emplace_back(Color::rbgFromU32(c[i]));
 }
 
 ColorPalette::ColorPalette(const f32 *c, size_t rgb_count) {
@@ -102,7 +95,9 @@ ColorPalette::ColorPalette(const f32 *c, size_t rgb_count) {
   }
 }
 
-ColorPalette::ColorPalette(std::initializer_list<int> c) : ColorPalette() {
+ColorPalette::ColorPalette() = default;
+
+ColorPalette::ColorPalette(std::initializer_list<int> c) {
   size_t n = c.size() / 3;
   auto it = c.begin();
   for (size_t i = 0; i < n; i++) {

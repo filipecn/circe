@@ -22,7 +22,7 @@ public:
 
     // instance shader
     if (!instance_set.instance_program.link(shaders_path, "instance"))
-      HERMES_LOG_ERROR("Failed to load instance shader: " + instance_set.instance_program.err);
+    HERMES_LOG_ERROR("Failed to load instance shader: {}", instance_set.instance_program.err);
 
     updateMesh(MeshType::Cube);
 
@@ -47,7 +47,7 @@ public:
 
     auto obj = circe::ImguiFolderDialog::folder_dialog_button("Pick obj");
     if (obj)
-      HERMES_LOG_VARIABLE(obj.path)
+      HERMES_LOG_VARIABLE(obj.path);
 
 
     // open Dialog Simple
@@ -76,7 +76,7 @@ public:
     instance_set.resize(n);
     auto instance_data = instance_set.instanceData();
     // setup instance properties
-    circe::ColorPalette palette = circe::ColorPalette::Batlow();
+    circe::ColorPalette palette = circe::ColorPalettes::Batlow();
     hermes::RNGSampler sampler;
     hermes::HaltonSequence rng;
     for (size_t i = 0; i < n; i++) {

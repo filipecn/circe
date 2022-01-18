@@ -54,9 +54,9 @@ public:
     unfolded = circe::gl::Texture::fromTexture(cubemap);
 
     if (!skybox.program.link(shaders_path, "skybox"))
-      HERMES_LOG_ERROR("Failed to load model shader: " + skybox.program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: {}", skybox.program.err);
     if (!model.program.link(shaders_path, "env_map"))
-      HERMES_LOG_ERROR("Failed to load model shader: " + model.program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: {}", model.program.err);
   }
 
   void prepareFrame() override {

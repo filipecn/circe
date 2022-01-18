@@ -5,7 +5,7 @@ public:
   SSOB() : BaseApp(800, 800, "") {
     hermes::Path shaders_path(std::string(SHADERS_PATH));
     if (!mesh.program.link(shaders_path, "ssbo"))
-      HERMES_LOG_ERROR("Failed to load model shader: " + mesh.program.err)
+      HERMES_LOG_ERROR("Failed to load model shader: ", mesh.program.err);
     {  /// setup model
       hermes::AoS aos;
       aos.pushField<hermes::point3>("position");

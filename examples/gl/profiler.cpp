@@ -36,21 +36,21 @@ struct ProfilerExample : public circe::gl::BaseApp {
 
   void render(circe::CameraInterface *camera) override {
     {
-      HERMES_PROFILE_FUNCTION(hermes::argb_colors::GreenA200)
+      HERMES_PROFILE_FUNCTION(hermes::argb_colors::GreenA200);
       ImGui::SetNextWindowSize(ImVec2(400.0f, 400.0f), ImGuiCond_FirstUseEver);
       ImGui::Begin("GPU performance", nullptr);
-      HERMES_PROFILE_START_BLOCK("stuff", hermes::argb_colors::Coral)
+      HERMES_PROFILE_START_BLOCK("stuff", hermes::argb_colors::Coral);
       for (int i = 0; i < 10; ++i) {
-        HERMES_PROFILE_SCOPE("for", hermes::argb_colors::Blue300)
+        HERMES_PROFILE_SCOPE("for", hermes::argb_colors::Blue300);
         std::this_thread::sleep_for(std::chrono::microseconds(500));
       }
       HERMES_PROFILE_END_BLOCK
-      HERMES_PROFILE_SCOPE("GUI", hermes::argb_colors::BlueA200)
+      HERMES_PROFILE_SCOPE("GUI", hermes::argb_colors::BlueA200);
       profiler_view.render();
       logger_view.render();
       HERMES_LOG_VARIABLE(this->frame_counter_);
       if(this->frame_counter_ % 10 == 0)
-        HERMES_LOG_WARNING("10th frame!")
+        HERMES_LOG_WARNING("10th frame!");
       ImGui::End();
     }
     // for now we can only update when stack is empty

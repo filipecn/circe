@@ -80,9 +80,9 @@ public:
     ball_mtl.roughness = 0.35;
     // setup shader program
     if (!light_model.program.link(shaders_path, "color"))
-      HERMES_LOG_ERROR("Failed to load model shader: " + light_model.program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: {}", light_model.program.err);
     if (!program.link(shaders_path, "pbr"))
-      HERMES_LOG_ERROR("Failed to load model shader: " + program.err);
+      HERMES_LOG_ERROR("Failed to load model shader: {}", program.err);
     // setup UBO
     ubo.push(program);
     program.setUniformBlockBinding("PBR", 0);

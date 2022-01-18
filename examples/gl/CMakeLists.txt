@@ -44,6 +44,7 @@ endfunction(buildExample)
 
 set(EXAMPLES
         2d
+        color_maps
         instances
         hello_circe
         shadows
