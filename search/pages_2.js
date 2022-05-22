@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['linking_20circe_98',['Linking Circe',['../md_docs_2_linking.html',1,'']]]
+  ['getting_20started_0',['Getting Started',['../index.html',1,'']]]
 ];

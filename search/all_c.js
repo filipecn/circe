@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['transparent_43',['Transparent',['../classcirce_1_1Color.html#ac95682eb55229f15960fc456798c1a4a',1,'circe::Color']]]
+  ['transparent_0',['Transparent',['../classcirce_1_1Color.html#ac95682eb55229f15960fc456798c1a4a',1,'circe::Color']]]
 ];
