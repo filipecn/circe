@@ -44,6 +44,7 @@ endfunction(buildExample)
 
 set(EXAMPLES
         2d
+        camera_controls
         color_maps
         instances
         hello_circe

@@ -35,7 +35,7 @@ namespace circe {
 
 class TrackballInterface {
 public:
-  enum class Mode { ROTATE, Z, PAN, SCALE, NONE };
+  enum class Mode { ROTATE, Z, PAN, SCALE, ORBIT, NONE };
 
   TrackballInterface() { curMode_ = Mode::NONE; }
 
@@ -44,33 +44,38 @@ public:
   static void createDefault2D(TrackballInterface &t);
   static void createDefault3D(TrackballInterface &t);
 
-  void draw();
-  /// process mouse button release event
+  /// \brief process mouse button release event
   /// \param camera
   /// \param button button code
   /// \param p normalized mouse position
   void buttonRelease(CameraInterface &camera, int button, hermes::point2 p);
-  /// process mouse button press event
+  /// \brief process mouse button press event
   /// \param camera
   /// \param button button code
   /// \param p normalized mouse position
   void buttonPress(const CameraInterface &camera, int button, hermes::point2 p);
-  /// process mouse move event
+  /// \brief process mouse move event
   /// \param camera
   /// \param p normalized mouse position
   void mouseMove(CameraInterface &camera, hermes::point2 p);
-  /// process mouse wheel event
+  /// \brief process mouse wheel event
   /// \param camera
   /// \param p normalized mouse position
   /// \param d scroll vector
   void mouseScroll(CameraInterface &camera, hermes::point2 p, hermes::vec2 d);
-  /// Attaches a new mode to the interface
+  /// \brief Attaches a new mode to the interface
   /// \param button button to be mapped to mode
   /// \param mode attached mode
   /// \param tm track object
   void attachTrackMode(int button, Mode mode, TrackMode *tm);
   /// \return true if current mode is active
   [[nodiscard]] bool isActive() const;
+  /// \brief current active mode
+  /// \return
+  [[nodiscard]] Mode currentModeType() const;
+  ///
+  /// \return
+  [[nodiscard]] const TrackMode *currentMode() const;
 
   Trackball tb;
 

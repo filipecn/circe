@@ -42,9 +42,6 @@ class TrackMode {
 public:
   TrackMode() : dragging_(false) {}
   virtual ~TrackMode() = default;
-  /// Renders trackball mode helpers
-  /// \param tb trackball reference
-  virtual void draw(const Trackball &tb) { HERMES_UNUSED_VARIABLE(tb); }
   /// Starts the manipulation (usually triggered by a button press)
   /// \param tb trackball reference
   /// \param camera active viewport camera
@@ -56,7 +53,7 @@ public:
     start_ = p;
     dragging_ = true;
   }
-  /// Updates track mode state (usually after a mouse moviment or scroll)
+  /// Updates track mode state (usually after a mouse movement or scroll)
   /// \param tb trackball reference
   /// \param camera active viewport camera
   /// \param p mouse position in normalized window position (NPos)
@@ -120,8 +117,6 @@ public:
   PanMode() : TrackMode() {}
   ~PanMode() override = default;
 
-  void draw(const Trackball &tb) override { HERMES_UNUSED_VARIABLE(tb); }
-
   void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
               hermes::vec2 d) override {
     HERMES_UNUSED_VARIABLE(d);
@@ -164,28 +159,63 @@ class RotateMode : public TrackMode {
 public:
   RotateMode() : TrackMode() {}
   ~RotateMode() override = default;
-  void draw(const Trackball &tb) override {
-    HERMES_UNUSED_VARIABLE(tb);
-//    hermes::Sphere s(tb.center(), tb.radius() * 2.f);
-//    glColor4f(0, 0, 0, 0.5);
-//    draw_sphere(s);
-  }
   void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
               hermes::vec2 d) override {
     HERMES_UNUSED_VARIABLE(d);
     if (!dragging_ || p == start_)
       return;
-    hermes::point3 a = hitSpherePlane(tb, camera, start_);
-    hermes::point3 b = hitSpherePlane(tb, camera, p);
-    hermes::vec3 axis =
-        hermes::normalize(hermes::cross((a - tb.center()), (b - tb.center())));
-    float phi = hermes::distance(a, b) / tb.radius();
-    tb.accumulatePartialTransform(
-        hermes::Transform::rotate(-hermes::Trigonometry::radians2degrees(phi) * 0.7f, axis));
+//    hermes::point3 a = hitSpherePlane(tb, camera, start_);
+//    hermes::point3 b = hitSpherePlane(tb, camera, p);
+    hermes::vec3 a = (hermes::vec3) hitSurface(tb, camera, start_);
+    hermes::vec3 b = (hermes::vec3) hitSurface(tb, camera, p);
+    a.normalize();
+    b.normalize();
+    auto screen_axis = hermes::cross(a, b).normalized();
+    auto angle = std::acos(hermes::Numbers::clamp(hermes::dot(a, b), -1.f, 1.f));
+
+    auto axis = hermes::inverse(camera.getViewTransform())(screen_axis).normalized();
+
+    // compute world axis
+//    hermes::Plane vp = camera.viewPlane(tb.center());
+//    auto s2w = hermes::Transform::alignVectors({0, 0, 1}, (hermes::vec3) vp.normal);
+//    HERMES_LOG_VARIABLES((hermes::vec3) vp.normal, s2w(hermes::vec3(0, 0, 1)));
+//    auto axis = s2w(screen_axis);
+    d_axis = axis;
+    d_a = a;
+    d_b = b;
+    d_screen_axis = screen_axis;
+    mouse_pos = p;
+    tb.accumulatePartialTransform(hermes::Transform::rotate(angle, d_axis));
+//    hermes::vec3 axis =
+//        hermes::normalize(hermes::cross((a - tb.center()), (b - tb.center())));
+//    float phi = hermes::distance(a, b) / tb.radius();
+//    tb.accumulatePartialTransform(hermes::Transform::rotate(-phi * 0.7f, axis));
     start_ = p;
   }
 
+  hermes::vec3 d_axis, d_screen_axis, d_a, d_b;
+  hermes::point2 mouse_pos;
+
 private:
+  ///
+  /// \param tb
+  /// \param camera
+  /// \param p
+  /// \return
+  static hermes::point3 hitSurface(Trackball &tb, CameraInterface &camera, hermes::point2 p) {
+    // p is in NDC [-1,1]x[1,-1]
+    // tb center will always be in [0,0]
+    // here we consider a trackball radius in NDC space
+    const float r = 0.7;
+    const float r2 = r * r;
+    // here we combine both surfaces (a sphere and a hyperbolic sheet)
+    // and check from which one we compute the intersection point
+    const float x2y2 = p.x * p.x + p.y * p.y;
+    if (x2y2 <= r2 * 0.5)
+      return {p.x, p.y, std::sqrt(r2 - x2y2)};
+    return {p.x, p.y, r2 / (2 * std::sqrt(x2y2))};
+  }
+
   hermes::point3 hitSpherePlane(Trackball &tb, CameraInterface &camera,
                                 hermes::point2 p) {
     hermes::Line l = camera.viewLineFromWindow(p);
@@ -243,6 +273,35 @@ private:
     hermes::vec3 dirView = hermes::normalize(hermes::vec3(vp.normal));
     hit = tb.center() + dirRadial * yval + dirView * xval;
     return true;
+  }
+};
+
+class OrbitMode : public TrackMode {
+public:
+  OrbitMode() : TrackMode() {}
+  ~OrbitMode() override = default;
+  void update(Trackball &tb, CameraInterface &camera, hermes::point2 p,
+              hermes::vec2 d) override {
+    HERMES_UNUSED_VARIABLE(d);
+    if (!dragging_ || p == start_)
+      return;
+    auto direction = p - start_;
+    if(std::abs(direction.x) > std::abs(direction.y))
+      direction.y = 0;
+    if(std::abs(direction.x) < std::abs(direction.y))
+      direction.x = 0;
+
+
+    auto t = camera.getPosition() - camera.getTarget();
+    auto u = camera.getUpVector();
+    auto right = hermes::cross(t.normalized(), u).normalized();
+    u = hermes::cross(right.normalized(), u).normalized();
+    // the distance between coordinates -1 and 1 is equivalent to a full rotation
+    float angle = hermes::Constants::pi * direction.x;
+    tb.accumulatePartialTransform(hermes::Transform::rotate(angle, u));
+    angle = hermes::Constants::pi * direction.y;
+    tb.accumulatePartialTransform(hermes::Transform::rotate(-angle, right));
+    start_ = p;
   }
 };
 

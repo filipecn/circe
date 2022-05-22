@@ -1,7 +1,7 @@
 # Circe
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![Website perso.crans.org](https://img.shields.io/website-up-down-green-red/https/filipecn.github.io/circe)](https://filipecn.github.io/circe/)
 ---
 
 Circe is a minimalist framework that can be used in `OpenGL` (and soon `Vulkan`) based applications. Circe serves as a
@@ -24,7 +24,7 @@ very old ancient blog: http://aergia.weebly.com/
 
 ## Usage
 
-Please check the [docs](https://filipecn.github.io/circe/) for a good introduction, details of the API and examples. 
+> Please check the [docs](https://filipecn.github.io/circe/) for a good introduction, details of the API and examples. 
 
 For a quick preview, the example bellow creates a blank window of size 800x800:
 

@@ -142,11 +142,11 @@ CartesianBase::CartesianBase() {
 
 CartesianBase::~CartesianBase() = default;
 
-void CartesianBase::draw(CameraInterface *camera) {
+void CartesianBase::draw(const CameraInterface *camera) {
   program_.use();
   program_.setUniform("projection", camera->getProjectionTransform());
   program_.setUniform("view", camera->getViewTransform());
-  program_.setUniform("model", hermes::Transform());
+  program_.setUniform("model", transform);
 
   program_.setUniform("color", circe::Color::Red());
   x_.draw();
@@ -154,6 +154,61 @@ void CartesianBase::draw(CameraInterface *camera) {
   y_.draw();
   program_.setUniform("color", circe::Color::Blue());
   z_.draw();
+}
+
+TrackballInterfaceModel::TrackballInterfaceModel() {
+  program_.attach(Shader(GL_VERTEX_SHADER, vs));
+  program_.attach(Shader(GL_FRAGMENT_SHADER, fs));
+  HERMES_ASSERT_WITH_LOG(program_.link(), program_.err);
+  trackball_ = circe::Shapes::icosphere({}, 1, 4, shape_options::wireframe);
+}
+
+TrackballInterfaceModel::~TrackballInterfaceModel() = default;
+
+void TrackballInterfaceModel::draw(const circe::TrackballInterface &tbi, CameraInterface *camera) {
+  program_.use();
+  program_.setUniform("projection", camera->getProjectionTransform());
+  program_.setUniform("view", camera->getViewTransform());
+  program_.setUniform("color", color);
+
+  switch (tbi.currentModeType()) {
+  case circe::TrackballInterface::Mode::ROTATE: {
+    auto s = tbi.tb.radius();
+    program_.setUniform("model", hermes::Transform::scale(s, s, s));
+//    trackball_.draw();
+    break;
+  }
+  case circe::TrackballInterface::Mode::Z:
+  case circe::TrackballInterface::Mode::PAN:
+  case circe::TrackballInterface::Mode::SCALE:
+  case circe::TrackballInterface::Mode::NONE:
+  default:break;
+  }
+}
+
+VectorModel::VectorModel() {
+  program_.attach(Shader(GL_VERTEX_SHADER, vs));
+  program_.attach(Shader(GL_FRAGMENT_SHADER, fs));
+  HERMES_ASSERT(program_.link())
+
+  vector_ = circe::Shapes::box({{0, -width, -width},
+                                {1, width, width}});
+}
+
+VectorModel::~VectorModel() = default;
+
+void VectorModel::draw(const hermes::vec3 &v, const CameraInterface *camera) {
+  auto s = v.length();
+
+  program_.use();
+  program_.setUniform("projection", camera->getProjectionTransform());
+  program_.setUniform("view", camera->getViewTransform());
+  program_.setUniform("model",
+//                      hermes::Transform::scale(s,s,s) *
+                      hermes::Transform::alignVectors({1, 0, 0}, v));
+  program_.setUniform("color", color);
+
+  vector_.draw();
 }
 
 }

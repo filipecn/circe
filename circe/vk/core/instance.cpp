@@ -84,11 +84,11 @@ bool SupportInfo::checkAvailableExtensions(
   u32 extensions_count = 0;
   R_CHECK_VULKAN(vkEnumerateInstanceExtensionProperties(
       nullptr, &extensions_count, nullptr), false)
-  HERMES_ASSERT(extensions_count != 0)
+  HERMES_ASSERT(extensions_count != 0);
   extensions.resize(extensions_count);
   R_CHECK_VULKAN(vkEnumerateInstanceExtensionProperties(
       nullptr, &extensions_count, &extensions[0]), false)
-  HERMES_ASSERT(extensions_count != 0)
+  HERMES_ASSERT(extensions_count != 0);
   return true;
 }
 
@@ -171,12 +171,12 @@ bool Instance::init(const std::string &application_name,
   instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   for (auto &extension : instance_extensions)
     if (!support_info.isInstanceExtensionSupported(extension)) {
-      HERMES_LOG_WARNING(concat("Extension named '", extension, "' is not supported."))
+      HERMES_LOG_WARNING(hermes::Str::concat("Extension named '", extension, "' is not supported.").c_str());
       return false;
     }
   for (auto &layer : validation_layers)
     if (!support_info.isValidationLayerSupported(layer)) {
-      HERMES_LOG_WARNING(concat("Validation layer named '", layer, "' is not supported."))
+      HERMES_LOG_WARNING(hermes::Str::concat("Validation layer named '", layer, "' is not supported.").c_str());
       return false;
     }
   VkApplicationInfo info;
@@ -239,7 +239,7 @@ std::vector<PhysicalDevice> Instance::enumerateAvailablePhysicalDevices() const 
   R_CHECK_VULKAN(
       vkEnumeratePhysicalDevices(vk_instance_, &devices_count, devices.data()), physical_devices)
   HERMES_LOG_AND_RETURN_VALUE_IF_NOT(devices_count != 0, physical_devices,
-                               "Could not enumerate physical devices.")
+                                     "Could not enumerate physical devices.")
   for (auto &device : devices)
     physical_devices.emplace_back(device);
 
@@ -273,7 +273,7 @@ PhysicalDevice Instance::pickPhysicalDevice(QueueFamilies &queue_families,
     queue_families = queue_families_list[candidates.rbegin()->second];
     return physical_devices[candidates.rbegin()->second];
   }
-  HERMES_LOG_WARNING("failed to find a suitable physical device!")
+  HERMES_LOG_WARNING("failed to find a suitable physical device!");
   return PhysicalDevice();
 }
 

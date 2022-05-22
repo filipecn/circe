@@ -30,10 +30,46 @@
 
 #include <circe/imgui/ImGuiFileDialog.h>
 #include <hermes/common/file_system.h>
+#include <vector>
 
 namespace circe {
 
-class ImguiFolderDialog {
+///
+/// \tparam E
+template<typename E>
+struct ImGuiRadioButtonSet {
+  ImGuiRadioButtonSet() = default;
+  ~ImGuiRadioButtonSet() = default;
+
+  const E &currentOption() const { return current_choice_; }
+
+  void push(const std::string &label, E type_value) {
+    RadioOption o = {
+        .type_id = type_value,
+        .label = label
+    };
+    options_.push_back(o);
+  }
+
+  void draw(const std::function<void(E)> &pick_callback = nullptr) {
+    for (const auto &option : options_)
+      if (ImGui::RadioButton(option.label.c_str(), option.type_id == current_choice_)) {
+        current_choice_ = option.type_id;
+        if (pick_callback)
+          pick_callback(current_choice_);
+      }
+  }
+
+private:
+  struct RadioOption {
+    E type_id;
+    std::string label;
+  };
+  std::vector<RadioOption> options_;
+  E current_choice_;
+};
+
+class ImguiOpenDialog {
 public:
   struct Result {
     hermes::Path path;
@@ -44,6 +80,22 @@ public:
   };
   static Result folder_dialog_button(const std::string &label, const hermes::Path &path = ".");
   static Result folder_dialog_menu_item(const std::string &label, const hermes::Path &path = ".");
+  /// \brief Open file dialog button
+  /// \param label button label
+  /// \param extensions accepted file extensions list (separated by ',')
+  /// \param path root path
+  /// \return Result object containing file path
+  static Result file_dialog_button(const std::string &label,
+                                   const std::string &extensions,
+                                   const hermes::Path &path = ".");
+  /// \brief Open file dialog menu button
+  /// \param label button label
+  /// \param extensions accepted file extensions list (separated by ',')
+  /// \param path root path
+  /// \return Result object containing file path
+  static Result file_dialog_menu_item(const std::string &label,
+                                      const std::string &extensions,
+                                      const hermes::Path &path = ".");
 
 };
 

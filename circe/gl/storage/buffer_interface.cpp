@@ -34,10 +34,17 @@ BufferInterface::BufferInterface() = default;
 BufferInterface::~BufferInterface() = default;
 
 void BufferInterface::attachMemory(DeviceMemory &device_memory, u64 offset) {
+  using_external_memory_ = true;
   mem_ = std::make_unique<DeviceMemory::View>(device_memory, dataSizeInBytes(), offset);
 }
 
+void BufferInterface::attachMemory(DeviceMemory::View *device_memory, u64 offset) {
+  using_external_memory_ = true;
+  mem_ = std::make_unique<DeviceMemory::View>(device_memory->deviceMemory(), dataSizeInBytes(), offset);
+}
+
 void BufferInterface::allocate(GLuint buffer_usage) {
+  using_external_memory_ = false;
   dm_.setTarget(bufferTarget());
   dm_.setUsage(buffer_usage);
   dm_.resize(dataSizeInBytes());

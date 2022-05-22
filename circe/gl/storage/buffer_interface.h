@@ -46,6 +46,7 @@ public:
   /// \param device_memory
   /// \param offset
   virtual void attachMemory(DeviceMemory &device_memory, u64 offset);
+  virtual void attachMemory(DeviceMemory::View *device_memory, u64 offset);
   /// \param buffer_usage
   virtual void allocate(GLuint buffer_usage);
   /// \param data
@@ -54,7 +55,7 @@ public:
   virtual void bind();
   /// \return
   inline DeviceMemory::View *memory() { return mem_.get(); }
-  inline const DeviceMemory::View *memory() const { return mem_.get(); }
+  [[nodiscard]] inline const DeviceMemory::View *memory() const { return mem_.get(); }
 
 protected:
   // memory resource

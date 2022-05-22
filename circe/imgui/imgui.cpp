@@ -429,7 +429,7 @@ CODE
  - 2018/07/22 (1.63) - changed ImGui::GetTime() return value from float to double to avoid accumulating floating point imprecisions over time.
  - 2018/07/08 (1.63) - style: renamed ImGuiCol_ModalWindowDarkening to ImGuiCol_ModalWindowDimBg for consistency with other features. Kept redirection enum (will obsolete).
  - 2018/06/08 (1.62) - examples: the imgui_impl_xxx files have been split to separate platform (Win32, Glfw, SDL2, etc.) from renderer (DX11, OpenGL, Vulkan,  etc.).
-                       old bindings will still work as is, however prefer using the separated bindings as they will be updated to support multi-viewports.
+                       old bindings will still work as is, however prefer using the separated bindings as they will be updated to support multi-viewports_.
                        when adopting new bindings follow the main.cpp code of your preferred examples/ folder to know which functions to call.
                        in particular, note that old bindings called ImGui::NewFrame() at the end of their ImGui_ImplXXXX_NewFrame() function.
  - 2018/06/06 (1.62) - renamed GetGlyphRangesChinese() to GetGlyphRangesChineseFull() to distinguish other variants and discourage using the full set.
@@ -1037,7 +1037,7 @@ ImGuiStyle::ImGuiStyle()
 }
 
 // To scale your entire UI (e.g. if you want your app to use High DPI or generally be DPI aware) you may use this helper function. Scaling the fonts is done separately and is up to you.
-// Important: This operation is lossy because we round all sizes to integer. If you need to change your scale multiples, call this over a freshly initialized ImGuiStyle structure rather than scaling multiple times.
+// Important: This operation is lossy because we round all sizes to integer. If you need to change your scale multiples, call this over a freshly initialized_ ImGuiStyle structure rather than scaling multiple times.
 void ImGuiStyle::ScaleAllSizes(float scale_factor)
 {
     WindowPadding = ImFloor(WindowPadding * scale_factor);
@@ -1064,7 +1064,7 @@ void ImGuiStyle::ScaleAllSizes(float scale_factor)
 
 ImGuiIO::ImGuiIO()
 {
-    // Most fields are initialized with zero
+    // Most fields are initialized_ with zero
     memset(this, 0, sizeof(*this));
     IM_ASSERT(IM_ARRAYSIZE(ImGuiIO::MouseDown) == ImGuiMouseButton_COUNT && IM_ARRAYSIZE(ImGuiIO::MouseClicked) == ImGuiMouseButton_COUNT); // Our pre-C++11 IM_STATIC_ASSERT() macros triggers warning on modern compilers so we don't use it here.
 
@@ -3938,7 +3938,7 @@ void ImGui::Shutdown(ImGuiContext* context)
     }
     g.IO.Fonts = NULL;
 
-    // Cleanup of other data are conditional on actually having initialized Dear ImGui.
+    // Cleanup of other data are conditional on actually having initialized_ Dear ImGui.
     if (!g.Initialized)
         return;
 
@@ -5799,7 +5799,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
         window->DrawList->PushTextureID(g.Font->ContainerAtlas->TexID);
         PushClipRect(host_rect.Min, host_rect.Max, false);
 
-        // Draw modal window background (darkens what is behind them, all viewports)
+        // Draw modal window background (darkens what is behind them, all viewports_)
         const bool dim_bg_for_modal = (flags & ImGuiWindowFlags_Modal) && window == GetTopMostPopupModal() && window->HiddenFramesCannotSkipItems <= 0;
         const bool dim_bg_for_window_list = g.NavWindowingTargetAnim && (window == g.NavWindowingTargetAnim->RootWindow);
         if (dim_bg_for_modal || dim_bg_for_window_list)

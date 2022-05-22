@@ -555,7 +555,7 @@ std::vector<unsigned char> Texture::texels() const {
   auto height = static_cast<int>(attributes_.size_in_texels.height);
 
   size_t element_size = 1;
-  if(attributes_.type == GL_FLOAT)
+  if (attributes_.type == GL_FLOAT)
     element_size = 4;
   std::vector<unsigned char> data(element_size * 4 * width * height, 0);
 
@@ -567,18 +567,32 @@ std::vector<unsigned char> Texture::texels() const {
 }
 
 std::vector<unsigned char> Texture::texels(hermes::index2 offset, hermes::size2 size) const {
-  if (offset.i < 0 || offset.j < 0 || offset.i + size.width >= attributes_.size_in_texels.width
-      || offset.j + size.height >= attributes_.size_in_texels.height)
+  if (offset.i < 0 || offset.j < 0 || offset.i + size.width >= attributes_.size_in_texels.width - 1
+      || offset.j + size.height >= attributes_.size_in_texels.height - 1)
     return {};
 
   std::vector<unsigned char> data(4 * size.total());
 
   glActiveTexture(GL_TEXTURE0);
+
   glBindTexture(attributes_.target, texture_object_);
-  glGetTextureSubImage(attributes_.target, 0, offset.i, offset.j, 0, size.width, size.height, 1,
-                       GL_RGBA, GL_UNSIGNED_BYTE, data.size(), &data[0]);
+  glGetTextureSubImage(texture_object_, 0, offset.i, offset.j, 0, size.width, size.height, 1,
+                       attributes_.format, attributes_.type, size.total() * 4, &data[0]);
   CHECK_GL_ERRORS;
   return data;
+}
+
+void Texture::texels(hermes::index2 offset, hermes::size2 size, byte *data) const {
+  if (offset.i < 0 || offset.j < 0 || offset.i + size.width >= attributes_.size_in_texels.width - 1
+      || offset.j + size.height >= attributes_.size_in_texels.height - 1)
+    return;
+
+  glActiveTexture(GL_TEXTURE0);
+
+  glBindTexture(attributes_.target, texture_object_);
+  glGetTextureSubImage(texture_object_, 0, offset.i, offset.j, 0, size.width, size.height, 1,
+                       attributes_.format, attributes_.type, size.total() * 4, data);
+  CHECK_GL_ERRORS;
 }
 
 void Texture::resize(const hermes::size3 &new_size) {

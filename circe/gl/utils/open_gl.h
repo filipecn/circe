@@ -33,6 +33,12 @@ namespace circe::gl {
 
 class OpenGL final {
 public:
+  /// \brief Gets OpenGL config information
+  /// \return
+  static std::string info();
+  ///
+  /// \param primitive_type
+  /// \return
   static size_t primitiveSize(GLuint primitive_type) {
     size_t primitive_size = 0;
     switch (primitive_type) {
@@ -53,6 +59,10 @@ public:
     }
     return primitive_size;
   }
+  ///
+  /// \param primitive_type
+  /// \param index_count
+  /// \return
   static size_t primitiveCount(GLuint primitive_type, GLuint index_count) {
     size_t primitive_count = 0;
     switch (primitive_type) {
@@ -76,6 +86,9 @@ public:
     }
     return primitive_count;
   }
+  ///
+  /// \param p
+  /// \return
   static std::string PrimitiveToStr(hermes::GeometricPrimitiveType p) {
 #define ES(P) \
     if(p == P) return #P
@@ -92,6 +105,9 @@ public:
     return "ERR";
 #undef ES
   }
+  ///
+  /// \param primitive
+  /// \return
   static GLuint PrimitiveToGL(hermes::GeometricPrimitiveType primitive) {
 #define RET_GL(P, G) \
   if(primitive == P) \
@@ -107,6 +123,9 @@ public:
     return GL_POINTS;
 #undef RET_GL
   }
+  ///
+  /// \param e
+  /// \return
   static std::string EnumToStr(GLenum e) {
 #define RET_STR(A) \
     if(e == A) return #A;
@@ -174,7 +193,10 @@ public:
     return "";
 #undef RET_STR
   }
-
+  ///
+  /// \param e
+  /// \param glsl_name
+  /// \return
   static std::string TypeToStr(GLenum e, std::string *glsl_name = nullptr) {
 #define RET_STR(A, B) \
     if(e == A) {      \
@@ -258,7 +280,9 @@ public:
     return "";
 #undef RET_STR
   }
-
+  ///
+  /// \param data_type
+  /// \return
   [[nodiscard]] static u64 dataSizeInBytes(GLuint data_type) {
     switch (data_type) {
     case GL_BYTE:
@@ -275,6 +299,9 @@ public:
     }
     return 0;
   }
+  ///
+  /// \tparam T
+  /// \return
   template<typename T>
   static GLenum dataTypeEnum() {
     if (std::is_same_v<T, i32>)
@@ -297,6 +324,9 @@ public:
 //      return GL_HALF_FLOAT;
     return GL_FIXED;
   }
+  ///
+  /// \param primitive_type
+  /// \return
   static std::string primitiveGLName(GLuint primitive_type) {
 #define RET_STR(A) \
     if(primitive_type == A) {      \
@@ -316,6 +346,9 @@ public:
 #undef RET_STR
     return "";
   }
+  ///
+  /// \param T
+  /// \return
   static GLenum dataTypeEnum(hermes::DataType T) {
 #define MATCH_TYPE(TT, R) \
    if(hermes::DataType::TT == T)  \

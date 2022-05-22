@@ -30,7 +30,7 @@
 #include <thread>
 
 struct ProfilerExample : public circe::gl::BaseApp {
-  ProfilerExample() : circe::gl::BaseApp(800, 800) {
+  ProfilerExample() : circe::gl::BaseApp(800, 800, "Profiler Example") {
     hermes::profiler::Profiler::setMaxBlockCount(200);
   }
 
@@ -49,8 +49,8 @@ struct ProfilerExample : public circe::gl::BaseApp {
       profiler_view.render();
       logger_view.render();
       HERMES_LOG_VARIABLE(this->frame_counter_);
-      if(this->frame_counter_ % 10 == 0)
-        HERMES_LOG_WARNING("10th frame!");
+      if (this->frame_counter_ % 10 == 0)
+      HERMES_LOG_WARNING("10th frame!");
       ImGui::End();
     }
     // for now we can only update when stack is empty

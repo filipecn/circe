@@ -144,7 +144,7 @@ ImageMemoryBarrier::ImageMemoryBarrier(const Image &image,
     vk_image_memory_barrier_.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     vk_image_memory_barrier_.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
   } else {
-    HERMES_LOG("unsupported layout transition!")
+    HERMES_LOG("unsupported layout transition!");
   }
 }
 

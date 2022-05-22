@@ -7,65 +7,58 @@ using namespace circe::gl;
 
 class InstancesApp : public BaseApp {
 public:
-  enum MeshType {
-    None,
-    Sphere,
-    Cube,
-    Circle,
-    Quad
+  enum MeshType : int {
+    Sphere = 0,
+    Cube = 1,
+    Quad = 2,
+    Mesh = 3,
+    None = 4,
   };
 
   InstancesApp() : BaseApp(800, 800, "") {
-    // resources
-    hermes::Path assets_path(std::string(ASSETS_PATH));
-    hermes::Path shaders_path(std::string(SHADERS_PATH));
+    // setup resources
+    circe::shape_options model_options = circe::shape_options::uv;
+    // the manager sets 0 index to sphere model
+    HERMES_ASSERT(SceneResourceManager::pushModel(circe::Shapes::icosphere(2, model_options)));
+    // the manager sets 1 index to sphere model
+    HERMES_ASSERT(SceneResourceManager::pushModel(circe::Shapes::box(hermes::bbox3::unitBox(true), model_options)));
+    // the manager sets 2 index to sphere model
+    HERMES_ASSERT(SceneResourceManager::pushModel(circe::Shapes::plane(hermes::Plane::XZ(),
+                                                                       {},
+                                                                       {1, 0, 0},
+                                                                       1,
+                                                                       model_options)));
+    // the manager sets 3 index to sphere model
+    HERMES_ASSERT(SceneResourceManager::pushModel(hermes::Path(std::string(ASSETS_PATH)) / "teapot.obj",
+                                                  model_options));
 
-    // instance shader
-    if (!instance_set.instance_program.link(shaders_path, "instance"))
-    HERMES_LOG_ERROR("Failed to load instance shader: {}", instance_set.instance_program.err);
+    // setup shader
+    ProgramManager::setShaderSearchPath(std::string(SHADERS_PATH));
+    auto instance_program = ProgramManager::push("instance");
+    HERMES_ASSERT(instance_program);
+    instance_set.program_handle = *instance_program;
+
+    // setup UI
+    object_type_ui.push("Sphere", MeshType::Sphere);
+    object_type_ui.push("Cube", MeshType::Cube);
+    object_type_ui.push("Quad", MeshType::Quad);
+    object_type_ui.push("Mesh", MeshType::Mesh);
 
     updateMesh(MeshType::Cube);
-
-//    this->app->scene.add(&instance_set);
   }
 
   void render(circe::CameraInterface *camera) override {
     ImGui::Begin("Controls");
-    static MeshType mesh_choice = MeshType::None;
-    if (ImGui::RadioButton("Sphere", mesh_choice == Sphere))
-      mesh_choice = Sphere;
-    if (ImGui::RadioButton("Cube", mesh_choice == Cube))
-      mesh_choice = Cube;
-    if (ImGui::RadioButton("Circle", mesh_choice == Circle))
-      mesh_choice = Circle;
-    if (ImGui::RadioButton("Quad", mesh_choice == Quad))
-      mesh_choice = Quad;
-    updateMesh(mesh_choice);
+    object_type_ui.draw([&](auto choice) {
+      updateMesh(choice);
+    });
+
     std::stringstream ss;
     ss << this->last_FPS_ << "fps" << std::endl;
     ImGui::Text("%s", ss.str().c_str());
 
-    auto obj = circe::ImguiFolderDialog::folder_dialog_button("Pick obj");
-    if (obj)
-      HERMES_LOG_VARIABLE(obj.path);
-
-
-    // open Dialog Simple
-    if (ImGui::Button("Open File Dialog"))
-      igfd::ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", 0, ".");
-
-    // display
-    if (igfd::ImGuiFileDialog::Instance()->FileDialog("ChooseFileDlgKey")) {
-      // action if OK
-      if (igfd::ImGuiFileDialog::Instance()->IsOk == true) {
-        std::string filePathName = igfd::ImGuiFileDialog::Instance()->GetFilePathName();
-        std::string filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
-        // action
-        std::cerr << filePath << std::endl;
-      }
-      // close
-      igfd::ImGuiFileDialog::Instance()->CloseDialog("ChooseFileDlgKey");
-    }
+//    if (auto obj = circe::ImguiOpenDialog::file_dialog_button("Pick obj", ".obj"))
+//      obj_path = obj.path;
 
     instance_set.draw(camera, hermes::Transform());
 
@@ -98,26 +91,16 @@ public:
     static MeshType last_type = MeshType::None;
     if (type != last_type) {
       last_type = type;
-      SceneModel model;
-      switch (type) {
-      case MeshType::
-        Sphere:model = circe::Shapes::icosphere(2);
-        instance_set.instance_model = std::move(model);
-        break;
-      case MeshType::Circle:
-      case MeshType::Cube:model = circe::Shapes::box(hermes::bbox3::unitBox(true));
-        instance_set.instance_model = std::move(model);
-        break;
-      case MeshType::Quad:
-      default:HERMES_NOT_IMPLEMENTED
-      }
-
+      instance_set.model_handle = SceneResourceManager::modelHandle((int) type).value();
       resize(100);
     }
   }
 
   // scene
   InstanceSet instance_set;
+
+  // UI
+  circe::ImGuiRadioButtonSet<MeshType> object_type_ui;
 };
 
 int main() {

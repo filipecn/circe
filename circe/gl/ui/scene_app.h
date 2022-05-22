@@ -30,7 +30,7 @@
 
 namespace circe::gl {
 
-/** \brief Simple scene with viewports support.
+/** \brief Simple scene with viewports_ support.
  */
 template <template <typename> class StructureType = Array>
 class SceneApp : public App {
@@ -53,15 +53,15 @@ public:
   void mouse(double x, double y) override {
     App::mouse(x, y);
     if (selectedObject && selectedObject->active) {
-      selectedObject->mouse(*viewports[activeObjectViewport].camera.get(),
-                            viewports[activeObjectViewport].getMouseNPos());
+      selectedObject->mouse(viewports_[activeObjectViewport].camera(),
+                            viewports_[activeObjectViewport].getMouseNPos());
       return;
     }
     activeObjectViewport = -1;
-    for (size_t i = 0; i < viewports.size(); i++) {
-      hermes::point2 p = viewports[i].getMouseNPos();
+    for (size_t i = 0; i < viewports_.size(); i++) {
+      hermes::point2 p = viewports_[i].getMouseNPos();
       if (p >= hermes::point2(-1.f, -1.f) && p <= hermes::point2(1.f, 1.f)) {
-        hermes::Ray3 r = viewports[i].camera->pickRay(p);
+        hermes::Ray3 r = viewports_[i].camera().pickRay(p);
         if (selectedObject)
           selectedObject->selected = false;
         selectedObject = scene.intersect(r);
@@ -77,8 +77,8 @@ public:
   void button(int b, int a, int m) override {
     App::button(b, a, m);
     if (selectedObject)
-      selectedObject->button(*viewports[activeObjectViewport].camera.get(),
-                             viewports[activeObjectViewport].getMouseNPos(), b,
+      selectedObject->button(viewports_[activeObjectViewport].camera(),
+                             viewports_[activeObjectViewport].getMouseNPos(), b,
                              a);
   }
 
@@ -86,8 +86,8 @@ public:
 
 protected:
   void render() override {
-    for (size_t i = 0; i < viewports.size(); i++)
-      viewports[i].render([&](CameraInterface *c) { scene.render(c); });
+    for (size_t i = 0; i < viewports_.size(); i++)
+      viewports_[i].render([&](CameraInterface *c) { scene.render(c); });
     if (this->renderCallback)
       this->renderCallback();
   }

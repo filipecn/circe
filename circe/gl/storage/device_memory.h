@@ -131,6 +131,9 @@ public:
   /// \param data_size
   /// \param offset
   void copy(void *data, u64 data_size = 0, u64 offset = 0);
+  /// \brief Makes a copy
+  /// \return
+  DeviceMemory&& copy() const;
   /// Binds buffer object (Allocates first if necessary)
   void bind();
   /// Retrieve a pointer to buffer memory (allocates if necessary).

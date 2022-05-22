@@ -4,9 +4,9 @@
 #define HEIGHT 400
 
 struct ViewportsExample : public circe::gl::BaseApp {
-  ViewportsExample() : circe::gl::BaseApp(2 * WIDTH, 2 * HEIGHT, "Viewports Example", false) {
+  ViewportsExample() : circe::gl::BaseApp(2 * WIDTH, 2 * HEIGHT, "Viewports Example", circe::app_options::no_viewport) {
     hermes::Path shaders_path(std::string(SHADERS_PATH));
-    // setup viewports
+    // setup viewports_
     //                |
     //    cameras     |     PERSPECTIVE
     //                |
@@ -17,10 +17,10 @@ struct ViewportsExample : public circe::gl::BaseApp {
 
     // top view viewport (XZ plane)
     this->app->addViewport2D(0, 0, WIDTH, HEIGHT);
-    this->app->getCamera<circe::UserCamera2D>(0)->setPosition({1, 0, 0});
+    this->app->viewport(0).camera().setPosition({1, 0, 0});
     // left view viewport (YZ plane)
     this->app->addViewport2D(WIDTH, 0, WIDTH, HEIGHT);
-    this->app->getCamera<circe::UserCamera2D>(1)->setPosition({0, 1, 0});
+    this->app->viewport(1).camera().setPosition({0, 1, 0});
     this->app->addViewport(0, HEIGHT, WIDTH, HEIGHT);
     // perspective view viewport
     this->app->addViewport(WIDTH, HEIGHT, WIDTH, HEIGHT);
@@ -32,9 +32,9 @@ struct ViewportsExample : public circe::gl::BaseApp {
 
   void prepareFrame() override {
     BaseApp::prepareFrame();
-    top.update(app->getCamera(0));
-    front.update(app->getCamera(1));
-    perspective.update(app->getCamera(2));
+    top.update(&app->viewport(0).camera());
+    front.update(&app->viewport(1).camera());
+    perspective.update(&app->viewport(2).camera());
   }
 
   void render(circe::CameraInterface *camera) override {
@@ -48,7 +48,7 @@ struct ViewportsExample : public circe::gl::BaseApp {
 
     model.draw();
 
-    if(current_viewport == 2) {
+    if (current_viewport == 2) {
       front.draw(camera);
       top.draw(camera);
       perspective.draw(camera);

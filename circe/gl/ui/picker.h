@@ -31,6 +31,7 @@
 #include <circe/gl/io/framebuffer.h>
 #include <circe/scene/camera_interface.h>
 #include <circe/gl/scene/scene_model.h>
+#include <circe/gl/storage/shader_storage_buffer.h>
 
 namespace circe::gl {
 
@@ -106,7 +107,7 @@ public:
   u32 picked_vertex_index{0};
   hermes::point3 picked_barycentric_coordinates;
 
-private:
+protected:
   circe::gl::Texture t_primitive_id_;
   circe::gl::Texture t_edge_id_;
   circe::gl::Texture t_barycentric_;
@@ -116,7 +117,7 @@ private:
 //                                                                                                     InstancePicker
 // *********************************************************************************************************************
 class InstancePicker : public Picker {
-    public:
+public:
   // *******************************************************************************************************************
   //                                                                                                     CONSTRUCTORS
   // *******************************************************************************************************************
@@ -129,6 +130,34 @@ class InstancePicker : public Picker {
             const hermes::index2 &pick_position, const std::function<void(const Program &)> &f) override;
 };
 
+// *********************************************************************************************************************
+//                                                                                                       RTMeshPicker
+// *********************************************************************************************************************
+/// Computes picking by ray tracing mesh elements
+class RTMeshPicker : public MeshPicker {
+public:
+  // *******************************************************************************************************************
+  //                                                                                                     CONSTRUCTORS
+  // *******************************************************************************************************************
+  RTMeshPicker();
+  ~RTMeshPicker();
+  // *******************************************************************************************************************
+  //                                                                                                          METHODS
+  // *******************************************************************************************************************
+  ///
+  /// \param model
+  /// \return
+  HeResult setModel(SceneModel *model);
+  ///
+  /// \param camera
+  /// \param pick_position
+  /// \param f
+  void pick(const circe::CameraInterface *camera, const hermes::index2 &pick_position);
+private:
+  SceneModel* model_{nullptr};
+  circe::gl::ShaderStorageBuffer vertex_ssbo_;
+  circe::gl::ShaderStorageBuffer index_ssbo_;
+};
 }
 
 #endif //CIRCE_CIRCE_GL_UI_PICKER_H

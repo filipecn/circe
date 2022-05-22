@@ -167,6 +167,7 @@ public:
   /// \return list of pixels by row major
   [[nodiscard]] std::vector<unsigned char> texels() const;
   [[nodiscard]] std::vector<unsigned char> texels(hermes::index2 offset, hermes::size2 size) const;
+  void texels(hermes::index2 offset, hermes::size2 size, byte *data) const;
   // ***********************************************************************
   //                           METRICS
   // ***********************************************************************

@@ -351,7 +351,7 @@ CommandPool::CommandPool(const LogicalDevice::Ref &logical_device,
                          u32 queue_family)
     : logical_device_(logical_device) {
   if (!init(logical_device, parameters, queue_family))
-    HERMES_LOG_ERROR("Could not create the command buffer.")
+    HERMES_LOG_ERROR("Could not create the command buffer.");
 }
 
 CommandPool::~CommandPool() {
@@ -363,7 +363,7 @@ bool CommandPool::init(const LogicalDevice::Ref &logical_device,
                        u32 queue_family) {
   destroy();
   logical_device_ = logical_device;
-  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.")
+  HERMES_VALIDATE_EXP_WITH_WARNING(logical_device_.good(), "using bad device.");
   VkCommandPoolCreateInfo command_pool_create_info = {
       VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, // VkStructureType sType
       nullptr,     // const void                 * pNext

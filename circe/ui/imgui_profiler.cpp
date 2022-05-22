@@ -265,6 +265,7 @@ u64 HProfiler::ticks2res(u64 ticks) {
   case Resolution::MILLISECONDS: return hermes::profiler::ticks2ms(ticks);
   case Resolution::SECONDS: return hermes::profiler::ticks2s(ticks);
   }
+  return 0;
 }
 
 }

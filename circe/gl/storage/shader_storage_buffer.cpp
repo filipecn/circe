@@ -87,5 +87,20 @@ void ShaderStorageBuffer::bind() {
 void ShaderStorageBuffer::setBindingIndex(GLuint binding_index) {
   binding_index_ = binding_index;
 }
+ShaderStorageBuffer ShaderStorageBuffer::fromVertexBuffer(VertexBuffer &vertex_buffer) {
+  ShaderStorageBuffer vertex_ssbo;
+  vertex_ssbo.descriptor = vertex_buffer.structDescriptor();
+  vertex_ssbo.struct_count_ = vertex_buffer.vertexCount();
+  vertex_ssbo.attachMemory(vertex_buffer.memory(), 0);
+  return vertex_ssbo;
+}
+
+ShaderStorageBuffer ShaderStorageBuffer::fromIndexBuffer(IndexBuffer &index_buffer) {
+  ShaderStorageBuffer index_ssbo;
+  index_ssbo.descriptor.pushField<i32>("index");
+  index_ssbo.struct_count_ = index_buffer.element_count * OpenGL::primitiveSize(index_buffer.element_type);
+  index_ssbo.attachMemory(index_buffer.memory(), 0);
+  return index_ssbo;
+}
 
 }

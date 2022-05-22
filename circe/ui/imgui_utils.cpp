@@ -30,7 +30,7 @@
 
 namespace circe {
 
-ImguiFolderDialog::Result ImguiFolderDialog::folder_dialog_button(const std::string &label, const hermes::Path &path) {
+ImguiOpenDialog::Result ImguiOpenDialog::folder_dialog_button(const std::string &label, const hermes::Path &path) {
   auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
   if (ImGui::Button(label.c_str()))
     igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose Folder", 0, path.fullName());
@@ -50,8 +50,8 @@ ImguiFolderDialog::Result ImguiFolderDialog::folder_dialog_button(const std::str
   return result;
 }
 
-ImguiFolderDialog::Result ImguiFolderDialog::folder_dialog_menu_item(const std::string &label,
-                                                                     const hermes::Path &path) {
+ImguiOpenDialog::Result ImguiOpenDialog::folder_dialog_menu_item(const std::string &label,
+                                                                 const hermes::Path &path) {
   auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
   if (ImGui::MenuItem(label.c_str()))
     igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose Folder", 0, path.fullName());
@@ -64,6 +64,50 @@ ImguiFolderDialog::Result ImguiFolderDialog::folder_dialog_menu_item(const std::
       std::string filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
       // action
       result = {filePath, true};
+    }
+    // close
+    igfd::ImGuiFileDialog::Instance()->CloseDialog(key);
+  }
+  return result;
+}
+
+ImguiOpenDialog::Result ImguiOpenDialog::file_dialog_button(const std::string &label,
+                                           const std::string &extensions,
+                                           const hermes::Path &path) {
+  auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
+  if (ImGui::Button(label.c_str()))
+    igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose File", extensions.c_str(), path.fullName());
+  Result result;
+  // display
+  if (igfd::ImGuiFileDialog::Instance()->FileDialog(key)) {
+    // action if OK
+    if (igfd::ImGuiFileDialog::Instance()->IsOk) {
+      std::string filePathName = igfd::ImGuiFileDialog::Instance()->GetFilePathName();
+      std::string filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
+      // action
+      result = {filePathName, true};
+    }
+    // close
+    igfd::ImGuiFileDialog::Instance()->CloseDialog(key);
+  }
+  return result;
+}
+
+ImguiOpenDialog::Result ImguiOpenDialog::file_dialog_menu_item(const std::string &label,
+                                                               const std::string &extensions,
+                                                               const hermes::Path &path) {
+  auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
+  if (ImGui::MenuItem(label.c_str()))
+    igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose File", extensions.c_str(), path.fullName());
+  Result result;
+  // display
+  if (igfd::ImGuiFileDialog::Instance()->FileDialog(key)) {
+    // action if OK
+    if (igfd::ImGuiFileDialog::Instance()->IsOk) {
+      std::string filePathName = igfd::ImGuiFileDialog::Instance()->GetFilePathName();
+      std::string filePath = igfd::ImGuiFileDialog::Instance()->GetCurrentPath();
+      // action
+      result = {filePathName, true};
     }
     // close
     igfd::ImGuiFileDialog::Instance()->CloseDialog(key);

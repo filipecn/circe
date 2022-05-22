@@ -48,7 +48,7 @@ public:
 
   // render
   virtual void prepareFrame();
-  virtual void render(circe::CameraInterface *camera) = 0;
+  virtual void render(circe::CameraInterface *camera);
   virtual void finishFrame();
   int run();
 

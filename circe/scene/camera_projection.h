@@ -34,7 +34,12 @@ public:
   CameraProjection() = default;
   virtual ~CameraProjection() = default;
   // updates projection transform after changes
-  virtual void update() = 0;
+  virtual void update() {};
+  [[nodiscard]] virtual CameraProjection *copy() const {
+    auto *c = new CameraProjection();
+    *c = *this;
+    return c;
+  }
 
   float ratio{1.f}; //!< film size ratio
   float near{0.01f}; //!< near depth clip plane
@@ -62,6 +67,11 @@ public:
                                                      this->far,
                                                      options);
   }
+  [[nodiscard]] CameraProjection *copy() const override {
+    auto *p = new PerspectiveProjection();
+    *p = *this;
+    return p;
+  }
 
   float fov{45.f}; //!< field of view angle in degrees
 };
@@ -78,7 +88,10 @@ public:
     set(left, right, bottom, top);
   }
   /// \param z
-  void zoom(float z) { region_ = hermes::Transform2::scale({z, z})(region_); }
+  void zoom(float z) {
+    region_ = hermes::Transform2::scale({z, z})(region_);
+    update();
+  }
   /// \param left
   /// \param right
   /// \param bottom
@@ -94,6 +107,11 @@ public:
     this->transform =
         hermes::Transform::ortho(region_.lower.x, region_.upper.x, region_.lower.y,
                                  region_.upper.y, this->near, this->far);
+  }
+  [[nodiscard]] CameraProjection *copy() const override {
+    auto *p = new OrthographicProjection();
+    *p = *this;
+    return p;
   }
 
 private:

@@ -55,20 +55,6 @@
 
 namespace circe::vk {
 
-inline void concatenate(std::ostringstream &s) {}
-
-template <typename H, typename... T>
-void concatenate(std::ostringstream &s, H p, T... t) {
-  s << p;
-  concatenate(s, t...);
-}
-
-template <class... Args> std::string concat(const Args &... args) {
-  std::ostringstream s;
-  concatenate(s, args...);
-  return s.str();
-}
-
 /// Holds a handle to the Vulkan API. Provides a set of helper functions
 /// to perform all Vulkan operations.
 class VulkanLibraryInterface {
@@ -152,7 +138,7 @@ public:
   };
   /// Viewport descriptions
   struct ViewportInfo {
-    std::vector<VkViewport> Viewports; //!< parameters for a set of viewports
+    std::vector<VkViewport> Viewports; //!< parameters for a set of viewports_
     std::vector<VkRect2D> Scissors;    //!< parameters for scissor tests
                                        //!< corresponding to each viewport
   };
@@ -962,7 +948,7 @@ public:
   /// dynamic, so there is no need to recreate the pipeline when they change
   /// (during command buffer recording). However, if their number is changed the
   /// pipeline must be recreated.
-  /// \param viewport_infos **[in]** viewports description
+  /// \param viewport_infos **[in]** viewports_ description
   /// \param viewport_state_create_info **[out]** viewport state creation info
   /// object
   static void specifyPipelineViewportAndScissorTestState(

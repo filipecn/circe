@@ -31,12 +31,20 @@
 using namespace circe::gl;
 
 struct Example2D : public BaseApp {
-  Example2D() : BaseApp(800, 800, "Example2D", false) {
-    app->addViewport2D(0, 0, 800, 800);
+  Example2D() : BaseApp(800,
+                        800,
+                        "Example2D",
+                        circe::viewport_options::orthographic) {
+    auto &camera = this->app->viewport().camera();
+//    dynamic_cast<circe::OrthographicProjection *>(camera.getProjection())->set();
   }
 
   void render(circe::CameraInterface *camera) override {
+    grid.draw(camera);
   }
+
+  // Scene
+  circe::gl::helpers::CartesianGrid grid;
 
 };
 

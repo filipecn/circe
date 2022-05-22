@@ -29,7 +29,7 @@
 
 class SkyboxExample : public circe::gl::BaseApp {
 public:
-  SkyboxExample() : BaseApp(800, 800) {
+  SkyboxExample() : BaseApp(800, 800, "Skybox Example") {
     // resources
     hermes::Path assets_path(std::string(ASSETS_PATH));
     hermes::Path shaders_path(std::string(SHADERS_PATH));
@@ -54,9 +54,9 @@ public:
     unfolded = circe::gl::Texture::fromTexture(cubemap);
 
     if (!skybox.program.link(shaders_path, "skybox"))
-      HERMES_LOG_ERROR("Failed to load model shader: {}", skybox.program.err);
+    HERMES_LOG_ERROR("Failed to load model shader: {}", skybox.program.err);
     if (!model.program.link(shaders_path, "env_map"))
-      HERMES_LOG_ERROR("Failed to load model shader: {}", model.program.err);
+    HERMES_LOG_ERROR("Failed to load model shader: {}", model.program.err);
   }
 
   void prepareFrame() override {
@@ -91,7 +91,7 @@ public:
                  {0, 1}, {1, 0});
     ImGui::End();
     // gizmo
-    ImGuizmo::SetRect(0, 0, this->app->viewports[0].width, this->app->viewports[0].height);
+    ImGuizmo::SetRect(0, 0, this->app->viewport(0).size().width, this->app->viewport(0).size().height);
     hermes::Transform t;
     circe::Gizmo::update(camera, t, ImGuizmo::OPERATION::TRANSLATE);
   }

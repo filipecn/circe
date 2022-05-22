@@ -93,8 +93,8 @@ bool LogicalDevice::init(const PhysicalDevice *physical_device,
 
   for (auto &extension : desired_extensions)
     if (!physical_device->isExtensionSupported(extension)) {
-      HERMES_LOG_WARNING(concat("Extension named '", extension,
-                               "' is not supported by a physical device."))
+      HERMES_LOG_WARNING(hermes::Str::concat("Extension named '", extension,
+                                             "' is not supported by a physical device.").c_str());
       return false;
     }
   std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
@@ -128,16 +128,16 @@ bool LogicalDevice::init(const PhysicalDevice *physical_device,
       &desired_features // const VkPhysicalDeviceFeatures * pEnabledFeatures
   };
   CHECK_VULKAN(vkCreateDevice(physical_device->handle(), &device_create_info,
-                              nullptr, &vk_device_))
+                              nullptr, &vk_device_));
   if (vk_device_ == VK_NULL_HANDLE)
-    HERMES_LOG_WARNING("Could not create logical device.")
+  HERMES_LOG_WARNING("Could not create logical device.");
 
   for (auto &info : queue_info.families()) {
     for (size_t i = 0; i < info.priorities.size(); ++i) {
       vkGetDeviceQueue(vk_device_, info.family_index.value(), i,
                        &info.vk_queues[i]);
       if (info.vk_queues[i] == VK_NULL_HANDLE)
-        HERMES_LOG_WARNING("Could not get device queue")
+      HERMES_LOG_WARNING("Could not get device queue");
     }
   }
   return good();

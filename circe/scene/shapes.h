@@ -120,6 +120,11 @@ public:
   /// \return
   static Model convert(const Model &model, shape_options options,
                        const std::vector<u64> &attr_filter = {});
+  /// Generates a wireframe with edges shapes
+  /// \param model
+  /// \param options
+  /// \return
+  static Model edgemesh(const Model &model, shape_options options);
   ///
   /// \param center
   /// \param radius
@@ -149,6 +154,14 @@ public:
                      const hermes::vec3 &direction,
                      const hermes::vec2 &size,
                      hermes::size2 divisions, shape_options options = shape_options::none);
+  /// \brief
+  /// \param a
+  /// \param b
+  /// \param c
+  /// \param d
+  /// \param options
+  /// \return
+  static Model hyperboloid(float a, float b, float c, float d, shape_options options = shape_options::none);
   ///
   /// \param box
   /// \param options
@@ -163,6 +176,16 @@ public:
                        shape_options options = shape_options::none);
 
   static Model curve(const std::vector<hermes::point3> &vertices, shape_options options = shape_options::none);
+  ///
+  /// \param region
+  /// \param resolution
+  /// \param f
+  /// \param options
+  /// \return
+  static Model fromSurfaceSamples(const hermes::bbox2 &region,
+                                  const hermes::size2 &resolution,
+                                  const std::function<real_t(const hermes::point2 &)> &f,
+                                  shape_options options = shape_options::none);
 };
 
 }

@@ -25,6 +25,7 @@
 #ifndef CIRCE_UI_APP_H
 #define CIRCE_UI_APP_H
 
+#include <circe/ui/options.h>
 #include <circe/gl/io/graphics_display.h>
 #include <circe/gl/io/viewport_display.h>
 
@@ -33,52 +34,100 @@
 
 namespace circe::gl {
 
-/** \brief base class
- * An App makes the creation of viewports easy.
- */
+// *********************************************************************************************************************
+//                                                                                                                App
+// *********************************************************************************************************************
+/// \brief Manages viewports_ views and user input
 class App {
 public:
-  /* Constructor.
-   * \param w **[in]** window width (in pixels)
-   * \param h **[in]** window height (in pixels)
-   * \param t **[in]** window title
-   * \param defaultViewport **[in | optional]** if true, creates a viewport with
-   * the
-   * same size of the window
-   */
-  explicit App(uint w, uint h, const char *t = "", bool defaultViewport = true);
+  // *******************************************************************************************************************
+  //                                                                                                     CONSTRUCTORS
+  // *******************************************************************************************************************
+  /// \brief Constructor.
+  /// \param w **[in]** window width (in pixels)
+  /// \param h **[in]** window height (in pixels)
+  /// \param t **[in]** window title
+  /// \param options
+  /// \param viewport_config
+  explicit App(uint w,
+               uint h,
+               const char *t,
+               circe::viewport_options viewport_config = circe::viewport_options::none,
+               circe::app_options options = circe::app_options::none);
+  explicit App(uint w,
+               uint h,
+               const char *t,
+               circe::app_options options,
+               circe::viewport_options viewport_config = circe::viewport_options::none);
+  ///
   virtual ~App() = default;
-  /** \brief add
-   * \param x **[in]** first pixel in X
-   * \param y **[in]** first pixel in Y
-   * \param w **[in]** viewport width (in pixels)
-   * \param h **[in]** viewport height (in pixels)
-   * Creates a new viewport **[x, y, w, h]**.
-   *
-   * **Note:** the origin of the screen space **(0, 0)** is on the upper-left
-   *corner of the window.
-   * \return the id of the new viewport
-   */
-  size_t addViewport(uint x, uint y, uint w, uint h);
-  size_t addViewport2D(uint x, uint y, uint w, uint h);
-  void init();
-  int run();
-  static void exit();
-  template<typename T = UserCamera> T *getCamera(size_t i = 0) {
-    return static_cast<T *>(viewports[i].camera.get());
-  }
+  // *******************************************************************************************************************
+  //                                                                                                          METHODS
+  // *******************************************************************************************************************
+  //                                                                                                        viewports_
+  /// \brief Creates a new viewport **[x, y, w, h]** with a perspective camera
+  /// \param x **[in]** first pixel in X
+  /// \param y **[in]** first pixel in Y
+  /// \param w **[in]** viewport width (in pixels)
+  /// \param h **[in]** viewport height (in pixels)
+  /// \param options
+  /// \param viewport_render_callback called on viewport draw
+  /// \note the origin of the screen space **(0, 0)** is on the upper-left corner of the window.
+  /// \return the id of the new viewport
+  size_t addViewport(uint x, uint y, uint w, uint h, circe::viewport_options options = circe::viewport_options::none,
+                     const std::function<void(circe::CameraInterface *)> &viewport_render_callback = nullptr);
+  /// \brief Creates a new viewport **[x, y, w, h]** with a orthographic camera
+  /// \param x **[in]** first pixel in X
+  /// \param y **[in]** first pixel in Y
+  /// \param w **[in]** viewport width (in pixels)
+  /// \param h **[in]** viewport height (in pixels)
+  /// \param viewport_render_callback called on viewport draw
+  /// \note the origin of the screen space **(0, 0)** is on the upper-left corner of the window.
+  /// \return the id of the new viewport
+  size_t addViewport2D(uint x, uint y, uint w, uint h,
+                       const std::function<void(circe::CameraInterface *)> &viewport_render_callback = nullptr);
+  /// \brief Creates a new viewport **[x, y, w, h]** with a orthographic camera
+  /// \param x **[in]** first pixel in X
+  /// \param y **[in]** first pixel in Y
+  /// \param w **[in]** viewport width (in pixels)
+  /// \param h **[in]** viewport height (in pixels)
+  /// \param viewport_render_callback called on viewport draw
+  /// \note the origin of the screen space **(0, 0)** is on the upper-left corner of the window.
+  /// \return the id of the new viewport
+  size_t addViewport3D(uint x, uint y, uint w, uint h,
+                       const std::function<void(circe::CameraInterface *)> &viewport_render_callback = nullptr);
+  /// \brief Gets current viewport being rendered
+  /// \return current viewport id
   [[nodiscard]] size_t currentRenderingViewport() const;
-
+  /// \brief Gets viewport
+  /// \param viewport_id
+  /// \return Viewport reference
+  [[nodiscard]] const ViewportDisplay &viewport(size_t viewport_id = 0) const;
+  /// \brief Gets viewport
+  /// \param viewport_id
+  /// \return Viewport reference
+  ViewportDisplay &viewport(size_t viewport_id = 0);
+  //                                                                                                        execution
+  /// \brief Initiates graphics display
+  void init();
+  /// \brief Initiates render loop
+  /// \return program result
+  int run();
+  /// \brief Halts render loop execution
+  static void exit();
+  //                                                                                                     input update
   virtual void button(int b, int a, int m);
   virtual void mouse(double x, double y);
   virtual void scroll(double dx, double dy);
 
-  std::vector<ViewportDisplay> viewports;
-  // render callbacks
+  // *******************************************************************************************************************
+  //                                                                                                        CALLBACKS
+  // *******************************************************************************************************************
+  //                                                                                                 render callbacks
   std::function<void()> prepareRenderCallback;
   std::function<void(circe::CameraInterface *)> renderCallback;
   std::function<void()> finishRenderCallback;
-  // input callbacks
+  //                                                                                                  input callbacks
   std::function<void(unsigned int)> charCallback;
   std::function<void(int, const char **)> dropCallback;
   std::function<void(double, double)> scrollCallback;
@@ -88,11 +137,11 @@ public:
   std::function<void(int, int)> resizeCallback;
 
 protected:
-  bool initialized;
-  size_t windowWidth, windowHeight;
-  std::string title;
-
+  bool initialized_;
+  size_t window_width_, window_height_;
+  std::string title_;
   size_t current_rendering_viewport_{0};
+  std::vector<ViewportDisplay> viewports_;
 
   virtual void render();
   virtual void charFunc(unsigned int pointcode);

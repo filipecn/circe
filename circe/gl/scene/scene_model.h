@@ -28,6 +28,7 @@
 #ifndef PONOS_CIRCE_CIRCE_GL_SCENE_SCENE_MODEL_H
 #define PONOS_CIRCE_CIRCE_GL_SCENE_SCENE_MODEL_H
 
+#include <circe/gl/graphics/program_manager.h>
 #include <circe/scene/model.h>
 
 namespace circe::gl {
@@ -76,6 +77,7 @@ public:
   // ***********************************************************************
   inline u64 vertexCount() const { return vb_.vertexCount(); }
   inline u64 elementCount() const { return primitive_count_; }
+  const VertexBuffer &vertexBuffer() const { return vb_; }
   VertexBuffer &vertexBuffer() { return vb_; }
   const IndexBuffer &indexBuffer() const { return ib_; }
   IndexBuffer &indexBuffer() { return ib_; }
@@ -92,6 +94,7 @@ public:
   //                          PUBLIC FIELDS
   // ***********************************************************************
   Program program;
+  ProgramHandle program_handle;
   hermes::Transform transform;
 
 private:

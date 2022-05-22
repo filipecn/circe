@@ -332,12 +332,31 @@ Model Shapes::icosphere(const point3 &center, real_t radius, u32 divisions, shap
   Model model;
   model = std::move(aos);
 
-  if (!only_vertices)
-    model = index_data;
-
   model.setPrimitiveType(GeometricPrimitiveType::TRIANGLES);
+  if (generate_wireframe)
+    model.setPrimitiveType(GeometricPrimitiveType::LINES);
   if (only_vertices)
     model.setPrimitiveType(GeometricPrimitiveType::POINTS);
+  if (!only_vertices) {
+    if (generate_wireframe) {
+      std::set<std::pair<int, int>> s;
+      std::vector<int> edges;
+      auto n_faces = index_data.size() / 3;
+      for (int i = 0; i < n_faces; ++i)
+        for (int j = 0; j < 3; ++j) {
+          int a = index_data[i * 3 + (j + 0) % 3];
+          int b = index_data[i * 3 + (j + 1) % 3];
+          auto key = std::make_pair(std::min(a, b), std::max(a, b));
+          if (!s.count(key)) {
+            s.insert(key);
+            edges.emplace_back(a);
+            edges.emplace_back(b);
+          }
+        }
+      model = edges;
+    } else
+      model = index_data;
+  }
 
   return model;
 #undef STORE_POSITION
@@ -374,8 +393,8 @@ Model Shapes::plane(const Plane &plane,
   const bool generate_tangents = (options & shape_options::tangent) == shape_options::tangent;
   const bool generate_bitangents = (options & shape_options::bitangent) == shape_options::bitangent;
   const bool wireframe = (options & shape_options::wireframe) == shape_options::wireframe;
-  if (std::fabs(dot(plane.normal, direction)) > 1e-8)
-    Log::warn("Direction vector must be perpendicular to plane normal vector.");
+//  if (std::fabs(dot(plane.normal, direction)) > 1e-8)
+//    Log::warn("Direction vector must be perpendicular to plane normal vector. {} {}", plane.normal, direction);
   // if the tangent space is needed, uv must be generated as well
   if (!generate_uvs && (generate_tangents || generate_bitangents)) {
     Log::warn("UV will be generated since tangent space is being generated.");
@@ -757,6 +776,144 @@ Model Shapes::curve(const std::vector<hermes::point3> &vertices, shape_options o
   model.setPrimitiveType(primitive_type);
   model = aos;
   return model;
+}
+
+Model Shapes::hyperboloid(float a, float b, float c, float d, shape_options options) {
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_uvw = CIRCE_MASK_BIT(options, shape_options::uvw);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
+  const bool flip_normals = CIRCE_MASK_BIT(options, shape_options::flip_normals);
+  const bool flip_faces = CIRCE_MASK_BIT(options, shape_options::flip_faces);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
+
+  // model data
+  AoS aos;
+
+  // data fields
+  const u64 position_id = aos.pushField<point3>("position");
+  const u64 normal_id = generate_normals ? aos.pushField<vec3>("normal") : 0;
+  const u64 uv_id = generate_uvs ? aos.pushField<point2>("uvs") : 0;
+  const u64 uvw_id = generate_uvw ? aos.pushField<point3>("uvw") : 0;
+  const u64 tangent_id = generate_tangents ? aos.pushField<vec3>("tangent") : 0;
+  const u64 bitangent_id = generate_bitangents ? aos.pushField<vec3>("bitangent") : 0;
+
+  std::vector<hermes::point3> vertices;
+
+  const float v_min = d > 0 ? -5 : 0;
+  const float v_max = 5;
+  const float v_step = 0.2;
+  const float theta_step = hermes::Constants::two_pi / 50;
+
+  float v = v_min;
+  while (v <= v_max) {
+    float theta = 0;
+    while (theta < hermes::Constants::two_pi) {
+      if (d > 0) {
+        vertices.emplace_back(a * std::cosh(v) * std::cos(theta),
+                              b * std::cosh(v) * std::sin(theta),
+                              c * std::sinh(v));
+      } else {
+        vertices.emplace_back(a * std::sinh(v) * std::cos(theta),
+                              b * std::sinh(v) * std::sin(theta),
+                              c * std::cosh(v));
+      }
+      theta += theta_step;
+    }
+    v += v_step;
+  }
+
+  aos.resize(vertices.size());
+  auto positions = aos.field<hermes::point3>(position_id);
+
+  positions = vertices;
+
+  // data type
+  GeometricPrimitiveType primitive_type = GeometricPrimitiveType::LINE_STRIP;
+  if (only_vertices)
+    primitive_type = GeometricPrimitiveType::POINTS;
+  else if (unique_positions)
+    primitive_type = GeometricPrimitiveType::LINES;
+
+  // prepare model
+  Model model;
+  model.setPrimitiveType(primitive_type);
+  model = aos;
+  return model;
+}
+
+Model Shapes::fromSurfaceSamples(const bbox2 &region, const size2 &resolution,
+                                 const std::function<real_t(const hermes::point2 &)> &f,
+                                 shape_options options) {
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_uvw = CIRCE_MASK_BIT(options, shape_options::uvw);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
+  const bool flip_normals = CIRCE_MASK_BIT(options, shape_options::flip_normals);
+  const bool flip_faces = CIRCE_MASK_BIT(options, shape_options::flip_faces);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
+
+  // model data
+  AoS aos;
+
+  // data fields
+  const u64 position_id = aos.pushField<point3>("position");
+  const u64 normal_id = generate_normals ? aos.pushField<vec3>("normal") : 0;
+  const u64 uv_id = generate_uvs ? aos.pushField<point2>("uvs") : 0;
+  const u64 uvw_id = generate_uvw ? aos.pushField<point3>("uvw") : 0;
+  const u64 tangent_id = generate_tangents ? aos.pushField<vec3>("tangent") : 0;
+  const u64 bitangent_id = generate_bitangents ? aos.pushField<vec3>("bitangent") : 0;
+
+  std::vector<hermes::point3> vertices;
+
+  // sample surface
+  hermes::vec2 d(region.extends() / hermes::vec2(resolution.width, resolution.height));
+  for (auto ij : hermes::range2(resolution)) {
+    auto p = region.lower + d * hermes::vec2(ij);
+    vertices.emplace_back(
+        p.x,
+        p.y,
+        f(p)
+    );
+  }
+
+  aos.resize(vertices.size());
+  auto positions = aos.field<hermes::point3>(position_id);
+
+  positions = vertices;
+
+  // data type
+  GeometricPrimitiveType primitive_type = GeometricPrimitiveType::LINE_STRIP;
+  if (only_vertices)
+    primitive_type = GeometricPrimitiveType::POINTS;
+  else if (unique_positions)
+    primitive_type = GeometricPrimitiveType::LINES;
+
+  // prepare model
+  Model model;
+  model.setPrimitiveType(primitive_type);
+  model = aos;
+  return model;
+}
+
+Model Shapes::edgemesh(const Model &model, shape_options options) {
+  const bool generate_wireframe = CIRCE_MASK_BIT(options, shape_options::wireframe);
+  const bool only_vertices = CIRCE_MASK_BIT(options, shape_options::vertices);
+  const bool generate_normals = CIRCE_MASK_BIT(options, shape_options::normal);
+  const bool generate_uvs = CIRCE_MASK_BIT(options, shape_options::uv);
+  const bool generate_uvw = CIRCE_MASK_BIT(options, shape_options::uvw);
+  const bool generate_tangents = CIRCE_MASK_BIT(options, shape_options::tangent);
+  const bool generate_bitangents = CIRCE_MASK_BIT(options, shape_options::bitangent);
+  const bool flip_normals = CIRCE_MASK_BIT(options, shape_options::flip_normals);
+  const bool flip_faces = CIRCE_MASK_BIT(options, shape_options::flip_faces);
+  const bool unique_positions = CIRCE_MASK_BIT(options, shape_options::unique_positions);
+  return Model();
 }
 
 }

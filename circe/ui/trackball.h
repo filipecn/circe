@@ -9,11 +9,11 @@ class Trackball {
 public:
   Trackball() : radius_(5.f) {}
 
-  hermes::point3 center() const { return center_; }
+  [[nodiscard]] hermes::point3 center() const { return center_; }
   void setCenter(const hermes::point3 &center) { center_ = center; }
-  float radius() const { return radius_; }
+  [[nodiscard]] float radius() const { return radius_; }
   void setRadius(float r) { radius_ = r; }
-  hermes::Transform transform() const { return transform_ * partialTransform_; }
+  [[nodiscard]] hermes::Transform transform() const { return transform_ * partialTransform_; }
   hermes::Transform getPartialTransform() { return partialTransform_; }
   hermes::Transform getTransform() { return partialTransform_; }
   void setTransform(hermes::Transform t) { transform_ = t; }

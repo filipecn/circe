@@ -40,6 +40,38 @@ public:
   /// \param p projection type
   CameraInterface() = default;
   virtual ~CameraInterface() = default;
+  CameraInterface(CameraInterface &&other) noexcept {
+    view = other.view;
+    inv_view = other.inv_view;
+    model = other.model;
+    inv_model = other.inv_model;
+    frustum = other.frustum;
+    normal = other.normal;
+    up = other.up;
+    pos = other.pos;
+    target = other.target;
+    projection = std::move(other.projection);
+    zoom = other.zoom;
+  }
+
+  CameraInterface(const CameraInterface &other) {
+    *this = other;
+  }
+
+  CameraInterface &operator=(const CameraInterface &other) {
+    view = other.view;
+    inv_view = other.inv_view;
+    model = other.model;
+    inv_model = other.inv_model;
+    frustum = other.frustum;
+    normal = other.normal;
+    up = other.up;
+    pos = other.pos;
+    target = other.target;
+    zoom = other.zoom;
+    projection.reset(other.projection->copy());
+    return *this;
+  }
   /// \param p normalized mouse position
   /// \return camera's ray in world space
   [[nodiscard]] virtual hermes::Ray3 pickRay(hermes::point2 p) const {
@@ -120,6 +152,10 @@ public:
   [[nodiscard]] virtual hermes::vec3 getRight() const {
     return hermes::normalize(hermes::cross(up, target - pos));
   }
+  virtual void setUpVector(hermes::vec3 u) {
+    up = u;
+    update();
+  }
   /// \param p target position
   virtual void setTarget(hermes::point3 p) {
     target = p;
@@ -148,6 +184,7 @@ public:
   [[nodiscard]] virtual float getNear() const { return projection->near; }
   [[nodiscard]] virtual float getFar() const { return projection->far; }
   [[nodiscard]] virtual const hermes::Frustum &getFrustum() const { return frustum; }
+  CameraProjection *getProjection() { return projection.get(); }
   ///
   virtual void update() = 0;
 

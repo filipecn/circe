@@ -144,4 +144,21 @@ std::string VertexBuffer::memoryDump(hermes::memory_dumper_options options) cons
   return dump;
 }
 
+hermes::StructDescriptor VertexBuffer::structDescriptor() const {
+  hermes::StructDescriptor descriptor;
+  for (const auto &attr : attributes.attributes_) {
+    switch (attr.type) {
+    case GL_FLOAT:
+      switch (attr.size) {
+      case 3:descriptor.pushField<hermes::vec3>(attr.name);
+        break;
+      default:HERMES_LOG_ERROR("attribute size not supported!");
+      }
+      break;
+    default:HERMES_LOG_ERROR("attribute type not supported!");
+    }
+  }
+  return descriptor;
+}
+
 }

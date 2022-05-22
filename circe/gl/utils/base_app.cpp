@@ -29,6 +29,7 @@
 #include <circe/imgui/imgui.h>
 #include <circe/gl/imgui/imgui_impl_glfw.h>
 #include <circe/gl/imgui/imgui_impl_opengl3.h>
+#include <circe/gl/scene/scene_resource_manager.h>
 
 namespace circe::gl {
 
@@ -39,10 +40,12 @@ BaseApp::~BaseApp() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
+  SceneResourceManager::cleanup();
+  ProgramManager::cleanup();
 }
 
 void BaseApp::init() {
-//  app->viewports[0].prepareRenderCallback = [&](const ViewportDisplay &vp) {
+//  app->viewports_[0].prepareRenderCallback = [&](const ViewportDisplay &vp) {
 //    this->prepareFrame(vp);
 //  };
   prepare();
@@ -116,6 +119,10 @@ void BaseApp::nextFrame(circe::CameraInterface *camera) {
 int BaseApp::run() {
   init();
   return app->run();
+}
+
+void BaseApp::render(circe::CameraInterface *camera) {
+
 }
 
 } // circe::gl namespace

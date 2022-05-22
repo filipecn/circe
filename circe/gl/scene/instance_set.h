@@ -25,6 +25,7 @@
 #ifndef CIRCE_INSTANCE_SET_H
 #define CIRCE_INSTANCE_SET_H
 
+#include <circe/gl/scene/scene_resource_manager.h>
 #include <circe/gl/scene/scene_object.h>
 #include <circe/gl/scene/scene_model.h>
 
@@ -73,26 +74,21 @@ public:
     u8 *mapped_data_{nullptr};
   };
   // *******************************************************************************************************************
-  //                                                                                                   STATIC METHODS
-  // *******************************************************************************************************************
-  // *******************************************************************************************************************
-  //                                                                                                 FRIEND FUNCTIONS
-  // *******************************************************************************************************************
-  // *******************************************************************************************************************
   //                                                                                                     CONSTRUCTORS
   // *******************************************************************************************************************
   InstanceSet();
   ~InstanceSet() override;
-  //                                                                                                       assignment
+  InstanceSet(const InstanceSet &other);
+  InstanceSet(InstanceSet &&other) noexcept;
   // *******************************************************************************************************************
   //                                                                                                        OPERATORS
   // *******************************************************************************************************************
-  //                                                                                                       assignment
-  //                                                                                                       arithmetic
-  //                                                                                                          boolean
+  InstanceSet &operator=(const InstanceSet &other);
+  InstanceSet &operator=(InstanceSet &&other) noexcept ;
   // *******************************************************************************************************************
   //                                                                                                          METHODS
   // *******************************************************************************************************************
+  bool good() const;
   /// \return total number of instances
   inline u64 count() const { return instance_count_; }
   /// reserve memory for n instances
@@ -100,24 +96,18 @@ public:
   void resize(uint n);
   View instanceData();
   void draw(const CameraInterface *camera, hermes::Transform transform) override;
+  void draw(const CameraInterface *camera);
   // *******************************************************************************************************************
   //                                                                                                    PUBLIC FIELDS
   // *******************************************************************************************************************
-  SceneModel instance_model;                       ///< instance model
-  Program instance_program;
+  SceneModelHandle model_handle{};   //!< instance model
+  ProgramHandle program_handle{};    //!< instance program
+
 private:
   DeviceMemory instance_buffer_;                   ///< instance buffer
   std::unique_ptr<DeviceMemory::View> instance_buffer_view_;
   VertexAttributes instance_attributes_;           ///< instance buffer attributes
   size_t instance_count_{0};
-
-  std::vector<GLBufferInterface *> buffers_;      ///< buffers
-
-  std::vector<uint> buffers_indices_;      ///< maps buffers -> data indices
-  std::vector<bool> data_changed_;         ///< data of a buffer must be updated
-  std::vector<std::vector<uint>> dataU_;   ///< unsigned int data
-  std::vector<std::vector<float>> dataF_;  ///< float data
-  std::vector<std::vector<uchar>> dataC_;  ///< unsigned byte data
 };
 
 } // circe namespace

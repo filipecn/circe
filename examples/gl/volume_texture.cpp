@@ -107,13 +107,17 @@ bool intersectVolumeBox(f32 &tmin, hermes::point3 raypos, hermes::vec3 raydir) {
 }
 
 struct VolumeTextureExample : public circe::gl::BaseApp {
-  VolumeTextureExample() : circe::gl::BaseApp(1600, 800, "Volume Texture Example", false) {
+  VolumeTextureExample() : circe::gl::BaseApp(1600,
+                                              800,
+                                              "Volume Texture Example",
+                                              circe::viewport_options::none,
+                                              circe::app_options::no_viewport) {
     hermes::Path shaders_path(std::string(SHADERS_PATH));
-    // viewports
+    // viewports_
     this->app->addViewport(0, 0, 1200, 800);
     this->app->addViewport(1200, 400, 400, 400);
-    this->app->viewports[0].clear_screen_color = circe::Color::Black();
-    this->app->viewports[1].clear_screen_color = circe::Color::Black();
+    this->app->viewport(0).clear_screen_color = circe::Color::Black();
+    this->app->viewport(1).clear_screen_color = circe::Color::Black();
     // DEBUG ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     // domain transform
     auto domain_box = hermes::bbox3::unitBox(true);
@@ -154,7 +158,7 @@ struct VolumeTextureExample : public circe::gl::BaseApp {
 
   void prepareFrame() override {
     BaseApp::prepareFrame();
-    camera_model.update(app->getCamera(1));
+    camera_model.update(&app->viewport(1).camera());
     ImGuizmo::BeginFrame();
   }
 
@@ -175,7 +179,7 @@ struct VolumeTextureExample : public circe::gl::BaseApp {
     w_box_model.draw();
 
     f32 t0 = 0;
-    if (intersectVolumeBox(t0, app->getCamera(1)->getPosition(), raydir))
+    if (intersectVolumeBox(t0, app->viewport(1).camera().getPosition(), raydir))
       w_box_model.program.setUniform("color", circe::Color::Red());
     camera_rays.draw();
 
@@ -222,23 +226,23 @@ struct VolumeTextureExample : public circe::gl::BaseApp {
 
     box_model.draw();
 
-    ImGuizmo::SetRect(this->app->viewports[1].x,
+    ImGuizmo::SetRect(this->app->viewport(1).position().i,
                       0,
-                      this->app->viewports[1].width,
-                      this->app->viewports[1].height);
+                      this->app->viewport(1).size().width,
+                      this->app->viewport(1).size().height);
     circe::Gizmo::update(camera, gizmo_transform, ImGuizmo::OPERATION::TRANSLATE);
 
-    auto next_pixel = app->viewports[1].project(gizmo_transform(hermes::point3()));
+    auto next_pixel = app->viewport(1).project(gizmo_transform(hermes::point3()));
     if (next_pixel != current_pixel) {
       current_pixel = next_pixel;
       rand_state = hermes::vec2(current_pixel.i, current_pixel.j) + hermes::vec2(0.234525, 0.5663);
 
-      auto p = app->viewports[1].viewCoordToNormDevCoord(hermes::point3(current_pixel.i, current_pixel.j, 0));
-      p = app->viewports[1].unProject(p);
-      raydir = hermes::normalize(p - app->getCamera(1)->getPosition());
+      auto p = app->viewport(1).viewCoordToNormDevCoord(hermes::point3(current_pixel.i, current_pixel.j, 0));
+      p = app->viewport(1).unProject(p);
+      raydir = hermes::normalize(p - app->viewport(1).camera().getPosition());
       std::vector<hermes::point3> path;
 
-      l = traceVolume(app->getCamera(1)->getPosition(), raydir, path);
+      l = traceVolume(app->viewport(1).camera().getPosition(), raydir, path);
       camera_rays = circe::Shapes::curve(path);
     }
 

@@ -39,6 +39,7 @@
 
 #include <circe/gl/utils/open_gl.h>
 #include <string>
+#include <hermes/storage/struct_descriptor.h>
 
 namespace circe::gl {
 
@@ -61,7 +62,7 @@ public:
     //!< as fixed-point values (GL_FALSE)
     u32 divisor{0};
     u32 location{0};
-    size_t componentSize() const {
+    [[nodiscard]] size_t componentSize() const {
       size_t component_size = 1;
       if (size % 3 == 0)
         component_size = 3;
@@ -126,9 +127,7 @@ public:
     auto it = attribute_name_id_map_.find(attribute_name);
     return it->second;
   }
-
   void setAttributeLocation(u64 id, GLint location);
-
   ///
   /// \param binding_index
   void bindFormats(GLuint binding_index) const;

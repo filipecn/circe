@@ -248,4 +248,26 @@ hermes::Transform glGetMVPTransform() {
   return glGetModelviewTransform() * glGetProjectionTransform();
 }
 
+std::string OpenGL::info() {
+  hermes::Str s;
+  const GLubyte *vendor = glGetString(GL_VENDOR); // Returns the vendor
+  const GLubyte *renderer = glGetString(GL_RENDERER); // Returns a hint to the model
+  s.appendLine("Vendor: ", vendor);
+  s.appendLine("Renderer: ", renderer);
+  int minor, major;
+  glGetIntegerv(GL_MAJOR_VERSION, &major);
+  glGetIntegerv(GL_MINOR_VERSION, &minor);
+  s.appendLine("Version: ", major, ".", minor);
+  s.appendLine("GLSL Version: ", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  int k = 0;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &k);
+  s.appendLine("Number of extensions: ", k);
+  for (int i = 0; i < k; ++i)
+    s.appendLine("  ", glGetStringi(GL_EXTENSIONS, i));
+  glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &k);
+  s.appendLine("Number of supported GLSL versions: ", k);
+  for (int i = 0; i < k; ++i)
+    s.appendLine("  ", glGetStringi(GL_SHADING_LANGUAGE_VERSION, i));
+  return s.str();
+}
 } // namespace circe

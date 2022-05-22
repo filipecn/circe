@@ -31,16 +31,31 @@
 #include <circe/scene/camera_interface.h>
 #include <circe/gl/scene/scene_model.h>
 #include <circe/colors/color.h>
+#include <circe/ui/trackball_interface.h>
 
 namespace circe::gl::helpers {
+
+class VectorModel {
+public:
+  VectorModel();
+  ~VectorModel();
+  void draw(const hermes::vec3 &v, const CameraInterface *camera);
+
+  circe::Color color{Color::Gray(0.75)};
+  f32 width{0.01};
+private:
+  Program program_;
+  SceneModel vector_;
+};
 
 class CartesianBase {
 public:
   CartesianBase();
   ~CartesianBase();
 
-  void draw(CameraInterface *camera);
+  void draw(const CameraInterface *camera);
 
+  hermes::Transform transform;
   f32 width{0.01};
 
 private:
@@ -87,6 +102,19 @@ private:
   SceneModel frustrum_;
   SceneModel target_;
   SceneModel pixels_;
+};
+
+class TrackballInterfaceModel {
+public:
+  explicit TrackballInterfaceModel();
+  ~TrackballInterfaceModel();
+  void draw(const circe::TrackballInterface &tbi, CameraInterface *camera);
+
+  circe::Color color{Color::Gray(0.75)};
+private:
+  Program program_;
+  SceneModel trackball_;
+  SceneModel view_plane_;
 };
 
 }

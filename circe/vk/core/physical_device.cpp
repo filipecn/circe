@@ -227,7 +227,7 @@ bool PhysicalDevice::selectPresentationMode(
       return true;
     }
   }
-  HERMES_LOG("Desired present mode is not supported. Selecting default FIFO mode.")
+  HERMES_LOG("Desired present mode is not supported. Selecting default FIFO mode.");
   for (auto &current_present_mode : present_modes) {
     if (current_present_mode == VK_PRESENT_MODE_FIFO_KHR) {
       present_mode = VK_PRESENT_MODE_FIFO_KHR;
@@ -280,7 +280,7 @@ bool PhysicalDevice::selectFormatOfSwapchainImages(
       image_format = desired_surface_format.format;
       image_color_space = surface_format.colorSpace;
       HERMES_LOG("Desired combination of format and colorspace is not "
-                "supported. Selecting other colorspace.")
+                "supported. Selecting other colorspace.");
       return true;
     }
   }
@@ -288,7 +288,7 @@ bool PhysicalDevice::selectFormatOfSwapchainImages(
   image_format = surface_formats[0].format;
   image_color_space = surface_formats[0].colorSpace;
   HERMES_LOG("Desired format is not supported. Selecting available format - "
-            "colorspace combination.")
+            "colorspace combination.");
   return true;
 }
 bool PhysicalDevice::findSupportedFormat(
@@ -307,7 +307,7 @@ bool PhysicalDevice::findSupportedFormat(
       return true;
     }
   }
-  HERMES_LOG("Failed to find supported format.")
+  HERMES_LOG("Failed to find supported format.");
   return false;
 }
 [[maybe_unused]] bool PhysicalDevice::surfaceCapabilities(

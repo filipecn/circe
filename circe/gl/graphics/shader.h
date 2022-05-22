@@ -128,6 +128,9 @@ public:
   /// \param other
   Program(Program &&other) noexcept;
   ~Program();
+  /// \param other
+  /// \return
+  Program &operator=(Program &&other) noexcept;
   /// Calls glDeleteProgram, but does not clean attributes and uniforms
   /// Note: Shaders must be attached and linked again for reuse
   void destroy();

@@ -140,6 +140,14 @@ void DeviceMemory::copy(void *data, u64 data_size, u64 offset) {
   CHECK_GL(glBufferSubData(target_, offset, data_size, data));
 }
 
+DeviceMemory &&DeviceMemory::copy() const {
+  DeviceMemory device_memory_copy;
+  device_memory_copy.setTarget(target_);
+  device_memory_copy.setUsage(usage_);
+  device_memory_copy.resize(size_);
+  return std::move(device_memory_copy);
+}
+
 void DeviceMemory::bind() {
   if (!allocated())
     allocate();
@@ -165,7 +173,8 @@ void DeviceMemory::unmap() const {
 }
 
 void DeviceMemory::destroy() {
-  if (buffer_object_id_) CHECK_GL(glDeleteBuffers(1, &buffer_object_id_));
+  if (buffer_object_id_)
+    CHECK_GL(glDeleteBuffers(1, &buffer_object_id_));
   buffer_object_id_ = 0;
 }
 

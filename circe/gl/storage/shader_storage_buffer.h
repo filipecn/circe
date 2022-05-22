@@ -30,11 +30,15 @@
 
 #include <circe/gl/storage/buffer_interface.h>
 #include <hermes/storage/array_of_structures.h>
+#include <circe/gl/storage/vertex_buffer.h>
+#include <circe/gl/storage/index_buffer.h>
 
 namespace circe::gl {
 
 class ShaderStorageBuffer : public BufferInterface {
 public:
+  static ShaderStorageBuffer fromVertexBuffer(VertexBuffer& vertex_buffer);
+  static ShaderStorageBuffer fromIndexBuffer(IndexBuffer& index_buffer);
   // ***********************************************************************
   //                           CONSTRUCTORS
   // ***********************************************************************

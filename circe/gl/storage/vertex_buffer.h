@@ -94,6 +94,8 @@ public:
   hermes::memory_dumper_options::type_values |
       hermes::memory_dumper_options::colored_output) const;
 
+  hermes::StructDescriptor structDescriptor() const;
+
   // public fields
   VertexAttributes attributes; //!< attribute description
 

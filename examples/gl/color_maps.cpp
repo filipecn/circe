@@ -32,6 +32,7 @@ struct ColorMapsExample : public circe::gl::BaseApp {
     hermes::Path shaders_path(std::string(SHADERS_PATH));
     HERMES_ASSERT_WITH_LOG(cube.program.link(shaders_path, "color"), cube.program.err);
     cube = circe::Shapes::box(hermes::bbox3::unitBox());
+    HERMES_LOG("asd");
   }
 
   void render(circe::CameraInterface *camera) override {

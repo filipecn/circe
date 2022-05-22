@@ -29,8 +29,6 @@ namespace circe {
 
 TrackballInterface::~TrackballInterface() = default;
 
-void TrackballInterface::draw() { modes_[curMode_]->draw(tb); }
-
 void TrackballInterface::buttonRelease(CameraInterface &camera, int button,
                                        hermes::point2 p) {
   HERMES_UNUSED_VARIABLE(button);
@@ -75,7 +73,8 @@ void TrackballInterface::createDefault2D(TrackballInterface &t) {
 void TrackballInterface::createDefault3D(TrackballInterface &t) {
   t.attachTrackMode(MOUSE_SCROLL, Mode::SCALE, new ScaleMode());
   t.attachTrackMode(MOUSE_BUTTON_RIGHT, Mode::PAN, new PanMode());
-  t.attachTrackMode(MOUSE_BUTTON_LEFT, Mode::ROTATE, new RotateMode());
+//  t.attachTrackMode(MOUSE_BUTTON_LEFT, Mode::ROTATE, new RotateMode());
+  t.attachTrackMode(MOUSE_BUTTON_LEFT, Mode::ORBIT, new OrbitMode());
   t.attachTrackMode(MOUSE_BUTTON_MIDDLE, Mode::Z, new ZMode());
 }
 
@@ -84,6 +83,17 @@ bool TrackballInterface::isActive() const {
   if (m != modes_.end())
     return m->second->isActive();
   return false;
+}
+
+TrackballInterface::Mode TrackballInterface::currentModeType() const {
+  return curMode_;
+}
+
+const TrackMode *TrackballInterface::currentMode() const {
+  auto it = modes_.find(curMode_);
+  if(it != modes_.end())
+    return it->second;
+  return nullptr;
 }
 
 } // namespace circe

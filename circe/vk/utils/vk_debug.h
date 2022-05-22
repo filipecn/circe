@@ -145,10 +145,10 @@ inline std::string vulkanResultString(VkResult err) {
   return "UNDEFINED";
 }
 
-#define HERMES_VALIDATE_EXP_WITH_WARNING(A, M)   \
-  {                                             \
-    if(!(A))                                    \
-      HERMES_LOG_WARNING(M)                      \
+#define HERMES_VALIDATE_EXP_WITH_WARNING(A, M)                                 \
+  {                                                                            \
+    if(!(A))                                                                   \
+      HERMES_LOG_WARNING(M);                                                   \
   }
 
 ///
@@ -156,8 +156,8 @@ inline std::string vulkanResultString(VkResult err) {
   {                                                                            \
     VkResult err = (A);                                                        \
     if (err != VK_SUCCESS) {                                                   \
-      HERMES_LOG_ERROR(#A)                                                      \
-      HERMES_LOG_ERROR(vulkanResultString(err))  \
+      HERMES_LOG_ERROR("{}", #A);                                              \
+      HERMES_LOG_ERROR("{}", vulkanResultString(err));                         \
     }                                                                          \
   }
 ///
@@ -165,8 +165,8 @@ inline std::string vulkanResultString(VkResult err) {
   {                                                                            \
     VkResult err = (A);                                                        \
     if (err != VK_SUCCESS) {                                                   \
-      HERMES_LOG_ERROR(#A)                                                      \
-      HERMES_LOG_ERROR(vulkanResultString(err))  \
+      HERMES_LOG_ERROR("{}", #A);                                              \
+      HERMES_LOG_ERROR("{}", vulkanResultString(err));                         \
       return R;                                                                \
     }                                                                          \
   }
@@ -175,8 +175,8 @@ inline std::string vulkanResultString(VkResult err) {
   {                                                                            \
     VkResult err = (A);                                                        \
     if (err != VK_SUCCESS) {                                                   \
-      HERMES_LOG_ERROR(#A)                                                      \
-      HERMES_LOG_ERROR(vulkanResultString(err))  \
+      HERMES_LOG_ERROR(#A);                                                    \
+      HERMES_LOG_ERROR(vulkanResultString(err));                               \
       exit(-1);                                                                \
     }                                                                          \
   }

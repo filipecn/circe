@@ -85,6 +85,8 @@ set(CIRCE_HEADERS
         circe/scene/model.h
         circe/scene/shapes.h
         circe/scene/spatial_structure_interface.h
+        circe/ui/options.h
+        circe/ui/camera_control.h
         circe/ui/imgui_logger.h
         circe/ui/imgui_profiler.h
         circe/ui/imgui_utils.h
@@ -102,6 +104,7 @@ set(CIRCE_SOURCES
         circe/scene/bvh.cpp
         circe/scene/model.cpp
         circe/scene/shapes.cpp
+        circe/ui/camera_control.cpp
         circe/ui/imgui_logger.cpp
         circe/ui/imgui_profiler.cpp
         circe/ui/imgui_utils.cpp
@@ -118,6 +121,7 @@ set(CIRCE_GL_HEADERS
         circe/gl/utils/win32_utils.h
         circe/gl/utils/base_app.h
         circe/gl/scene/quad.h
+        circe/gl/scene/scene_resource_manager.h
         circe/gl/scene/scene.h
         circe/gl/scene/scene_mesh.h
         circe/gl/scene/scene_object.h
@@ -156,6 +160,7 @@ set(CIRCE_GL_HEADERS
         #        circe/gl/helpers/quad_tree_model.h
         #        circe/gl/helpers/scene_handle.h
         #        circe/gl/helpers/vector_grid.h
+        circe/gl/graphics/program_manager.h
         # imgui
         circe/gl/imgui/imgui_impl_glfw.h
         circe/gl/imgui/imgui_impl_opengl3.h
@@ -181,10 +186,7 @@ set(CIRCE_GL_SOURCES
         circe/gl/graphics/shader.cpp
         circe/gl/graphics/shader_manager.cpp
         circe/gl/graphics/shadow_map.cpp
-        #        circe/gl/helpers/bbox_model.cpp
-        #        circe/gl/helpers/segment_model.cpp
-#        circe/gl/helpers/cartesian_grid.cpp
-        #        circe/gl/helpers/geometry_drawers.cpp
+        circe/gl/graphics/program_manager.cpp
         circe/gl/imgui/imgui_impl_glfw.cpp
         circe/gl/imgui/imgui_impl_opengl3.cpp
         circe/gl/io/buffer.cpp
@@ -197,10 +199,10 @@ set(CIRCE_GL_SOURCES
         circe/gl/scene/instance_set.cpp
         circe/gl/scene/mesh_utils.cpp
         circe/gl/scene/quad.cpp
+        circe/gl/scene/scene_resource_manager.cpp
         circe/gl/scene/scene_mesh.cpp
         circe/gl/scene/scene_model.cpp
         circe/gl/scene/triangle_mesh.cpp
-        #        circe/gl/scene/volume_box.cpp
         circe/gl/scene/wireframe_mesh.cpp
         circe/gl/storage/buffer_interface.cpp
         circe/gl/storage/device_memory.cpp

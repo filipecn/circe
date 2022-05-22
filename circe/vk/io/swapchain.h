@@ -126,7 +126,7 @@ public:
             VkSurfaceTransformFlagBitsKHR surface_transform,
             VkPresentModeKHR present_mode);
   /// Initializes swap chain object.
-  /// If this swap chain is already an initialized swap chain, this function will
+  /// If this swap chain is already an initialized_ swap chain, this function will
   /// destroy it first and recreate it.
   /// \return
   bool init();

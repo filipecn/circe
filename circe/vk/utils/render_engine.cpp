@@ -247,7 +247,7 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
     return;
   } else if (next_image_result != VK_SUCCESS &&
       next_image_result != VK_SUBOPTIMAL_KHR) {
-    HERMES_LOG_ERROR("error on getting next swapchain image!")
+    HERMES_LOG_ERROR("error on getting next swapchain image!");
     return;
   }
   if (images_in_flight_[image_index] != VK_NULL_HANDLE)
@@ -303,7 +303,7 @@ void RenderEngine::draw(VkQueue graphics_queue, VkQueue presentation_queue) {
     recreateSwapChain();
     framebuffer_resized_ = false;
   } else if (next_image_result != VK_SUCCESS) {
-    HERMES_LOG_ERROR("error on presenting swapchain image!")
+    HERMES_LOG_ERROR("error on presenting swapchain image!");
     return;
   }
 

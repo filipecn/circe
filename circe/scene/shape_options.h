@@ -45,7 +45,8 @@ enum class shape_options {
   wireframe = 0x80, //!< only edges
   vertices = 0x100, //!< only vertices
   flip_normals = 0x200, //!< flip normals to point inwards (uv coordinates may change as well)
-  flip_faces = 0x400 //!< reverse face vertex order
+  flip_faces = 0x400, //!< reverse face vertex order
+  merge = 0x800 //!< merge shape elements
 };
 CIRCE_ENABLE_BITMASK_OPERATORS(shape_options);
 }

@@ -73,20 +73,58 @@ std::string InstanceSet::View::memoryDump(hermes::memory_dumper_options options)
   return dump;
 }
 
+InstanceSet::InstanceSet(const InstanceSet &other) {
+  *this = other;
+}
+
+InstanceSet::InstanceSet(InstanceSet &&other) noexcept {
+  *this = std::move(other);
+}
+
+InstanceSet &InstanceSet::operator=(const InstanceSet &other) {
+  model_handle = other.model_handle;
+  program_handle = other.program_handle;
+  instance_buffer_ = other.instance_buffer_.copy();
+  instance_buffer_view_ = std::make_unique<DeviceMemory::View>(instance_buffer_);
+  instance_attributes_ = other.instance_attributes_;
+  instance_count_ = other.instance_count_;
+  return *this;
+}
+
+InstanceSet &InstanceSet::operator=(InstanceSet &&other) noexcept {
+  model_handle = other.model_handle;
+  program_handle = other.program_handle;
+  instance_buffer_ = std::move(other.instance_buffer_);
+  instance_buffer_view_ = std::move(other.instance_buffer_view_);
+  instance_attributes_ = other.instance_attributes_;
+  instance_count_ = other.instance_count_;
+  return *this;
+}
+
 InstanceSet::InstanceSet() = default;
 
 InstanceSet::~InstanceSet() = default;
 
+bool InstanceSet::good() const {
+  auto instance_program = ProgramManager::program(program_handle);
+  auto instance_model = SceneResourceManager::model(model_handle);
+  if (!instance_program || !instance_model)
+    return false;
+  return (*instance_program)->good() && (*instance_model)->vertexBuffer().vertexCount();
+}
+
 void InstanceSet::resize(uint n) {
-  if (!instance_program.good()) {
-    HERMES_LOG_WARNING("Bad instance program!");
+  auto instance_program = ProgramManager::program(program_handle);
+  auto instance_model = SceneResourceManager::model(model_handle);
+  if (!good()) {
+    HERMES_LOG_WARNING("Incomplete mode/program description!");
     return;
   }
   instance_count_ = n;
   // first we need to split attributes between base and instance attributes
-  auto attributes = instance_program.extractAttributes();
+  auto attributes = (*instance_program)->extractAttributes();
   std::set<std::string> base_attribute_names;
-  const auto &base_attributes = instance_model.vertexBuffer().attributes.attributes();
+  const auto &base_attributes = (*instance_model)->vertexBuffer().attributes.attributes();
   for (const auto &attribute : base_attributes)
     base_attribute_names.insert(attribute.name);
 
@@ -103,36 +141,60 @@ void InstanceSet::resize(uint n) {
   instance_buffer_.resize(instance_count_ * instance_attributes_.stride());
   instance_buffer_view_ = std::make_unique<DeviceMemory::View>(instance_buffer_);
   // update vertex attributes
-  instance_model.bind();
+  (*instance_model)->bind();
   instance_attributes_.bindFormats(1);
 
-  instance_model.vertexBuffer().bind();
+  (*instance_model)->vertexBuffer().bind();
   CHECK_GL(glBindVertexBuffer(1, instance_buffer_.id(),
                               instance_buffer_view_->offset(), instance_attributes_.stride()));
-  instance_model.indexBuffer().bind();
+  (*instance_model)->indexBuffer().bind();
 
-  instance_model.unbind();
+  (*instance_model)->unbind();
   CHECK_GL_ERRORS
 }
 
 void InstanceSet::draw(const CameraInterface *camera,
                        hermes::Transform transform) {
-  if (!instance_program.good() || !instance_model.vertexBuffer().vertexCount())
+  if (!good())
     return;
-  instance_program.use();
-  instance_program.setUniform("model_view_matrix", camera->getViewTransform());
-  instance_program.setUniform("projection_matrix", camera->getProjectionTransform());
+  auto instance_program = ProgramManager::program(program_handle);
+  auto instance_model = SceneResourceManager::model(model_handle);
 
-  instance_model.bind();
+  (*instance_program)->use();
+  (*instance_program)->setUniform("model_view_matrix", camera->getViewTransform());
+  (*instance_program)->setUniform("projection_matrix", camera->getProjectionTransform());
+
+  (*instance_model)->bind();
 
   glDrawElementsInstanced(
-      instance_model.indexBuffer().element_type,
-      instance_model.indexBuffer().element_count * 3,
-      instance_model.indexBuffer().data_type,
+      (*instance_model)->indexBuffer().element_type,
+      (*instance_model)->indexBuffer().element_count * 3,
+      (*instance_model)->indexBuffer().data_type,
       nullptr,
       instance_count_);
 
-  instance_model.unbind();
+  (*instance_model)->unbind();
+
+  CHECK_GL_ERRORS;
+}
+
+void InstanceSet::draw(const CameraInterface *camera) {
+  auto instance_model = SceneResourceManager::model(model_handle);
+  if (!instance_model)
+    return;
+  if (!(*instance_model)->vertexBuffer().vertexCount())
+    return;
+
+  (*instance_model)->bind();
+
+  glDrawElementsInstanced(
+      (*instance_model)->indexBuffer().element_type,
+      (*instance_model)->indexBuffer().element_count * 3,
+      (*instance_model)->indexBuffer().data_type,
+      nullptr,
+      instance_count_);
+
+  (*instance_model)->unbind();
 
   CHECK_GL_ERRORS;
 }

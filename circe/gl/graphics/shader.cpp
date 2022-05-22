@@ -355,6 +355,19 @@ Program::~Program() {
   destroy();
 }
 
+Program &Program::operator=(Program &&other) noexcept {
+  destroy();
+  id_ = other.id_;
+  other.id_ = 0;
+  linked_ = other.linked_;
+  attr_locations_ = std::move(other.attr_locations_);
+  uniform_locations_ = std::move(other.uniform_locations_);
+  ub_map_name_id_ = std::move(other.ub_map_name_id_);
+  uniforms_ = std::move(other.uniforms_);
+  uniform_blocks_ = std::move(other.uniform_blocks_);
+  return *this;
+}
+
 void Program::destroy() {
   glDeleteProgram(id_);
   id_ = 0;
@@ -598,6 +611,7 @@ VertexAttributes Program::extractAttributes() const {
         switch (type) {
         SWITCH_CASE(GL_FLOAT_VEC4, hermes::vec4)
         SWITCH_CASE(GL_FLOAT_VEC3, hermes::vec3)
+        SWITCH_CASE(GL_FLOAT_VEC2, hermes::vec2)
         SWITCH_CASE(GL_FLOAT_MAT4, hermes::mat4)
         default: HERMES_LOG_ERROR("Invalid Shader-Vertex Attribute");
         }

@@ -174,7 +174,7 @@ public:
     depth_buffer_view.render(lights[0].shadow_map.depthMap());
     ImGui::End();
     // gizmo
-    ImGuizmo::SetRect(0, 0, this->app->viewports[0].width, this->app->viewports[0].height);
+    ImGuizmo::SetRect(0, 0, this->app->viewport(0).size().width, this->app->viewport(0).size().height);
     circe::Gizmo::update(camera, lights[0].model_transform, operation);
 
     updateLights();

@@ -46,7 +46,7 @@ Buffer::Buffer(const LogicalDevice::Ref &logical_device, VkDeviceSize size,
                VkBufferUsageFlags usage, VkSharingMode sharing_mode)
     : logical_device_(logical_device) {
   if (!init(logical_device_, size, usage, sharing_mode))
-    HERMES_LOG_ERROR("Could not create buffer.")
+    HERMES_LOG_ERROR("Could not create buffer.");
 }
 
 Buffer::Buffer(Buffer &&other) noexcept
@@ -79,7 +79,7 @@ bool Buffer::init(const LogicalDevice::Ref &logical_device, VkDeviceSize size,
   info_.queueFamilyIndexCount = 0;
   info_.pQueueFamilyIndices = nullptr;
   R_CHECK_VULKAN(
-      vkCreateBuffer(logical_device.handle(), &info_, nullptr, &vk_buffer_), false)
+      vkCreateBuffer(logical_device.handle(), &info_, nullptr, &vk_buffer_), false);
   return true;
 }
 
@@ -122,9 +122,9 @@ Buffer::View::View(VkBuffer vk_buffer, VkDevice vk_logical_device, VkFormat form
 
   CHECK_VULKAN(vkCreateBufferView(vk_logical_device_,
                                   &buffer_view_create_info, nullptr,
-                                  &vk_buffer_view_))
+                                  &vk_buffer_view_));
   if (vk_buffer_view_ == VK_NULL_HANDLE)
-    HERMES_LOG_ERROR("Could not create buffer view.")
+    HERMES_LOG_ERROR("Could not create buffer view.");
 }
 
 Buffer::View::View(View &&other) noexcept: vk_logical_device_{other.vk_logical_device_},

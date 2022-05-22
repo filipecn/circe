@@ -24,7 +24,7 @@
 //  2019-03-15: OpenGL: Added a dummy GL call + comments in ImGui_ImplOpenGL3_Init() to detect uninitialized GL function loaders early.
 //  2019-03-03: OpenGL: Fix support for ES 2.0 (WebGL 1.0).
 //  2019-02-20: OpenGL: Fix for OSX not supporting OpenGL 4.5, we don't try to read GL_CLIP_ORIGIN even if defined by the headers/loader.
-//  2019-02-11: OpenGL: Projecting clipping rectangles correctly using draw_data->FramebufferScale to allow multi-viewports for retina display.
+//  2019-02-11: OpenGL: Projecting clipping rectangles correctly using draw_data->FramebufferScale to allow multi-viewports_ for retina display.
 //  2019-02-01: OpenGL: Using GLSL 410 shaders for any version over 410 (e.g. 430, 450).
 //  2018-11-30: Misc: Setting up io.BackendRendererName so it can be displayed in the About Window.
 //  2018-11-13: OpenGL: Support for GL 4.5's glClipControl(GL_UPPER_LEFT) / GL_CLIP_ORIGIN.
@@ -113,19 +113,19 @@
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
 //  You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>            // Needs to be initialized with gl3wInit() in user's code
+#include <GL/gl3w.h>            // Needs to be initialized_ with gl3wInit() in user's code
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>            // Needs to be initialized with glewInit() in user's code.
+#include <GL/glew.h>            // Needs to be initialized_ with glewInit() in user's code.
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>          // Needs to be initialized with gladLoadGL() in user's code.
+#include <glad/glad.h>          // Needs to be initialized_ with gladLoadGL() in user's code.
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
 #define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/Binding.h>  // Needs to be initialized with glbinding::Binding::initialize() in user's code.
+#include <glbinding/Binding.h>  // Needs to be initialized_ with glbinding::Binding::initialize() in user's code.
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
 #define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/glbinding.h>// Needs to be initialized with glbinding::initialize() in user's code.
+#include <glbinding/glbinding.h>// Needs to be initialized_ with glbinding::initialize() in user's code.
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #else
@@ -210,7 +210,7 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
 #endif
 
     // Make a dummy GL call (we don't actually need the result)
-    // IF YOU GET A CRASH HERE: it probably means that you haven't initialized the OpenGL function loader used by this code.
+    // IF YOU GET A CRASH HERE: it probably means that you haven't initialized_ the OpenGL function loader used by this code.
     // Desktop OpenGL 3/4 need a function loader. See the IMGUI_IMPL_OPENGL_LOADER_xxx explanation above.
     GLint current_texture;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &current_texture);
@@ -334,7 +334,7 @@ void    ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
     ImGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 
     // Will project scissor/clipping rectangles into framebuffer space
-    ImVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
+    ImVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports_
     ImVec2 clip_scale = draw_data->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
 
     // Render command lists
