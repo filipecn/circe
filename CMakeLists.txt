@@ -1,15 +1,11 @@
-# avoid policy warning message
-if (POLICY CMP0048)
-    cmake_policy(SET CMP0048 NEW)
-endif (POLICY CMP0048)
-# main project
-project(CIRCE)
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(VERSION 3.1)
+##########################################
+##                cmake                 ##
+##########################################
+cmake_minimum_required(VERSION 3.19)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-# path variables
-set(ROOT_PROJECT_PATH "${PROJECT_SOURCE_DIR}")
-set(BUILD_ROOT ${CMAKE_CURRENT_BINARY_DIR})
+# avoid policy warning messages
+cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0135 NEW)
 ##########################################
 ##               options                ##
 ##########################################
@@ -24,6 +20,16 @@ set(INSTALL_PATH ${BUILD_ROOT} CACHE STRING "include and lib folders path")
 # external libs
 set(HERMES_INCLUDE_PATH "" CACHE STRING "hermes include path")
 set(HERMES_LIB_PATH "" CACHE STRING "hermes lib path")
+##########################################
+##                project               ##
+##########################################
+project(CIRCE)
+# path variables
+set(ROOT_PROJECT_PATH "${PROJECT_SOURCE_DIR}")
+set(BUILD_ROOT ${CMAKE_CURRENT_BINARY_DIR})
+##########################################
+##             compilation              ##
+##########################################
 # cmake modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 # check for specific machine/compiler options.

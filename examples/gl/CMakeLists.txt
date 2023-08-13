@@ -49,7 +49,7 @@ set(EXAMPLES
         instances
         hello_circe
         shadows
-        skybox
+        #        skybox
         picking
         profiler
 #        texture_atlas

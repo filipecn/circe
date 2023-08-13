@@ -60,6 +60,7 @@ SOFTWARE.
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <cstdint>
 
 namespace igfd
 {

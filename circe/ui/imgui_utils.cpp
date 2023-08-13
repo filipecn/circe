@@ -31,7 +31,7 @@
 namespace circe {
 
 ImguiOpenDialog::Result ImguiOpenDialog::folder_dialog_button(const std::string &label, const hermes::Path &path) {
-  auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
+  auto key = hermes::Str::regex::replace(label, " ", "") + "ImguiDialogKey";
   if (ImGui::Button(label.c_str()))
     igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose Folder", 0, path.fullName());
   Result result;
@@ -52,7 +52,7 @@ ImguiOpenDialog::Result ImguiOpenDialog::folder_dialog_button(const std::string 
 
 ImguiOpenDialog::Result ImguiOpenDialog::folder_dialog_menu_item(const std::string &label,
                                                                  const hermes::Path &path) {
-  auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
+  auto key = hermes::Str::regex::replace(label, " ", "") + "ImguiDialogKey";
   if (ImGui::MenuItem(label.c_str()))
     igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose Folder", 0, path.fullName());
   Result result;
@@ -74,7 +74,7 @@ ImguiOpenDialog::Result ImguiOpenDialog::folder_dialog_menu_item(const std::stri
 ImguiOpenDialog::Result ImguiOpenDialog::file_dialog_button(const std::string &label,
                                            const std::string &extensions,
                                            const hermes::Path &path) {
-  auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
+  auto key = hermes::Str::regex::replace(label, " ", "") + "ImguiDialogKey";
   if (ImGui::Button(label.c_str()))
     igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose File", extensions.c_str(), path.fullName());
   Result result;
@@ -96,7 +96,7 @@ ImguiOpenDialog::Result ImguiOpenDialog::file_dialog_button(const std::string &l
 ImguiOpenDialog::Result ImguiOpenDialog::file_dialog_menu_item(const std::string &label,
                                                                const std::string &extensions,
                                                                const hermes::Path &path) {
-  auto key = hermes::Str::replace_r(label, " ", "") + "ImguiDialogKey";
+  auto key = hermes::Str::regex::replace(label, " ", "") + "ImguiDialogKey";
   if (ImGui::MenuItem(label.c_str()))
     igfd::ImGuiFileDialog::Instance()->OpenDialog(key, "Choose File", extensions.c_str(), path.fullName());
   Result result;

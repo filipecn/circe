@@ -525,7 +525,7 @@ void Program::cacheLocations() {
       const auto &u = uniforms_.back();
       for (int j = 1; j < u.array_size; ++j) {
         Uniform au = u;
-        au.name = hermes::Str::replace_r(u.name, "[0]", std::to_string(j));
+        au.name = hermes::Str::regex::replace(u.name, "[0]", std::to_string(j));
         au.index = i + j;
         au.location = u.location + j;
         uniform_locations_[au.name] = au.location;
